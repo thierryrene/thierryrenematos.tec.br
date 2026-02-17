@@ -1,0 +1,32 @@
+[
+  {
+    "id": "ensaio_01",
+    "slug": "cidade-em-contraste",
+    "name": "Ensaio 01",
+    "title": "Cidade em contraste",
+    "description": "Serie urbana com foco em geometria, sombra e ritmo noturno.",
+    "created_at": "2026-02-01",
+    "updated_at": "2026-02-01",
+    "status": "published"
+  },
+  {
+    "id": "ensaio_02",
+    "slug": "ritmo-domestico",
+    "name": "Ensaio 02",
+    "title": "Ritmo domestico",
+    "description": "Narrativa de intimidade visual no espaco domestico.",
+    "created_at": "2025-09-01",
+    "updated_at": "2025-09-01",
+    "status": "published"
+  },
+  {
+    "id": "ensaio_03",
+    "slug": "cor-de-domingo",
+    "name": "Ensaio 03",
+    "title": "Cor de domingo",
+    "description": "Recortes espontaneos de fim de semana em luz natural.",
+    "created_at": "2024-11-01",
+    "updated_at": "2024-11-01",
+    "status": "published"
+  }
+]

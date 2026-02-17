@@ -22,8 +22,10 @@ A experiencia desejada combina:
 - **performance alta**: base estatica com interatividade apenas onde necessario.
 
 ## Status atual
-- layout inicial em `index.html` (prototipo funcional da interface);
+- layout em `index.html` com render dinamico de blog e fotografias;
 - stack ativa simples: HTML + Tailwind CDN + JS puro;
+- camada de conteudo em `data/*.json` pronta para migracao futura para CMS;
+- interacoes locais em fotografias (likes, comentarios e mensagem privada);
 - especificacao tecnica mestre em `docs/especificacoes-tecnicas.md`;
 - governanca inicial para colaboracao com agentes de codigo.
 
@@ -32,9 +34,16 @@ A experiencia desejada combina:
 - `assets/css/styles.css`: base de estilos locais
 - `assets/js/main.js`: base de scripts locais
 - `assets/img/`: imagens do projeto
+- `assets/img/blog/`: midia de blog
+- `assets/img/fotografias/`: midia de fotografias
 - `assets/fonts/`: fontes locais
+- `data/posts.json`: base de posts
+- `data/photos.json`: base de fotografias
+- `data/essays.json`: base de ensaios fotograficos
+- `data/media-map.json`: metadados de midia (alt/caption/credito)
 - `docs/especificacoes-tecnicas.md`: documento tecnico principal
 - `docs/agent-playbook.md`: guia tecnico para execucao por agentes
+- `docs/content-model.md`: modelo de conteudo e checklist editorial/publicacao
 - `docs/politica-de-conteudo.md`: regras de uso e protecao de conteudo
 - `AGENTS.md`: regras operacionais para agentes de codigo
 - `CHANGELOG.md`: historico de evolucao do projeto

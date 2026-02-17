@@ -11,6 +11,7 @@
 - Tailwind via CDN
 - CSS customizado com variaveis
 - JavaScript puro
+- Conteudo em `data/*.json` (posts/fotos/ensaios/midia)
 
 Nao fazer nesta fase:
 - adotar Astro (ou outro framework) sem aprovacao explicita;
@@ -28,6 +29,8 @@ Nao fazer nesta fase:
 - Override manual com persistencia em `localStorage`.
 - Navegacao clara entre Dashboard, Sobre, Blog e Contato.
 - Estados de fallback para blocos de dados externos.
+- Fotografias com filtros por ensaio/ano.
+- Interacoes de prototipo em fotografias: likes, comentarios e mensagem privada (modo local).
 
 ## 5. Seguranca e dados
 - Nao expor chaves/tokens no client.

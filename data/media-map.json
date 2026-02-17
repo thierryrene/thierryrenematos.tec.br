@@ -1,0 +1,26 @@
+[
+  {
+    "id": "media_blog_cover_default",
+    "owner_type": "post",
+    "owner_id": "post_2026_02_bento-grids",
+    "path": "assets/img/blog/.gitkeep",
+    "kind": "image",
+    "alt": "Capa padrao do blog",
+    "caption": "Placeholder para capa de post",
+    "credit": "Arquivo pessoal",
+    "created_at": "2026-02-17",
+    "updated_at": "2026-02-17"
+  },
+  {
+    "id": "media_photo_2026_ensaio_01_001",
+    "owner_type": "photo",
+    "owner_id": "photo_2026_ensaio_01_001",
+    "path": "assets/img/fotografias/.gitkeep",
+    "kind": "image",
+    "alt": "Recorte urbano noturno com alto contraste",
+    "caption": "Cidade em contraste",
+    "credit": "thierry",
+    "created_at": "2026-02-17",
+    "updated_at": "2026-02-17"
+  }
+]

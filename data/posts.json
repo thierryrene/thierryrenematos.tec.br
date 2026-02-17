@@ -1,0 +1,48 @@
+[
+  {
+    "id": "post_2026_02_bento-grids",
+    "slug": "a-era-das-bento-grids",
+    "title": "A era das Bento Grids: por que a organizacao celular dominou a web",
+    "excerpt": "Uma analise sobre layouts modulares, hierarquia visual e experiencia editorial.",
+    "content": [
+      "Este artigo e um conteudo ficticio para validar arquitetura editorial no website.",
+      "A logica de grid modular organiza leitura e reduz ruido visual.",
+      "Com dados e ritmo tipografico, o layout passa a contar historia sem depender de plataformas externas."
+    ],
+    "category": "Design",
+    "created_at": "2026-02-14",
+    "updated_at": "2026-02-14",
+    "status": "published",
+    "cover_image": "assets/img/blog/.gitkeep"
+  },
+  {
+    "id": "post_2026_02_astro-ilhas",
+    "slug": "astro-5-e-as-ilhas-de-servidor",
+    "title": "Astro 5 e as Ilhas de Servidor",
+    "excerpt": "Panorama tecnico sobre renderizacao parcial e estrategia de paginas leves.",
+    "content": [
+      "Conteudo ficticio para testes de card e pagina interna.",
+      "O foco desta fase continua em HTML e JS puro, com migracao futura opcional."
+    ],
+    "category": "Tech",
+    "created_at": "2026-02-05",
+    "updated_at": "2026-02-05",
+    "status": "published",
+    "cover_image": "assets/img/blog/.gitkeep"
+  },
+  {
+    "id": "post_2026_01_spotify-api",
+    "slug": "integrando-a-api-do-spotify",
+    "title": "Integrando a API do Spotify em 10 minutos",
+    "excerpt": "Passo a passo inicial para provar integracao sem perder a identidade visual.",
+    "content": [
+      "Conteudo ficticio para validar variacoes de comprimento de texto.",
+      "Os proximos passos incluem fallback robusto e estado de erro amigavel."
+    ],
+    "category": "Tutorial",
+    "created_at": "2026-01-28",
+    "updated_at": "2026-01-28",
+    "status": "published",
+    "cover_image": "assets/img/blog/.gitkeep"
+  }
+]

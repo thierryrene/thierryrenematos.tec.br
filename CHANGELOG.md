@@ -19,6 +19,10 @@ Este arquivo segue o padrao Keep a Changelog e versionamento semantico.
 - `robots.txt` com bloqueio de crawlers de IA, indexadores e bots de preview social.
 - Metatags de anti-indexacao/anti-snippet no `index.html`.
 - Politica de uso e protecao em `docs/politica-de-conteudo.md`.
+- Camada de dados em `data/*.json` (posts, fotografias, ensaios e media map) com IDs/slug/datas/status.
+- Documento `docs/content-model.md` com convencoes editoriais e checklist de publicacao.
+- Render dinamico de Blog/Fotografias no `index.html` para facilitar migracao futura para CMS.
+- Interacoes locais em fotografias: likes, comentarios e mensagem privada (via `localStorage`).
 
 ## [0.1.0] - 2026-02-17
 ### Added

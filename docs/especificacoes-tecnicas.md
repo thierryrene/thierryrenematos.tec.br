@@ -66,6 +66,7 @@ Comportamento:
 No prototipo atual, o conteudo pode permanecer em pagina unica com secoes:
 - Dashboard
 - Sobre
+- Fotografias
 - Blog
 - Contato
 
@@ -74,6 +75,23 @@ Diretriz:
 - preservar semantica HTML;
 - preparar conteudo para futura separacao em rotas fisicas, sem obrigatoriedade nesta fase.
 
+### 6.1 Modelo de dados local (preparacao para CMS)
+O conteudo deve ser mantido em arquivos JSON no diretorio `data/`:
+- `data/posts.json`
+- `data/photos.json`
+- `data/essays.json`
+- `data/media-map.json`
+
+Campos obrigatorios para objetos de conteudo:
+- `id`, `slug`, `created_at`, `updated_at`, `status`
+
+Requisito:
+- renderizar blog e fotografias a partir desses dados, evitando acoplamento do layout a texto hardcoded.
+
+### 6.2 Midia e metadados
+- organizar midia em `assets/img/blog/` e `assets/img/fotografias/`;
+- manter metadados de acessibilidade (`alt`) e contexto (`caption`, `credit`) no `media-map`.
+
 ## 7. Integracoes externas
 Nesta fase, integracoes podem ser representadas por placeholders.
 
@@ -81,6 +99,14 @@ Quando integrar APIs reais:
 - nunca expor tokens/chaves no client;
 - priorizar camada server-side quando houver backend;
 - implementar estado de erro visivel (degradacao elegante).
+
+### 7.1 Interacoes sociais em Fotografias (fase atual)
+Enquanto nao houver backend, likes, comentarios e mensagens privadas podem funcionar em modo local com `localStorage`, apenas para validacao de UX.
+
+Quando evoluir para producao:
+- mover persistencia para backend autenticado;
+- aplicar moderacao e limite de abuso;
+- adicionar consentimento e politica de privacidade para dados de interacao.
 
 ## 8. Regras para agentes de codigo
 - seguir este documento como referencia principal;

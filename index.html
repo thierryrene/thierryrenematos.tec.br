@@ -12,7 +12,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
-        
+
         :root {
             --bg-color: #09090b;
             --grid-border: #27272a;
@@ -31,7 +31,7 @@
             --item-hover: #f4f4f5;
             --empty-slot: rgba(228, 228, 231, 0.5);
         }
-        
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
@@ -41,7 +41,6 @@
             padding: 0;
         }
 
-        /* Estrutura de Borda Brutalista */
         .brutalist-container {
             border-left: 1px solid var(--grid-border);
             border-top: 1px solid var(--grid-border);
@@ -61,8 +60,9 @@
             .grid-item {
                 aspect-ratio: 1 / 1;
             }
+
             .grid-item.md\:col-span-2.md\:row-span-2 {
-                aspect-ratio: 1 / 1; 
+                aspect-ratio: 1 / 1;
             }
         }
 
@@ -84,7 +84,7 @@
             color: var(--accent);
             position: relative;
         }
-        
+
         nav a.active-nav::after {
             content: '';
             position: absolute;
@@ -103,10 +103,10 @@
             display: block;
         }
 
-        /* Animação do Botão de Tema */
         #theme-toggle svg {
             transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         .theme-day #theme-toggle svg {
             transform: rotate(180deg);
         }
@@ -114,13 +114,15 @@
         .post-body p {
             margin-bottom: 1.5rem;
             line-height: 1.8;
-            opacity: 0.8;
+            opacity: 0.85;
+        }
+
+        .modal-hidden {
+            display: none;
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
-
-    <!-- Navegação Superior -->
     <header class="flex flex-wrap w-full sticky top-0 bg-[var(--bg-color)] z-50 border-b border-[var(--grid-border)]">
         <div class="p-6 font-bold tracking-tighter text-xl border-r border-[var(--grid-border)] flex items-center">
             <a href="#" onclick="showPage('dashboard')" class="hover:text-[var(--accent)] transition-colors">thierry</a>
@@ -141,8 +143,6 @@
     </header>
 
     <main class="flex-grow p-4 md:p-12">
-        
-        <!-- PÁGINA: DASHBOARD -->
         <div id="page-dashboard" class="page-content active max-w-7xl mx-auto">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-5 dashboard-grid">
                 <div class="grid-item md:col-span-2 md:row-span-2 p-8 justify-between">
@@ -159,15 +159,12 @@
                         <span id="time-status" class="text-[10px] font-mono uppercase tracking-[0.2em] opacity-50">Syncing...</span>
                     </div>
                 </div>
-                <!-- Cards de API simplificados para o protótipo -->
                 <div class="grid-item p-6 justify-between"><span class="label">Threads</span><div class="font-medium">@username</div></div>
                 <div class="grid-item p-6 justify-between"><span class="label">Instagram</span><div class="w-full h-full bg-zinc-500/10 border border-zinc-500/20 rounded-sm"></div></div>
                 <div class="grid-item p-6 justify-between"><span class="label">Strava</span><div class="text-3xl font-bold text-orange-500 italic mt-auto">12.4k</div></div>
-                <div class="grid-item p-6 justify-between"><span class="label">YouTube</span><div class="text-xs font-bold leading-none mt-auto">Último Vídeo</div></div>
+                <div class="grid-item p-6 justify-between"><span class="label">YouTube</span><div class="text-xs font-bold leading-none mt-auto">Ultimo Video</div></div>
                 <div class="grid-item p-6 justify-between"><span class="label">Listening Log</span><div class="flex gap-1 items-end h-12 mt-auto"><div class="w-2 bg-red-500 h-[80%]"></div><div class="w-2 bg-green-500 h-[40%]"></div><div class="w-2 bg-zinc-500 h-[90%]"></div></div></div>
                 <div class="grid-item p-6 justify-between"><span class="label">Spotify</span><div class="mt-auto flex items-center gap-2"><div class="w-2 h-2 bg-green-500 rounded-full animate-ping"></div><span class="text-[9px] font-bold uppercase">Live</span></div></div>
-                
-                <!-- Slots Vazios -->
                 <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">GitHub</span></div>
                 <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">LinkedIn</span></div>
                 <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">X</span></div>
@@ -181,7 +178,6 @@
             </div>
         </div>
 
-        <!-- PÁGINA: SOBRE -->
         <div id="page-sobre" class="page-content max-w-4xl mx-auto">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-3">
                 <div class="grid-item md:col-span-3 p-12 md:p-16 aspect-auto md:aspect-auto">
@@ -232,24 +228,14 @@
                 <div class="grid-item p-10 justify-between">
                     <span class="label">Metricas (ficticias)</span>
                     <div class="space-y-5 mt-4">
-                        <div>
-                            <div class="text-3xl font-bold">+48</div>
-                            <div class="text-xs uppercase tracking-[0.2em] opacity-60">Projetos</div>
-                        </div>
-                        <div>
-                            <div class="text-3xl font-bold">+120</div>
-                            <div class="text-xs uppercase tracking-[0.2em] opacity-60">Artigos e notas</div>
-                        </div>
-                        <div>
-                            <div class="text-3xl font-bold">17k</div>
-                            <div class="text-xs uppercase tracking-[0.2em] opacity-60">Horas de pratica</div>
-                        </div>
+                        <div><div class="text-3xl font-bold">+48</div><div class="text-xs uppercase tracking-[0.2em] opacity-60">Projetos</div></div>
+                        <div><div class="text-3xl font-bold">+120</div><div class="text-xs uppercase tracking-[0.2em] opacity-60">Artigos e notas</div></div>
+                        <div><div class="text-3xl font-bold">17k</div><div class="text-xs uppercase tracking-[0.2em] opacity-60">Horas de pratica</div></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- PAGINA: FOTOGRAFIAS -->
         <div id="page-fotografias" class="page-content max-w-6xl mx-auto">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-4">
                 <div class="grid-item md:col-span-4 p-12 md:p-16 aspect-auto md:aspect-auto">
@@ -264,140 +250,43 @@
                 <div class="grid-item md:col-span-4 p-8 md:p-10 aspect-auto md:aspect-auto">
                     <span class="label">Filtros</span>
                     <div class="flex flex-col gap-6">
-                        <div class="flex flex-wrap gap-3 items-center">
-                            <span class="text-[10px] uppercase tracking-[0.2em] opacity-60">Ensaio</span>
-                            <button type="button" data-filter-group="ensaio" data-filter-value="all" onclick="setPhotoFilter('ensaio', 'all', this)" class="text-xs uppercase tracking-[0.15em] px-3 py-2 border border-[var(--grid-border)] bg-[var(--item-hover)]">Todos</button>
-                            <button type="button" data-filter-group="ensaio" data-filter-value="ensaio-01" onclick="setPhotoFilter('ensaio', 'ensaio-01', this)" class="text-xs uppercase tracking-[0.15em] px-3 py-2 border border-[var(--grid-border)]">Ensaio 01</button>
-                            <button type="button" data-filter-group="ensaio" data-filter-value="ensaio-02" onclick="setPhotoFilter('ensaio', 'ensaio-02', this)" class="text-xs uppercase tracking-[0.15em] px-3 py-2 border border-[var(--grid-border)]">Ensaio 02</button>
-                            <button type="button" data-filter-group="ensaio" data-filter-value="ensaio-03" onclick="setPhotoFilter('ensaio', 'ensaio-03', this)" class="text-xs uppercase tracking-[0.15em] px-3 py-2 border border-[var(--grid-border)]">Ensaio 03</button>
-                        </div>
-                        <div class="flex flex-wrap gap-3 items-center">
-                            <span class="text-[10px] uppercase tracking-[0.2em] opacity-60">Ano</span>
-                            <button type="button" data-filter-group="ano" data-filter-value="all" onclick="setPhotoFilter('ano', 'all', this)" class="text-xs uppercase tracking-[0.15em] px-3 py-2 border border-[var(--grid-border)] bg-[var(--item-hover)]">Todos</button>
-                            <button type="button" data-filter-group="ano" data-filter-value="2026" onclick="setPhotoFilter('ano', '2026', this)" class="text-xs uppercase tracking-[0.15em] px-3 py-2 border border-[var(--grid-border)]">2026</button>
-                            <button type="button" data-filter-group="ano" data-filter-value="2025" onclick="setPhotoFilter('ano', '2025', this)" class="text-xs uppercase tracking-[0.15em] px-3 py-2 border border-[var(--grid-border)]">2025</button>
-                            <button type="button" data-filter-group="ano" data-filter-value="2024" onclick="setPhotoFilter('ano', '2024', this)" class="text-xs uppercase tracking-[0.15em] px-3 py-2 border border-[var(--grid-border)]">2024</button>
-                        </div>
+                        <div class="flex flex-wrap gap-3 items-center" id="photo-essay-filters"></div>
+                        <div class="flex flex-wrap gap-3 items-center" id="photo-year-filters"></div>
                     </div>
                 </div>
 
-                <div class="grid-item photo-item md:col-span-2 p-8 md:p-10 aspect-auto md:aspect-auto" data-ensaio="ensaio-01" data-ano="2026">
-                    <span class="label">Ensaio 01 - 2026</span>
-                    <div class="w-full h-72 bg-zinc-500/10 border border-zinc-500/20 mb-6"></div>
-                    <h3 class="text-2xl font-bold mb-3">Cidade em contraste</h3>
-                    <p class="text-sm opacity-70">Luz dura, concreto e recortes urbanos em caminhada noturna.</p>
-                </div>
-
-                <div class="grid-item photo-item p-8 md:p-10 aspect-auto md:aspect-auto" data-ensaio="ensaio-02" data-ano="2025">
-                    <span class="label">Ensaio 02 - 2025</span>
-                    <div class="w-full h-44 bg-zinc-500/10 border border-zinc-500/20 mb-6"></div>
-                    <h3 class="text-xl font-bold mb-3">Ritmo domestico</h3>
-                    <p class="text-sm opacity-70">Objetos, texturas e silencios do cotidiano.</p>
-                </div>
-
-                <div class="grid-item photo-item p-8 md:p-10 aspect-auto md:aspect-auto" data-ensaio="ensaio-03" data-ano="2024">
-                    <span class="label">Ensaio 03 - 2024</span>
-                    <div class="w-full h-44 bg-zinc-500/10 border border-zinc-500/20 mb-6"></div>
-                    <h3 class="text-xl font-bold mb-3">Cor de domingo</h3>
-                    <p class="text-sm opacity-70">Uma serie de cenas espontaneas em luz natural.</p>
-                </div>
-
-                <div class="grid-item p-8 md:p-10 justify-between">
-                    <span class="label">Publicacao</span>
-                    <div>
-                        <h3 class="text-2xl font-bold mb-4">Fluxo autoral</h3>
-                        <p class="text-sm opacity-75 leading-relaxed">
-                            Novas fotos entram em lotes tematicos, com contexto curto e data de captura.
-                        </p>
-                    </div>
-                    <div class="text-[10px] uppercase tracking-[0.2em] opacity-60 mt-8">Atualizacao quinzenal</div>
-                </div>
-
-                <div class="grid-item md:col-span-3 p-8 md:p-10 aspect-auto md:aspect-auto">
-                    <span class="label">Manifesto visual</span>
-                    <p class="text-2xl md:text-3xl font-bold leading-tight max-w-4xl">
-                        Fotografar aqui e uma escolha de independencia: o arquivo e meu, o contexto e meu, o tempo da narrativa tambem.
-                    </p>
-                </div>
+                <div id="photo-grid" class="contents"></div>
             </div>
         </div>
 
-        <!-- PÁGINA: BLOG (LISTAGEM) -->
         <div id="page-blog" class="page-content max-w-6xl mx-auto">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-3">
                 <div class="grid-item p-12 md:col-span-3 aspect-auto md:aspect-auto">
                     <span class="label">meu.ponto - meu ponto de vista</span>
                     <h2 class="text-6xl font-bold italic tracking-tighter">Writing & Thoughts</h2>
                 </div>
-
-                <div class="grid-item md:col-span-2 p-10 aspect-auto md:aspect-auto flex-row gap-10 items-center justify-between group cursor-pointer" onclick="openPost('A era das Bento Grids: Por que a organização celular dominou a web.', '14. Fev. 2026', 'Design')">
-                    <div class="max-w-md">
-                        <span class="label">14. Fev. 2026 — Design</span>
-                        <h3 class="text-3xl font-bold mb-4 group-hover:text-[var(--accent)] transition-colors">A era das Bento Grids: Por que a organização celular dominou a web.</h3>
-                        <p class="text-sm opacity-60">Uma análise profunda sobre layouts modulares e UX.</p>
-                    </div>
-                    <div class="w-32 h-32 bg-[var(--accent)] opacity-20 hidden md:block"></div>
-                </div>
-
-                <div class="grid-item p-10 justify-between group cursor-pointer" onclick="openPost('Astro 5 e as Ilhas de Servidor.', '05. Fev. 2026', 'Tech')">
-                    <div>
-                        <span class="label">05. Fev. 2026 — Tech</span>
-                        <h3 class="text-xl font-bold group-hover:text-[var(--accent)] transition-colors">Astro 5 e as Ilhas de Servidor.</h3>
-                    </div>
-                    <div class="text-[10px] font-bold uppercase mt-4">Ler Artigo →</div>
-                </div>
-
-                <div class="grid-item p-8 justify-between group cursor-pointer" onclick="openPost('Integrando a API do Spotify em 10 minutos.', '28. Jan. 2026', 'Tutorial')">
-                    <div>
-                        <span class="label">28. Jan. 2026</span>
-                        <h3 class="text-lg font-bold group-hover:text-[var(--accent)] transition-colors">Integrando a API do Spotify em 10 minutos.</h3>
-                    </div>
-                </div>
-
-                <div class="grid-item p-8 justify-between group cursor-pointer" onclick="openPost('O Minimalismo no Design Brutalista Contemporâneo.', '20. Jan. 2026', 'Design')">
-                    <div>
-                        <span class="label">20. Jan. 2026</span>
-                        <h3 class="text-lg font-bold group-hover:text-[var(--accent)] transition-colors">O Minimalismo no Design Brutalista Contemporâneo.</h3>
-                    </div>
-                </div>
-
-                <div class="grid-item p-8 justify-between group cursor-pointer" onclick="openPost('Como o Strava mudou minha rotina de dev.', '15. Jan. 2026', 'Life')">
-                    <div>
-                        <span class="label">15. Jan. 2026</span>
-                        <h3 class="text-lg font-bold group-hover:text-[var(--accent)] transition-colors">Como o Strava mudou minha rotina de dev.</h3>
-                    </div>
-                </div>
+                <div id="blog-list" class="contents"></div>
             </div>
         </div>
 
-        <!-- PÁGINA: DETALHE DO POST (NOVA) -->
         <div id="page-post" class="page-content max-w-5xl mx-auto">
             <div class="brutalist-container">
-                <!-- Cabeçalho do Post -->
                 <div class="grid-item p-12 md:p-20 aspect-auto md:aspect-auto">
                     <button onclick="showPage('blog')" class="label hover:text-[var(--accent)] transition-colors mb-12 flex items-center gap-2">
-                        ← Voltar para o blogue
+                        <- Voltar para o blogue
                     </button>
-                    <span id="post-meta" class="label text-[var(--accent)]">Data — Categoria</span>
-                    <h2 id="post-title" class="text-4xl md:text-6xl font-bold leading-none tracking-tighter mt-4">Título do Artigo</h2>
+                    <span id="post-meta" class="label text-[var(--accent)]">Data - Categoria</span>
+                    <h2 id="post-title" class="text-4xl md:text-6xl font-bold leading-none tracking-tighter mt-4">Titulo do Artigo</h2>
                 </div>
 
-                <!-- Conteúdo do Post -->
                 <div class="grid grid-cols-1 md:grid-cols-4">
                     <div class="grid-item md:col-span-3 p-12 md:p-20 aspect-auto md:aspect-auto post-body">
                         <div class="w-full h-64 bg-zinc-500/10 border border-zinc-500/20 mb-12 flex items-center justify-center italic opacity-30">
-                            
+                            capa de artigo
                         </div>
-                        <p class="text-xl font-medium mb-10">Este e um paragrafo introdutorio que explora a premissa central do artigo em questao, mantendo o tom tecnico e direto do projeto <a href="#" onclick="showPage('dashboard')" class="underline decoration-[var(--accent)] underline-offset-4 hover:text-[var(--accent)] transition-colors">thierry</a>.</p>
-                        <p>O design brutalista na web moderna não é apenas sobre estética crua; é sobre a priorização da estrutura e da clareza da informação sobre o ornamento desnecessário. Ao remover sombras suaves e gradientes complexos, permitimos que a hierarquia tipográfica e a organização espacial (como a grelha Bento) comuniquem a função de cada elemento.</p>
-                        <p>Ao utilizarmos o Astro 5, conseguimos entregar este conteúdo como HTML estático puro, garantindo que o tempo de carregamento seja quase instantâneo, independentemente da complexidade visual da grelha.</p>
-                        <blockquote class="border-l-4 border-[var(--accent)] pl-6 py-2 my-10 italic text-2xl font-light opacity-90">
-                            "A grelha não é uma prisão, é a fundação da liberdade visual."
-                        </blockquote>
-                        <p>Concluímos que a evolução do dashboard pessoal passa pela integração inteligente de APIs que conversam entre si num ambiente visualmente coerente e expansível.</p>
+                        <div id="post-body-content"></div>
                     </div>
 
-                    <!-- Barra Lateral do Post -->
                     <div class="grid-item p-12 aspect-auto md:aspect-auto">
                         <span class="label mb-6">Partilhar</span>
                         <div class="flex flex-col gap-4">
@@ -405,13 +294,10 @@
                             <a href="#" class="text-xs font-bold hover:text-[var(--accent)]">LinkedIn</a>
                             <a href="#" class="text-xs font-bold hover:text-[var(--accent)]">Threads</a>
                         </div>
-                        
+
                         <div class="mt-20">
                             <span class="label mb-6">Relacionados</span>
-                            <div class="space-y-8">
-                                <a href="#" class="block text-sm font-bold hover:text-[var(--accent)]">A evolução do Design Modular em 2026.</a>
-                                <a href="#" class="block text-sm font-bold hover:text-[var(--accent)]">Astro vs Next: A batalha das ilhas.</a>
-                            </div>
+                            <div class="space-y-8" id="post-related"></div>
                         </div>
                     </div>
                 </div>
@@ -428,69 +314,572 @@
                 </div>
             </div>
         </div>
-
     </main>
 
     <footer class="brutalist-container grid grid-cols-1 md:grid-cols-2 p-6 text-[10px] uppercase tracking-widest opacity-40 mt-auto">
-        <div class="flex items-center">Feito com Astro & Tailwind</div>
+        <div class="flex items-center">Feito com HTML + Tailwind CDN</div>
         <div class="md:text-right flex items-center justify-end">© 2009 ate hoje <a href="#" onclick="showPage('dashboard')" class="ml-1 hover:text-[var(--accent)] transition-colors">thierry</a></div>
     </footer>
 
+    <div id="comments-modal" class="modal-hidden fixed inset-0 z-[100] bg-black/70 p-4 md:p-10">
+        <div class="max-w-3xl mx-auto border border-[var(--grid-border)] bg-[var(--bg-color)]">
+            <div class="p-6 border-b border-[var(--grid-border)] flex items-center justify-between">
+                <h3 class="text-lg font-bold">Comentarios</h3>
+                <button class="text-xs uppercase tracking-[0.2em]" onclick="closeCommentsModal()">fechar</button>
+            </div>
+            <div class="p-6 space-y-4 max-h-[60vh] overflow-auto" id="comments-list"></div>
+            <form class="p-6 border-t border-[var(--grid-border)]" onsubmit="submitComment(event)">
+                <input type="text" id="comment-input" class="w-full p-3 bg-transparent border border-[var(--grid-border)] text-sm" placeholder="Escreva um comentario curto" required>
+                <div class="mt-4 flex justify-end">
+                    <button type="submit" class="text-xs uppercase tracking-[0.2em] px-4 py-2 border border-[var(--grid-border)] hover:bg-[var(--item-hover)]">Publicar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="message-modal" class="modal-hidden fixed inset-0 z-[100] bg-black/70 p-4 md:p-10">
+        <div class="max-w-3xl mx-auto border border-[var(--grid-border)] bg-[var(--bg-color)]">
+            <div class="p-6 border-b border-[var(--grid-border)] flex items-center justify-between">
+                <h3 class="text-lg font-bold">Mensagem privada</h3>
+                <button class="text-xs uppercase tracking-[0.2em]" onclick="closeMessageModal()">fechar</button>
+            </div>
+            <form class="p-6" onsubmit="submitPrivateMessage(event)">
+                <p class="text-xs opacity-70 mb-4">Interacao local para prototipo de UX. Em CMS real, isso deve usar backend autenticado.</p>
+                <textarea id="message-input" class="w-full min-h-40 p-3 bg-transparent border border-[var(--grid-border)] text-sm" placeholder="Escreva sua mensagem privada" required></textarea>
+                <div class="mt-4 flex justify-end">
+                    <button type="submit" class="text-xs uppercase tracking-[0.2em] px-4 py-2 border border-[var(--grid-border)] hover:bg-[var(--item-hover)]">Enviar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         let manualThemeOverride = false;
-        const photoFilters = { ensaio: 'all', ano: 'all' };
+        let activePhotoId = null;
+        let activePostId = null;
+
+        const storageKeys = {
+            likes: 'thierry.likes.v1',
+            comments: 'thierry.comments.v1',
+            messages: 'thierry.messages.v1'
+        };
+
+        const FALLBACK_DATA = {
+            posts: [
+                {
+                    id: 'post_2026_02_bento-grids',
+                    slug: 'a-era-das-bento-grids',
+                    title: 'A era das Bento Grids: por que a organizacao celular dominou a web',
+                    excerpt: 'Uma analise sobre layouts modulares, hierarquia visual e experiencia editorial.',
+                    content: [
+                        'Este artigo e um conteudo ficticio para validar arquitetura editorial no website.',
+                        'A logica de grid modular organiza leitura e reduz ruido visual.',
+                        'Com dados e ritmo tipografico, o layout passa a contar historia sem depender de plataformas externas.'
+                    ],
+                    category: 'Design',
+                    created_at: '2026-02-14',
+                    updated_at: '2026-02-14',
+                    status: 'published'
+                }
+            ],
+            photos: [
+                {
+                    id: 'photo_2026_ensaio_01_001',
+                    slug: 'cidade-em-contraste-01',
+                    title: 'Cidade em contraste',
+                    description: 'Luz dura, concreto e recortes urbanos em caminhada noturna.',
+                    essay_id: 'ensaio_01',
+                    year: 2026,
+                    media_type: 'image',
+                    created_at: '2026-02-10',
+                    updated_at: '2026-02-10',
+                    status: 'published'
+                },
+                {
+                    id: 'photo_2026_ensaio_01_002',
+                    slug: 'cidade-em-contraste-02',
+                    title: 'Sinais de madrugada',
+                    description: 'Reflexos em asfalto molhado e semaforos em longa exposicao.',
+                    essay_id: 'ensaio_01',
+                    year: 2026,
+                    media_type: 'image',
+                    created_at: '2026-02-11',
+                    updated_at: '2026-02-11',
+                    status: 'published'
+                },
+                {
+                    id: 'video_2026_ensaio_01_003',
+                    slug: 'cidade-em-contraste-video-01',
+                    title: 'Travessia noturna',
+                    description: 'Video curto com fluxo de pedestres e luzes da avenida.',
+                    essay_id: 'ensaio_01',
+                    year: 2026,
+                    media_type: 'video',
+                    created_at: '2026-02-12',
+                    updated_at: '2026-02-12',
+                    status: 'published'
+                },
+                {
+                    id: 'photo_2025_ensaio_02_001',
+                    slug: 'ritmo-domestico-01',
+                    title: 'Ritmo domestico',
+                    description: 'Objetos, texturas e silencios do cotidiano.',
+                    essay_id: 'ensaio_02',
+                    year: 2025,
+                    media_type: 'image',
+                    created_at: '2025-09-04',
+                    updated_at: '2025-09-04',
+                    status: 'published'
+                },
+                {
+                    id: 'photo_2025_ensaio_02_002',
+                    slug: 'ritmo-domestico-02',
+                    title: 'Luz de janela',
+                    description: 'Sombras suaves em objetos de uso diario no inicio da manha.',
+                    essay_id: 'ensaio_02',
+                    year: 2025,
+                    media_type: 'image',
+                    created_at: '2025-09-06',
+                    updated_at: '2025-09-06',
+                    status: 'published'
+                },
+                {
+                    id: 'video_2025_ensaio_02_003',
+                    slug: 'ritmo-domestico-video-01',
+                    title: 'Som da casa',
+                    description: 'Video curto com movimentos lentos e ambiente intimista.',
+                    essay_id: 'ensaio_02',
+                    year: 2025,
+                    media_type: 'video',
+                    created_at: '2025-09-08',
+                    updated_at: '2025-09-08',
+                    status: 'published'
+                },
+                {
+                    id: 'photo_2024_ensaio_03_001',
+                    slug: 'cor-de-domingo-01',
+                    title: 'Cor de domingo',
+                    description: 'Uma serie de cenas espontaneas em luz natural.',
+                    essay_id: 'ensaio_03',
+                    year: 2024,
+                    media_type: 'image',
+                    created_at: '2024-11-16',
+                    updated_at: '2024-11-16',
+                    status: 'published'
+                },
+                {
+                    id: 'photo_2024_ensaio_03_002',
+                    slug: 'cor-de-domingo-02',
+                    title: 'Fim de tarde aberto',
+                    description: 'Cores quentes e movimento leve em espacos publicos.',
+                    essay_id: 'ensaio_03',
+                    year: 2024,
+                    media_type: 'image',
+                    created_at: '2024-11-20',
+                    updated_at: '2024-11-20',
+                    status: 'published'
+                }
+            ],
+            essays: [
+                {
+                    id: 'ensaio_01',
+                    name: 'Ensaio 01',
+                    title: 'Cidade em contraste',
+                    description: 'Serie urbana com foco em geometria, sombra e ritmo noturno.',
+                    status: 'published'
+                },
+                {
+                    id: 'ensaio_02',
+                    name: 'Ensaio 02',
+                    title: 'Ritmo domestico',
+                    description: 'Narrativa de intimidade visual no espaco domestico.',
+                    status: 'published'
+                },
+                {
+                    id: 'ensaio_03',
+                    name: 'Ensaio 03',
+                    title: 'Cor de domingo',
+                    description: 'Recortes espontaneos de fim de semana em luz natural.',
+                    status: 'published'
+                }
+            ],
+            mediaMap: []
+        };
+
+        const state = {
+            posts: [],
+            photos: [],
+            essays: [],
+            mediaMap: [],
+            photoFilters: {
+                essay: 'all',
+                year: 'all'
+            },
+            likes: {},
+            comments: {},
+            messages: {}
+        };
 
         function showPage(pageId) {
-            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active-nav'));
-            
+            document.querySelectorAll('.page-content').forEach((page) => page.classList.remove('active'));
+            document.querySelectorAll('nav a').forEach((link) => link.classList.remove('active-nav'));
+
             const targetPage = document.getElementById('page-' + pageId);
-            if(targetPage) targetPage.classList.add('active');
-            
+            if (targetPage) targetPage.classList.add('active');
+
             const navLink = document.getElementById('nav-' + pageId);
-            if(navLink) navLink.classList.add('active-nav');
-            
+            if (navLink) navLink.classList.add('active-nav');
+
             window.scrollTo(0, 0);
         }
 
-        // Função para abrir um post específico
-        function openPost(title, date, category) {
-            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active-nav'));
-            
-            const postPage = document.getElementById('page-post');
-            document.getElementById('post-title').innerText = title;
-            document.getElementById('post-meta').innerText = date + " — " + category;
-            
-            postPage.classList.add('active');
-            window.scrollTo(0, 0);
-        }
-
-        function updatePhotoFilterButtons() {
-            document.querySelectorAll('[data-filter-group]').forEach(button => {
-                const group = button.getAttribute('data-filter-group');
-                const value = button.getAttribute('data-filter-value');
-                const isActive = photoFilters[group] === value;
-                if (isActive) {
-                    button.classList.add('bg-[var(--item-hover)]');
-                } else {
-                    button.classList.remove('bg-[var(--item-hover)]');
-                }
+        function formatDatePt(dateValue) {
+            const d = new Date(dateValue + 'T12:00:00');
+            return d.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
             });
         }
 
-        function applyPhotoFilters() {
-            document.querySelectorAll('.photo-item').forEach(item => {
-                const ensaioMatch = photoFilters.ensaio === 'all' || item.dataset.ensaio === photoFilters.ensaio;
-                const anoMatch = photoFilters.ano === 'all' || item.dataset.ano === photoFilters.ano;
-                item.style.display = ensaioMatch && anoMatch ? '' : 'none';
+        function readStorage(key, fallback = {}) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return fallback;
+                return JSON.parse(raw);
+            } catch {
+                return fallback;
+            }
+        }
+
+        function writeStorage(key, value) {
+            localStorage.setItem(key, JSON.stringify(value));
+        }
+
+        async function loadJson(path) {
+            const response = await fetch(path, { cache: 'no-store' });
+            if (!response.ok) throw new Error('falha ao carregar ' + path);
+            return response.json();
+        }
+
+        async function bootstrapContent() {
+            try {
+                const [posts, photos, essays, mediaMap] = await Promise.all([
+                    loadJson('data/posts.json'),
+                    loadJson('data/photos.json'),
+                    loadJson('data/essays.json'),
+                    loadJson('data/media-map.json')
+                ]);
+
+                state.posts = posts;
+                state.photos = photos;
+                state.essays = essays;
+                state.mediaMap = mediaMap;
+            } catch (error) {
+                console.warn('carregando fallback local de dados:', error.message);
+                state.posts = FALLBACK_DATA.posts;
+                state.photos = FALLBACK_DATA.photos;
+                state.essays = FALLBACK_DATA.essays;
+                state.mediaMap = FALLBACK_DATA.mediaMap;
+            }
+
+            state.likes = readStorage(storageKeys.likes, {});
+            state.comments = readStorage(storageKeys.comments, {});
+            state.messages = readStorage(storageKeys.messages, {});
+
+            renderPhotoFilters();
+            renderPhotoGrid();
+            renderBlogList();
+        }
+
+        function getEssayById(id) {
+            return state.essays.find((essay) => essay.id === id);
+        }
+
+        function getPublishedPosts() {
+            return state.posts
+                .filter((post) => post.status === 'published')
+                .sort((a, b) => b.created_at.localeCompare(a.created_at));
+        }
+
+        function getPublishedPhotos() {
+            return state.photos
+                .filter((photo) => photo.status === 'published')
+                .sort((a, b) => b.created_at.localeCompare(a.created_at));
+        }
+
+        function createFilterButton(group, value, label, isActive) {
+            return `
+                <button
+                    type="button"
+                    data-filter-group="${group}"
+                    data-filter-value="${value}"
+                    onclick="setPhotoFilter('${group}', '${value}')"
+                    class="text-xs uppercase tracking-[0.15em] px-3 py-2 border border-[var(--grid-border)] ${isActive ? 'bg-[var(--item-hover)]' : ''}">
+                    ${label}
+                </button>
+            `;
+        }
+
+        function renderPhotoFilters() {
+            const essayFilterRoot = document.getElementById('photo-essay-filters');
+            const yearFilterRoot = document.getElementById('photo-year-filters');
+            const essays = state.essays.filter((essay) => essay.status === 'published');
+            const years = [...new Set(getPublishedPhotos().map((photo) => String(photo.year)))].sort((a, b) => Number(b) - Number(a));
+
+            const essayButtons = [
+                '<span class="text-[10px] uppercase tracking-[0.2em] opacity-60">Ensaio</span>',
+                createFilterButton('essay', 'all', 'Todos', state.photoFilters.essay === 'all'),
+                ...essays.map((essay) => createFilterButton('essay', essay.id, essay.name, state.photoFilters.essay === essay.id))
+            ];
+
+            const yearButtons = [
+                '<span class="text-[10px] uppercase tracking-[0.2em] opacity-60">Ano</span>',
+                createFilterButton('year', 'all', 'Todos', state.photoFilters.year === 'all'),
+                ...years.map((year) => createFilterButton('year', year, year, state.photoFilters.year === year))
+            ];
+
+            essayFilterRoot.innerHTML = essayButtons.join('');
+            yearFilterRoot.innerHTML = yearButtons.join('');
+        }
+
+        function getPhotoLikeModel(photoId) {
+            if (!state.likes[photoId]) {
+                state.likes[photoId] = { count: 0, liked: false };
+            }
+            return state.likes[photoId];
+        }
+
+        function getPhotoComments(photoId) {
+            if (!state.comments[photoId]) state.comments[photoId] = [];
+            return state.comments[photoId];
+        }
+
+        function getPhotoMessages(photoId) {
+            if (!state.messages[photoId]) state.messages[photoId] = [];
+            return state.messages[photoId];
+        }
+
+        function renderPhotoCard(photo, large = false) {
+            const essay = getEssayById(photo.essay_id);
+            const likeModel = getPhotoLikeModel(photo.id);
+            const comments = getPhotoComments(photo.id);
+            const messages = getPhotoMessages(photo.id);
+            const titleSize = large ? 'text-2xl' : 'text-xl';
+            const imageHeight = large ? 'h-72' : 'h-44';
+            const colSpan = large ? 'md:col-span-2' : '';
+            const likeEmoji = likeModel.liked ? '❤️' : '🤍';
+            const mediaType = photo.media_type === 'video' ? 'video' : 'image';
+            const mediaLabel = mediaType === 'video' ? 'video placeholder ▶' : 'foto placeholder';
+
+            return `
+                <article class="grid-item photo-item ${colSpan} p-8 md:p-10 aspect-auto md:aspect-auto justify-between" data-photo-id="${photo.id}">
+                    <div>
+                        <span class="label">${essay ? essay.name : 'Ensaio'} - ${photo.year} - ${mediaType}</span>
+                        <div class="w-full ${imageHeight} bg-zinc-500/10 border border-zinc-500/20 mb-6 flex items-center justify-center text-[10px] uppercase tracking-[0.2em] opacity-50">
+                            ${mediaLabel}
+                        </div>
+                        <h3 class="${titleSize} font-bold mb-3">${photo.title}</h3>
+                        <p class="text-sm opacity-70">${photo.description}</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-[var(--grid-border)] flex items-center gap-5">
+                        <button type="button" onclick="togglePhotoLike('${photo.id}')" class="text-xl leading-none hover:scale-110 transition-transform" title="Curtir">${likeEmoji}</button>
+                        <span class="text-[10px] uppercase tracking-[0.2em] opacity-60 mr-2">${likeModel.count}</span>
+                        <button type="button" onclick="openCommentsModal('${photo.id}')" class="text-xl leading-none hover:scale-110 transition-transform" title="Comentarios">💬</button>
+                        <span class="text-[10px] uppercase tracking-[0.2em] opacity-60 mr-2">${comments.length}</span>
+                        <button type="button" onclick="openMessageModal('${photo.id}')" class="text-xl leading-none hover:scale-110 transition-transform" title="Mensagem privada">✉️</button>
+                        <span class="text-[10px] uppercase tracking-[0.2em] opacity-60">${messages.length}</span>
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderPhotoGrid() {
+            const root = document.getElementById('photo-grid');
+            const photos = getPublishedPhotos().filter((photo) => {
+                const essayMatch = state.photoFilters.essay === 'all' || photo.essay_id === state.photoFilters.essay;
+                const yearMatch = state.photoFilters.year === 'all' || String(photo.year) === state.photoFilters.year;
+                return essayMatch && yearMatch;
             });
+
+            if (!photos.length) {
+                root.innerHTML = `
+                    <div class="grid-item md:col-span-4 p-10 aspect-auto md:aspect-auto">
+                        <span class="label">Sem resultado</span>
+                        <p class="text-sm opacity-70">Nao ha fotografias para o filtro selecionado.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            root.innerHTML = photos.map((photo, index) => renderPhotoCard(photo, index === 0)).join('');
         }
 
         function setPhotoFilter(group, value) {
-            photoFilters[group] = value;
-            updatePhotoFilterButtons();
-            applyPhotoFilters();
+            state.photoFilters[group] = value;
+            renderPhotoFilters();
+            renderPhotoGrid();
+        }
+
+        function togglePhotoLike(photoId) {
+            const model = getPhotoLikeModel(photoId);
+            model.liked = !model.liked;
+            model.count = model.liked ? model.count + 1 : Math.max(0, model.count - 1);
+            writeStorage(storageKeys.likes, state.likes);
+            renderPhotoGrid();
+        }
+
+        function openCommentsModal(photoId) {
+            activePhotoId = photoId;
+            document.getElementById('comments-modal').classList.remove('modal-hidden');
+            renderCommentsModal();
+        }
+
+        function closeCommentsModal() {
+            document.getElementById('comments-modal').classList.add('modal-hidden');
+            activePhotoId = null;
+        }
+
+        function renderCommentsModal() {
+            const list = document.getElementById('comments-list');
+            const comments = getPhotoComments(activePhotoId);
+            if (!comments.length) {
+                list.innerHTML = '<p class="text-sm opacity-70">Sem comentarios ainda. Seja a primeira pessoa a comentar.</p>';
+                return;
+            }
+
+            list.innerHTML = comments
+                .slice()
+                .reverse()
+                .map((comment) => `
+                    <div class="border border-[var(--grid-border)] p-4">
+                        <div class="text-[10px] uppercase tracking-[0.2em] opacity-60 mb-2">${formatDatePt(comment.created_at)}</div>
+                        <p class="text-sm leading-relaxed">${comment.text}</p>
+                    </div>
+                `)
+                .join('');
+        }
+
+        function submitComment(event) {
+            event.preventDefault();
+            if (!activePhotoId) return;
+
+            const input = document.getElementById('comment-input');
+            const value = input.value.trim();
+            if (!value) return;
+
+            const comments = getPhotoComments(activePhotoId);
+            comments.push({
+                id: 'comment_' + Date.now(),
+                text: value,
+                created_at: new Date().toISOString().slice(0, 10)
+            });
+
+            writeStorage(storageKeys.comments, state.comments);
+            input.value = '';
+            renderCommentsModal();
+            renderPhotoGrid();
+        }
+
+        function openMessageModal(photoId) {
+            activePhotoId = photoId;
+            document.getElementById('message-modal').classList.remove('modal-hidden');
+        }
+
+        function closeMessageModal() {
+            document.getElementById('message-modal').classList.add('modal-hidden');
+            activePhotoId = null;
+            document.getElementById('message-input').value = '';
+        }
+
+        function submitPrivateMessage(event) {
+            event.preventDefault();
+            if (!activePhotoId) return;
+
+            const input = document.getElementById('message-input');
+            const value = input.value.trim();
+            if (!value) return;
+
+            const messages = getPhotoMessages(activePhotoId);
+            messages.push({
+                id: 'message_' + Date.now(),
+                text: value,
+                created_at: new Date().toISOString().slice(0, 10)
+            });
+
+            writeStorage(storageKeys.messages, state.messages);
+            closeMessageModal();
+            renderPhotoGrid();
+        }
+
+        function renderBlogCard(post, index) {
+            if (index === 0) {
+                return `
+                    <article class="grid-item md:col-span-2 p-10 aspect-auto md:aspect-auto flex-row gap-10 items-center justify-between group cursor-pointer" onclick="openPostById('${post.id}')">
+                        <div class="max-w-md">
+                            <span class="label">${formatDatePt(post.created_at)} - ${post.category}</span>
+                            <h3 class="text-3xl font-bold mb-4 group-hover:text-[var(--accent)] transition-colors">${post.title}</h3>
+                            <p class="text-sm opacity-60">${post.excerpt}</p>
+                        </div>
+                        <div class="w-32 h-32 bg-[var(--accent)] opacity-20 hidden md:block"></div>
+                    </article>
+                `;
+            }
+
+            return `
+                <article class="grid-item p-8 justify-between group cursor-pointer" onclick="openPostById('${post.id}')">
+                    <div>
+                        <span class="label">${formatDatePt(post.created_at)} - ${post.category}</span>
+                        <h3 class="text-lg font-bold group-hover:text-[var(--accent)] transition-colors">${post.title}</h3>
+                    </div>
+                    <div class="text-[10px] font-bold uppercase mt-4">Ler Artigo -></div>
+                </article>
+            `;
+        }
+
+        function renderBlogList() {
+            const root = document.getElementById('blog-list');
+            const posts = getPublishedPosts();
+
+            if (!posts.length) {
+                root.innerHTML = `
+                    <div class="grid-item md:col-span-3 p-10 aspect-auto md:aspect-auto">
+                        <span class="label">Sem posts</span>
+                        <p class="text-sm opacity-70">Nenhum post publicado no momento.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            root.innerHTML = posts.map((post, index) => renderBlogCard(post, index)).join('');
+        }
+
+        function openPostById(postId) {
+            const post = state.posts.find((item) => item.id === postId);
+            if (!post) return;
+
+            activePostId = postId;
+
+            document.querySelectorAll('.page-content').forEach((p) => p.classList.remove('active'));
+            document.querySelectorAll('nav a').forEach((a) => a.classList.remove('active-nav'));
+
+            const postPage = document.getElementById('page-post');
+            const postMeta = document.getElementById('post-meta');
+            const postTitle = document.getElementById('post-title');
+            const postBody = document.getElementById('post-body-content');
+            const postRelated = document.getElementById('post-related');
+
+            postMeta.innerText = `${formatDatePt(post.created_at)} - ${post.category}`;
+            postTitle.innerText = post.title;
+            postBody.innerHTML = post.content.map((paragraph) => `<p>${paragraph}</p>`).join('');
+
+            const relatedPosts = getPublishedPosts().filter((item) => item.id !== post.id).slice(0, 2);
+            postRelated.innerHTML = relatedPosts
+                .map((item) => `<a href="#" onclick="openPostById('${item.id}')" class="block text-sm font-bold hover:text-[var(--accent)]">${item.title}</a>`)
+                .join('');
+
+            postPage.classList.add('active');
+            window.scrollTo(0, 0);
         }
 
         function toggleThemeManual() {
@@ -510,38 +899,41 @@
             if (isDay) {
                 sunIcon.classList.remove('hidden');
                 moonIcon.classList.add('hidden');
-                if(statusText) statusText.innerText = "OVERRIDE — DAY MODE";
-                if(dot) dot.style.backgroundColor = "#fbbf24";
+                if (statusText) statusText.innerText = 'OVERRIDE - DAY MODE';
+                if (dot) dot.style.backgroundColor = '#fbbf24';
             } else {
                 sunIcon.classList.add('hidden');
                 moonIcon.classList.remove('hidden');
-                if(statusText) statusText.innerText = "OVERRIDE — NIGHT MODE";
-                if(dot) dot.style.backgroundColor = "#818cf8";
+                if (statusText) statusText.innerText = 'OVERRIDE - NIGHT MODE';
+                if (dot) dot.style.backgroundColor = '#818cf8';
             }
         }
 
         function updateTheme() {
             if (manualThemeOverride) return;
+
             const now = new Date();
             const hour = now.getHours();
             const body = document.body;
             const statusText = document.getElementById('time-status');
             const dot = document.getElementById('time-dot');
             const isDay = hour >= 6 && hour < 18;
+
             if (isDay) {
                 body.classList.add('theme-day');
-                if(statusText) statusText.innerText = hour + ":00 — DAY MODE";
-                if(dot) dot.style.backgroundColor = "#fbbf24";
+                if (statusText) statusText.innerText = hour + ':00 - DAY MODE';
+                if (dot) dot.style.backgroundColor = '#fbbf24';
             } else {
                 body.classList.remove('theme-day');
-                if(statusText) statusText.innerText = hour + ":00 — NIGHT MODE";
-                if(dot) dot.style.backgroundColor = "#818cf8";
+                if (statusText) statusText.innerText = hour + ':00 - NIGHT MODE';
+                if (dot) dot.style.backgroundColor = '#818cf8';
             }
+
             updateThemeIcons();
         }
+
         updateTheme();
-        updatePhotoFilterButtons();
-        applyPhotoFilters();
+        bootstrapContent();
         setInterval(updateTheme, 60000);
     </script>
 </body>
