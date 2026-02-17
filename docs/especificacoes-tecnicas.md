@@ -1,9 +1,13 @@
-# MEU.PONTO - Especificacao Tecnica do Projeto
+# Thierry Rene Matos - Especificacao Tecnica do Projeto
 
-Este documento e a fonte de verdade para o desenvolvimento do MEU.PONTO.
+Este documento e a fonte de verdade para o desenvolvimento do site Thierry Rene Matos.
 
 ## 1. Visao do projeto
-O MEU.PONTO e o website pessoal de Thierry, com proposta de dashboard biografico em linguagem Neo-Brutalista.
+O site Thierry Rene Matos e um website pessoal com proposta de dashboard biografico em linguagem Neo-Brutalista.
+
+Definicao editorial:
+- `meu.ponto` e o nome da secao de blog;
+- significado: "meu ponto de vista".
 
 Objetivo principal nesta fase:
 - consolidar um layout forte e funcional;

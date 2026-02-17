@@ -1,7 +1,8 @@
 # AGENTS.md - Diretrizes para agentes de codigo
 
 ## Objetivo
-Este repositorio implementa o projeto pessoal **MEU.PONTO**. Agentes devem manter coerencia com a proposta biografica, a estetica brutalista e a arquitetura definida nas especificacoes tecnicas.
+Este repositorio implementa o projeto pessoal **Thierry Rene Matos**. Agentes devem manter coerencia com a proposta biografica, a estetica brutalista e a arquitetura definida nas especificacoes tecnicas.
+No contexto de conteudo, `meu.ponto` e o nome editorial do blog ("meu ponto de vista").
 
 ## Ordem de prioridade
 1. `docs/especificacoes-tecnicas.md` (fonte da verdade)

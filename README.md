@@ -1,7 +1,9 @@
-# MEU.PONTO - Reformulacao do thierryrenematos.tec.br
+# Thierry Rene Matos - Reformulacao do thierryrenematos.tec.br
 
 ## Sobre o projeto
-O **MEU.PONTO** e o meu novo website pessoal: um dashboard biografico que organiza meu rastro digital em uma interface unica, brutalista e orientada a dados.
+O **Thierry Rene Matos** e o meu novo website pessoal: um dashboard biografico que organiza meu rastro digital em uma interface unica, brutalista e orientada a dados.
+
+No projeto, `meu.ponto` e o nome do blog e representa "meu ponto de vista".
 
 Mais do que um portfolio tradicional, este projeto representa meu momento atual como pessoa criativa e tecnica. A proposta e publicar, em tempo real e com identidade visual forte, sinais do que estou construindo, estudando, ouvindo, treinando e escrevendo.
 

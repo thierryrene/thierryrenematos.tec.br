@@ -1,9 +1,10 @@
-# Agent Playbook - MEU.PONTO
+# Agent Playbook - Thierry Rene Matos
 
 ## 1. Contexto de produto
 - Projeto: reformulacao do site pessoal `thierryrenematos.tec.br`.
 - Conceito: dashboard biografico com linguagem Neo-Brutalista.
 - Objetivo: consolidar sinais digitais em uma experiencia unica e evolutiva.
+- Blog: `meu.ponto` (significado editorial: "meu ponto de vista").
 
 ## 2. Stack atual obrigatoria
 - HTML5
