@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>thierry</title>
+    <meta name="description" content="Website pessoal de thierry com dashboard biografico, blog meu.ponto e galeria autoral de fotografias e videos.">
     <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex, max-image-preview:none, max-snippet:0, max-video-preview:0">
     <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex, max-image-preview:none, max-snippet:0, max-video-preview:0">
     <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet, noimageindex, max-image-preview:none, max-snippet:0, max-video-preview:0">
@@ -167,11 +168,12 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:bg-[var(--bg-color)] focus:border focus:border-[var(--grid-border)] focus:px-3 focus:py-2">Pular para o conteudo</a>
     <header class="flex flex-wrap w-full sticky top-0 bg-[var(--bg-color)] z-50 border-b border-[var(--grid-border)]">
         <div class="p-6 font-bold tracking-tighter text-xl border-r border-[var(--grid-border)] flex items-center">
             <a href="#" onclick="showPage('dashboard')" class="hover:text-[var(--accent)] transition-colors">thierry</a>
         </div>
-        <nav class="flex-grow flex items-center gap-8 px-10 overflow-x-auto whitespace-nowrap">
+        <nav aria-label="Navegacao principal" class="flex-grow flex items-center gap-8 px-10 overflow-x-auto whitespace-nowrap">
             <a href="#" onclick="showPage('dashboard')" id="nav-dashboard" class="label mb-0 hover:text-[var(--text-main)] transition-colors active-nav">Dashboard</a>
             <a href="#" onclick="showPage('sobre')" id="nav-sobre" class="label mb-0 hover:text-[var(--text-main)] transition-colors">Sobre</a>
             <a href="#" onclick="showPage('fotografias')" id="nav-fotografias" class="label mb-0 hover:text-[var(--text-main)] transition-colors">Fotografias</a>
@@ -186,7 +188,7 @@
         </button>
     </header>
 
-    <main class="flex-grow p-4 md:p-12">
+    <main id="main-content" class="flex-grow p-4 md:p-12">
         <div id="page-dashboard" class="page-content active max-w-7xl mx-auto">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-5 dashboard-grid">
                 <div class="grid-item md:col-span-2 md:row-span-2 p-8 justify-between">
@@ -365,7 +367,7 @@
         <div class="md:text-right flex items-center justify-end">de 2009 até hoje</div>
     </footer>
 
-    <div id="comments-modal" class="modal-hidden fixed inset-0 z-[100] bg-black/70 p-4 md:p-10">
+    <div id="comments-modal" class="modal-hidden fixed inset-0 z-[100] bg-black/70 p-4 md:p-10" role="dialog" aria-modal="true" aria-label="Modal de comentarios">
         <div class="max-w-3xl mx-auto border border-[var(--grid-border)] bg-[var(--bg-color)]">
             <div class="p-6 border-b border-[var(--grid-border)] flex items-center justify-between">
                 <h3 class="text-lg font-bold">Comentarios</h3>
@@ -381,7 +383,7 @@
         </div>
     </div>
 
-    <div id="message-modal" class="modal-hidden fixed inset-0 z-[100] bg-black/70 p-4 md:p-10">
+    <div id="message-modal" class="modal-hidden fixed inset-0 z-[100] bg-black/70 p-4 md:p-10" role="dialog" aria-modal="true" aria-label="Modal de mensagem privada">
         <div class="max-w-3xl mx-auto border border-[var(--grid-border)] bg-[var(--bg-color)]">
             <div class="p-6 border-b border-[var(--grid-border)] flex items-center justify-between">
                 <h3 class="text-lg font-bold">Mensagem privada</h3>
@@ -771,23 +773,37 @@
             const likeEmoji = likeModel.liked ? '❤️' : '🤍';
             const mediaType = photo.media_type === 'video' ? 'video' : 'image';
             const mediaLabel = mediaType === 'video' ? 'video placeholder ▶' : 'foto placeholder';
+            const imageAlt = photo.alt || photo.title || 'Midia da galeria';
+            const mediaBlock = mediaType === 'image'
+                ? `
+                    <div class="relative w-full ${imageHeight} bg-zinc-500/10 border border-zinc-500/20 mb-6 overflow-hidden">
+                        <img src="${photo.image || ''}" alt="${imageAlt}" loading="lazy" decoding="async" class="w-full h-full object-cover"
+                            onerror="this.style.display='none'; this.parentElement.querySelector('[data-fallback]').style.display='flex';">
+                        <div data-fallback class="absolute inset-0 hidden items-center justify-center text-[10px] uppercase tracking-[0.2em] opacity-50">
+                            ${mediaLabel}
+                        </div>
+                    </div>
+                `
+                : `
+                    <div class="w-full ${imageHeight} bg-zinc-500/10 border border-zinc-500/20 mb-6 flex items-center justify-center text-[10px] uppercase tracking-[0.2em] opacity-50">
+                        ${mediaLabel}
+                    </div>
+                `;
 
             return `
                 <article class="grid-item photo-item ${colSpan} p-8 md:p-10 aspect-auto md:aspect-auto justify-between" data-photo-id="${photo.id}">
                     <div>
                         <span class="label">${essay ? essay.name : 'Ensaio'} - ${photo.year} - ${mediaType}</span>
-                        <div class="w-full ${imageHeight} bg-zinc-500/10 border border-zinc-500/20 mb-6 flex items-center justify-center text-[10px] uppercase tracking-[0.2em] opacity-50">
-                            ${mediaLabel}
-                        </div>
+                        ${mediaBlock}
                         <h3 class="${titleSize} font-bold mb-3">${photo.title}</h3>
                         <p class="text-sm opacity-70">${photo.description}</p>
                     </div>
                     <div class="mt-6 pt-4 border-t border-[var(--grid-border)] flex items-center gap-5">
-                        <button type="button" onclick="togglePhotoLike('${photo.id}')" class="text-xl leading-none hover:scale-110 transition-transform" title="Curtir">${likeEmoji}</button>
+                        <button type="button" onclick="togglePhotoLike('${photo.id}')" class="text-xl leading-none hover:scale-110 transition-transform" title="Curtir" aria-label="Curtir foto">${likeEmoji}</button>
                         <span class="text-[10px] uppercase tracking-[0.2em] opacity-60 mr-2">${likeModel.count}</span>
-                        <button type="button" onclick="openCommentsModal('${photo.id}')" class="text-xl leading-none hover:scale-110 transition-transform" title="Comentarios">💬</button>
+                        <button type="button" onclick="openCommentsModal('${photo.id}')" class="text-xl leading-none hover:scale-110 transition-transform" title="Comentarios" aria-label="Abrir comentarios">💬</button>
                         <span class="text-[10px] uppercase tracking-[0.2em] opacity-60 mr-2">${comments.length}</span>
-                        <button type="button" onclick="openMessageModal('${photo.id}')" class="text-xl leading-none hover:scale-110 transition-transform" title="Mensagem privada">✉️</button>
+                        <button type="button" onclick="openMessageModal('${photo.id}')" class="text-xl leading-none hover:scale-110 transition-transform" title="Mensagem privada" aria-label="Enviar mensagem privada">✉️</button>
                         <span class="text-[10px] uppercase tracking-[0.2em] opacity-60">${messages.length}</span>
                     </div>
                 </article>
