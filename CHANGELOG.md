@@ -15,6 +15,11 @@ Este arquivo segue o padrao Keep a Changelog e versionamento semantico.
 - Integracao gradual de dados externos com fallback visual e seguranca.
 - Avaliacao futura de migracao para framework em iniciativa separada.
 
+### Added
+- `robots.txt` com bloqueio de crawlers de IA, indexadores e bots de preview social.
+- Metatags de anti-indexacao/anti-snippet no `index.html`.
+- Politica de uso e protecao em `docs/politica-de-conteudo.md`.
+
 ## [0.1.0] - 2026-02-17
 ### Added
 - Estrutura inicial do repositorio (`assets/`, `docs/`, `index.html`).

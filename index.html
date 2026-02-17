@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thierry Rene Matos</title>
+    <title>thierry</title>
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex, max-image-preview:none, max-snippet:0, max-video-preview:0">
+    <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex, max-image-preview:none, max-snippet:0, max-video-preview:0">
+    <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet, noimageindex, max-image-preview:none, max-snippet:0, max-video-preview:0">
+    <meta name="google" content="notranslate">
+    <meta name="rights" content="Copyright (c) 2009 ate hoje thierry. Todos os direitos reservados.">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
@@ -118,11 +123,12 @@
     <!-- Navegação Superior -->
     <header class="flex flex-wrap w-full sticky top-0 bg-[var(--bg-color)] z-50 border-b border-[var(--grid-border)]">
         <div class="p-6 font-bold tracking-tighter text-xl border-r border-[var(--grid-border)] flex items-center">
-            Thierry Rene Matos
+            <a href="#" onclick="showPage('dashboard')" class="hover:text-[var(--accent)] transition-colors">thierry</a>
         </div>
         <nav class="flex-grow flex items-center gap-8 px-10 overflow-x-auto whitespace-nowrap">
             <a href="#" onclick="showPage('dashboard')" id="nav-dashboard" class="label mb-0 hover:text-[var(--text-main)] transition-colors active-nav">Dashboard</a>
             <a href="#" onclick="showPage('sobre')" id="nav-sobre" class="label mb-0 hover:text-[var(--text-main)] transition-colors">Sobre</a>
+            <a href="#" onclick="showPage('fotografias')" id="nav-fotografias" class="label mb-0 hover:text-[var(--text-main)] transition-colors">Fotografias</a>
             <a href="#" onclick="showPage('blog')" id="nav-blog" class="label mb-0 hover:text-[var(--text-main)] transition-colors">Blog</a>
             <a href="#" onclick="showPage('contato')" id="nav-contato" class="label mb-0 hover:text-[var(--text-main)] transition-colors">Contato</a>
         </nav>
@@ -177,10 +183,142 @@
 
         <!-- PÁGINA: SOBRE -->
         <div id="page-sobre" class="page-content max-w-4xl mx-auto">
-            <div class="brutalist-container p-12">
-                <span class="label">Sobre</span>
-                <h2 class="text-5xl font-bold mb-8">Designer, Developer, Human.</h2>
-                <p class="text-xl opacity-80 leading-relaxed">Construindo experiências digitais baseadas em dados e design minimalista.</p>
+            <div class="brutalist-container grid grid-cols-1 md:grid-cols-3">
+                <div class="grid-item md:col-span-3 p-12 md:p-16 aspect-auto md:aspect-auto">
+                    <span class="label">Sobre</span>
+                    <h2 class="text-4xl md:text-6xl font-bold leading-none tracking-tighter mb-8">designer, developer, storyteller.</h2>
+                    <p class="text-lg md:text-xl opacity-80 max-w-3xl leading-relaxed">
+                        Este texto e ficticio e existe apenas para validar ritmo tipografico, espacamento e hierarquia visual.
+                        A ideia e comunicar uma presenca autoral, tecnica e humana em um mesmo bloco narrativo.
+                    </p>
+                </div>
+
+                <div class="grid-item p-8 justify-between">
+                    <span class="label">Foco Atual</span>
+                    <h3 class="text-2xl font-bold leading-tight">Produtos digitais com linguagem editorial e dados vivos.</h3>
+                    <p class="text-sm opacity-70 mt-4">Prototipos, interfaces e direcao visual orientada a comportamento.</p>
+                </div>
+
+                <div class="grid-item p-8 justify-between">
+                    <span class="label">Base</span>
+                    <h3 class="text-2xl font-bold leading-tight">Design de interface, front-end e estrategia de conteudo.</h3>
+                    <p class="text-sm opacity-70 mt-4">Combinando consistencia tecnica e sensibilidade narrativa.</p>
+                </div>
+
+                <div class="grid-item p-8 justify-between">
+                    <span class="label">Direcao</span>
+                    <h3 class="text-2xl font-bold leading-tight">Construir um website pessoal vivo e modular.</h3>
+                    <p class="text-sm opacity-70 mt-4">Sistema visual escalavel para portfolio, blog e atualizacoes de rotina.</p>
+                </div>
+
+                <div class="grid-item md:col-span-2 p-10 aspect-auto md:aspect-auto">
+                    <span class="label">Linha do Tempo (ficticia)</span>
+                    <div class="space-y-8 mt-4">
+                        <div>
+                            <div class="text-xs uppercase tracking-[0.2em] opacity-60 mb-2">2022</div>
+                            <p class="text-base opacity-80">Inicio da pesquisa em grids editoriais e sistemas brutalistas para uso pessoal.</p>
+                        </div>
+                        <div>
+                            <div class="text-xs uppercase tracking-[0.2em] opacity-60 mb-2">2024</div>
+                            <p class="text-base opacity-80">Estruturacao de um workflow de conteudo: notas, ensaios visuais e artigos longos.</p>
+                        </div>
+                        <div>
+                            <div class="text-xs uppercase tracking-[0.2em] opacity-60 mb-2">2026</div>
+                            <p class="text-base opacity-80">Consolidacao do website como dashboard biografico com foco em narrativa de dados.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-item p-10 justify-between">
+                    <span class="label">Metricas (ficticias)</span>
+                    <div class="space-y-5 mt-4">
+                        <div>
+                            <div class="text-3xl font-bold">+48</div>
+                            <div class="text-xs uppercase tracking-[0.2em] opacity-60">Projetos</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold">+120</div>
+                            <div class="text-xs uppercase tracking-[0.2em] opacity-60">Artigos e notas</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold">17k</div>
+                            <div class="text-xs uppercase tracking-[0.2em] opacity-60">Horas de pratica</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGINA: FOTOGRAFIAS -->
+        <div id="page-fotografias" class="page-content max-w-6xl mx-auto">
+            <div class="brutalist-container grid grid-cols-1 md:grid-cols-4">
+                <div class="grid-item md:col-span-4 p-12 md:p-16 aspect-auto md:aspect-auto">
+                    <span class="label">Fotografias</span>
+                    <h2 class="text-4xl md:text-6xl font-bold tracking-tighter leading-none mb-8">acervo pessoal</h2>
+                    <p class="text-lg md:text-xl opacity-80 max-w-4xl leading-relaxed">
+                        Esta secao centraliza minhas fotografias pessoais no meu proprio website.
+                        A proposta e publicar ensaios, registros de rotina e viagens sem depender de redes sociais como plataforma principal.
+                    </p>
+                </div>
+
+                <div class="grid-item md:col-span-4 p-8 md:p-10 aspect-auto md:aspect-auto">
+                    <span class="label">Filtros</span>
+                    <div class="flex flex-col gap-6">
+                        <div class="flex flex-wrap gap-3 items-center">
+                            <span class="text-[10px] uppercase tracking-[0.2em] opacity-60">Ensaio</span>
+                            <button type="button" data-filter-group="ensaio" data-filter-value="all" onclick="setPhotoFilter('ensaio', 'all', this)" class="text-xs uppercase tracking-[0.15em] px-3 py-2 border border-[var(--grid-border)] bg-[var(--item-hover)]">Todos</button>
+                            <button type="button" data-filter-group="ensaio" data-filter-value="ensaio-01" onclick="setPhotoFilter('ensaio', 'ensaio-01', this)" class="text-xs uppercase tracking-[0.15em] px-3 py-2 border border-[var(--grid-border)]">Ensaio 01</button>
+                            <button type="button" data-filter-group="ensaio" data-filter-value="ensaio-02" onclick="setPhotoFilter('ensaio', 'ensaio-02', this)" class="text-xs uppercase tracking-[0.15em] px-3 py-2 border border-[var(--grid-border)]">Ensaio 02</button>
+                            <button type="button" data-filter-group="ensaio" data-filter-value="ensaio-03" onclick="setPhotoFilter('ensaio', 'ensaio-03', this)" class="text-xs uppercase tracking-[0.15em] px-3 py-2 border border-[var(--grid-border)]">Ensaio 03</button>
+                        </div>
+                        <div class="flex flex-wrap gap-3 items-center">
+                            <span class="text-[10px] uppercase tracking-[0.2em] opacity-60">Ano</span>
+                            <button type="button" data-filter-group="ano" data-filter-value="all" onclick="setPhotoFilter('ano', 'all', this)" class="text-xs uppercase tracking-[0.15em] px-3 py-2 border border-[var(--grid-border)] bg-[var(--item-hover)]">Todos</button>
+                            <button type="button" data-filter-group="ano" data-filter-value="2026" onclick="setPhotoFilter('ano', '2026', this)" class="text-xs uppercase tracking-[0.15em] px-3 py-2 border border-[var(--grid-border)]">2026</button>
+                            <button type="button" data-filter-group="ano" data-filter-value="2025" onclick="setPhotoFilter('ano', '2025', this)" class="text-xs uppercase tracking-[0.15em] px-3 py-2 border border-[var(--grid-border)]">2025</button>
+                            <button type="button" data-filter-group="ano" data-filter-value="2024" onclick="setPhotoFilter('ano', '2024', this)" class="text-xs uppercase tracking-[0.15em] px-3 py-2 border border-[var(--grid-border)]">2024</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-item photo-item md:col-span-2 p-8 md:p-10 aspect-auto md:aspect-auto" data-ensaio="ensaio-01" data-ano="2026">
+                    <span class="label">Ensaio 01 - 2026</span>
+                    <div class="w-full h-72 bg-zinc-500/10 border border-zinc-500/20 mb-6"></div>
+                    <h3 class="text-2xl font-bold mb-3">Cidade em contraste</h3>
+                    <p class="text-sm opacity-70">Luz dura, concreto e recortes urbanos em caminhada noturna.</p>
+                </div>
+
+                <div class="grid-item photo-item p-8 md:p-10 aspect-auto md:aspect-auto" data-ensaio="ensaio-02" data-ano="2025">
+                    <span class="label">Ensaio 02 - 2025</span>
+                    <div class="w-full h-44 bg-zinc-500/10 border border-zinc-500/20 mb-6"></div>
+                    <h3 class="text-xl font-bold mb-3">Ritmo domestico</h3>
+                    <p class="text-sm opacity-70">Objetos, texturas e silencios do cotidiano.</p>
+                </div>
+
+                <div class="grid-item photo-item p-8 md:p-10 aspect-auto md:aspect-auto" data-ensaio="ensaio-03" data-ano="2024">
+                    <span class="label">Ensaio 03 - 2024</span>
+                    <div class="w-full h-44 bg-zinc-500/10 border border-zinc-500/20 mb-6"></div>
+                    <h3 class="text-xl font-bold mb-3">Cor de domingo</h3>
+                    <p class="text-sm opacity-70">Uma serie de cenas espontaneas em luz natural.</p>
+                </div>
+
+                <div class="grid-item p-8 md:p-10 justify-between">
+                    <span class="label">Publicacao</span>
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4">Fluxo autoral</h3>
+                        <p class="text-sm opacity-75 leading-relaxed">
+                            Novas fotos entram em lotes tematicos, com contexto curto e data de captura.
+                        </p>
+                    </div>
+                    <div class="text-[10px] uppercase tracking-[0.2em] opacity-60 mt-8">Atualizacao quinzenal</div>
+                </div>
+
+                <div class="grid-item md:col-span-3 p-8 md:p-10 aspect-auto md:aspect-auto">
+                    <span class="label">Manifesto visual</span>
+                    <p class="text-2xl md:text-3xl font-bold leading-tight max-w-4xl">
+                        Fotografar aqui e uma escolha de independencia: o arquivo e meu, o contexto e meu, o tempo da narrativa tambem.
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -250,7 +388,7 @@
                         <div class="w-full h-64 bg-zinc-500/10 border border-zinc-500/20 mb-12 flex items-center justify-center italic opacity-30">
                             
                         </div>
-                        <p class="text-xl font-medium mb-10">Este e um paragrafo introdutorio que explora a premissa central do artigo em questao, mantendo o tom tecnico e direto do projeto Thierry Rene Matos.</p>
+                        <p class="text-xl font-medium mb-10">Este e um paragrafo introdutorio que explora a premissa central do artigo em questao, mantendo o tom tecnico e direto do projeto <a href="#" onclick="showPage('dashboard')" class="underline decoration-[var(--accent)] underline-offset-4 hover:text-[var(--accent)] transition-colors">thierry</a>.</p>
                         <p>O design brutalista na web moderna não é apenas sobre estética crua; é sobre a priorização da estrutura e da clareza da informação sobre o ornamento desnecessário. Ao remover sombras suaves e gradientes complexos, permitimos que a hierarquia tipográfica e a organização espacial (como a grelha Bento) comuniquem a função de cada elemento.</p>
                         <p>Ao utilizarmos o Astro 5, conseguimos entregar este conteúdo como HTML estático puro, garantindo que o tempo de carregamento seja quase instantâneo, independentemente da complexidade visual da grelha.</p>
                         <blockquote class="border-l-4 border-[var(--accent)] pl-6 py-2 my-10 italic text-2xl font-light opacity-90">
@@ -295,11 +433,12 @@
 
     <footer class="brutalist-container grid grid-cols-1 md:grid-cols-2 p-6 text-[10px] uppercase tracking-widest opacity-40 mt-auto">
         <div class="flex items-center">Feito com Astro & Tailwind</div>
-        <div class="md:text-right flex items-center justify-end">© 2026 Thierry Rene Matos</div>
+        <div class="md:text-right flex items-center justify-end">© 2009 ate hoje <a href="#" onclick="showPage('dashboard')" class="ml-1 hover:text-[var(--accent)] transition-colors">thierry</a></div>
     </footer>
 
     <script>
         let manualThemeOverride = false;
+        const photoFilters = { ensaio: 'all', ano: 'all' };
 
         function showPage(pageId) {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
@@ -325,6 +464,33 @@
             
             postPage.classList.add('active');
             window.scrollTo(0, 0);
+        }
+
+        function updatePhotoFilterButtons() {
+            document.querySelectorAll('[data-filter-group]').forEach(button => {
+                const group = button.getAttribute('data-filter-group');
+                const value = button.getAttribute('data-filter-value');
+                const isActive = photoFilters[group] === value;
+                if (isActive) {
+                    button.classList.add('bg-[var(--item-hover)]');
+                } else {
+                    button.classList.remove('bg-[var(--item-hover)]');
+                }
+            });
+        }
+
+        function applyPhotoFilters() {
+            document.querySelectorAll('.photo-item').forEach(item => {
+                const ensaioMatch = photoFilters.ensaio === 'all' || item.dataset.ensaio === photoFilters.ensaio;
+                const anoMatch = photoFilters.ano === 'all' || item.dataset.ano === photoFilters.ano;
+                item.style.display = ensaioMatch && anoMatch ? '' : 'none';
+            });
+        }
+
+        function setPhotoFilter(group, value) {
+            photoFilters[group] = value;
+            updatePhotoFilterButtons();
+            applyPhotoFilters();
         }
 
         function toggleThemeManual() {
@@ -374,6 +540,8 @@
             updateThemeIcons();
         }
         updateTheme();
+        updatePhotoFilterButtons();
+        applyPhotoFilters();
         setInterval(updateTheme, 60000);
     </script>
 </body>

@@ -1,4 +1,4 @@
-# Agent Playbook - Thierry Rene Matos
+# Agent Playbook - meu website
 
 ## 1. Contexto de produto
 - Projeto: reformulacao do site pessoal `thierryrenematos.tec.br`.

@@ -1,9 +1,9 @@
-# Thierry Rene Matos - Especificacao Tecnica do Projeto
+# meu website - Especificacao Tecnica do Projeto
 
-Este documento e a fonte de verdade para o desenvolvimento do site Thierry Rene Matos.
+Este documento e a fonte de verdade para o desenvolvimento do meu website.
 
 ## 1. Visao do projeto
-O site Thierry Rene Matos e um website pessoal com proposta de dashboard biografico em linguagem Neo-Brutalista.
+Meu website e um website pessoal com proposta de dashboard biografico em linguagem Neo-Brutalista.
 
 Definicao editorial:
 - `meu.ponto` e o nome da secao de blog;

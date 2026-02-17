@@ -35,6 +35,7 @@ A experiencia desejada combina:
 - `assets/fonts/`: fontes locais
 - `docs/especificacoes-tecnicas.md`: documento tecnico principal
 - `docs/agent-playbook.md`: guia tecnico para execucao por agentes
+- `docs/politica-de-conteudo.md`: regras de uso e protecao de conteudo
 - `AGENTS.md`: regras operacionais para agentes de codigo
 - `CHANGELOG.md`: historico de evolucao do projeto
 
