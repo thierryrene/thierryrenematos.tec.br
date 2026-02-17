@@ -40,6 +40,7 @@
             --btn-padding-x: var(--space-4);
             --btn-font-size: 0.75rem;
             --btn-letter-spacing: 0.15em;
+            --page-max-width: 90rem;
         }
 
         body.theme-day {
@@ -148,6 +149,12 @@
             display: block;
         }
 
+        .page-shell {
+            max-width: var(--page-max-width);
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         #theme-toggle svg {
             transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -189,7 +196,7 @@
     </header>
 
     <main id="main-content" class="flex-grow p-4 md:p-12">
-        <div id="page-dashboard" class="page-content active max-w-7xl mx-auto">
+        <div id="page-dashboard" class="page-content page-shell active">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-5 dashboard-grid">
                 <div class="grid-item md:col-span-2 md:row-span-2 p-8 justify-between">
                     <div>
@@ -224,7 +231,7 @@
             </div>
         </div>
 
-        <div id="page-sobre" class="page-content max-w-4xl mx-auto">
+        <div id="page-sobre" class="page-content page-shell">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-3">
                 <div class="grid-item md:col-span-3 p-12 md:p-16 aspect-auto md:aspect-auto">
                     <span class="label">Sobre</span>
@@ -282,7 +289,7 @@
             </div>
         </div>
 
-        <div id="page-fotografias" class="page-content max-w-6xl mx-auto">
+        <div id="page-fotografias" class="page-content page-shell">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-4">
                 <div class="grid-item md:col-span-4 p-12 md:p-16 aspect-auto md:aspect-auto">
                     <span class="label">Fotografias</span>
@@ -305,7 +312,7 @@
             </div>
         </div>
 
-        <div id="page-blog" class="page-content max-w-6xl mx-auto">
+        <div id="page-blog" class="page-content page-shell">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-3">
                 <div class="grid-item p-12 md:col-span-3 aspect-auto md:aspect-auto">
                     <span class="label">meu.ponto - meu ponto de vista</span>
@@ -315,7 +322,7 @@
             </div>
         </div>
 
-        <div id="page-post" class="page-content max-w-5xl mx-auto">
+        <div id="page-post" class="page-content page-shell">
             <div class="brutalist-container">
                 <div class="grid-item p-12 md:p-20 aspect-auto md:aspect-auto">
                     <button onclick="showPage('blog')" class="label hover:text-[var(--accent)] transition-colors mb-12 flex items-center gap-2">
@@ -350,7 +357,7 @@
             </div>
         </div>
 
-        <div id="page-contato" class="page-content max-w-2xl mx-auto">
+        <div id="page-contato" class="page-content page-shell">
             <div class="brutalist-container p-12">
                 <span class="label">Contato</span>
                 <h2 class="text-4xl font-bold mb-8">Vamos criar algo.</h2>
