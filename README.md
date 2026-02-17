@@ -26,6 +26,8 @@ A experiencia desejada combina:
 - stack ativa simples: HTML + Tailwind CDN + JS puro;
 - camada de conteudo em `data/*.json` pronta para migracao futura para CMS;
 - interacoes locais em fotografias (likes, comentarios e mensagem privada);
+- design system minimo com tokens CSS em `:root` e classes base de UI;
+- checklist nao-funcional definido para mobile-first, a11y, performance e SEO;
 - especificacao tecnica mestre em `docs/especificacoes-tecnicas.md`;
 - governanca inicial para colaboracao com agentes de codigo.
 
@@ -44,6 +46,8 @@ A experiencia desejada combina:
 - `docs/especificacoes-tecnicas.md`: documento tecnico principal
 - `docs/agent-playbook.md`: guia tecnico para execucao por agentes
 - `docs/content-model.md`: modelo de conteudo e checklist editorial/publicacao
+- `docs/design-system.md`: tokens, padroes de componentes e regras de uso visual
+- `docs/non-functional-checklist.md`: criterios de qualidade tecnica por pagina
 - `docs/politica-de-conteudo.md`: regras de uso e protecao de conteudo
 - `AGENTS.md`: regras operacionais para agentes de codigo
 - `CHANGELOG.md`: historico de evolucao do projeto

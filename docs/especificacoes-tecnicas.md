@@ -48,6 +48,14 @@ Observacao:
 - evitar espacamentos que quebrem a continuidade da malha;
 - usar `box-sizing: border-box` global.
 
+### 4.3 Design system minimo obrigatorio
+- manter tokens globais no `:root` para espacamento, borda e componentes;
+- padronizar estilo de botao e card por classes base reutilizaveis;
+- evitar estilos duplicados quando houver classe base equivalente.
+
+Referencia:
+- `docs/design-system.md`
+
 ## 5. Sistema de temas
 Variaveis base:
 - `--bg-color`
@@ -115,7 +123,16 @@ Quando evoluir para producao:
 - manter consistencia visual com a grade e tema definidos;
 - atualizar `CHANGELOG.md` em mudancas relevantes.
 
-## 9. Roadmap revisado
+## 9. Requisitos nao-funcionais obrigatorios
+- Mobile-first: base funcional primeiro em telas pequenas.
+- Acessibilidade: semantica correta, foco visivel, contraste adequado, `alt` em midias.
+- Performance: midias otimizadas e `loading=\"lazy\"` quando aplicavel.
+- SEO basico: `title`, `meta description` e hierarquia de headings consistente.
+
+Referencia:
+- `docs/non-functional-checklist.md`
+
+## 10. Roadmap revisado
 1. consolidar layout e conteudo da versao HTML atual;
 2. ajustar acessibilidade, semantica e performance basica;
 3. integrar primeiros dados reais de forma segura;

@@ -21,6 +21,8 @@ Este arquivo segue o padrao Keep a Changelog e versionamento semantico.
 - Politica de uso e protecao em `docs/politica-de-conteudo.md`.
 - Camada de dados em `data/*.json` (posts, fotografias, ensaios e media map) com IDs/slug/datas/status.
 - Documento `docs/content-model.md` com convencoes editoriais e checklist de publicacao.
+- Documento `docs/design-system.md` com tokens de espacamento e padrao de botoes/cards.
+- Documento `docs/non-functional-checklist.md` com criterios de mobile-first, a11y, performance e SEO.
 - Render dinamico de Blog/Fotografias no `index.html` para facilitar migracao futura para CMS.
 - Interacoes locais em fotografias: likes, comentarios e mensagem privada (via `localStorage`).
 
