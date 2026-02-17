@@ -3,7 +3,7 @@
     "id": "post_2026_02_bento-grids",
     "slug": "a-era-das-bento-grids",
     "title": "A era das Bento Grids: por que a organizacao celular dominou a web",
-    "excerpt": "Uma analise sobre layouts modulares, hierarquia visual e experiencia editorial.",
+    "excerpt": "Uma analise profunda sobre layouts modulares, hierarquia visual e UX.",
     "content": [
       "Este artigo e um conteudo ficticio para validar arquitetura editorial no website.",
       "A logica de grid modular organiza leitura e reduz ruido visual.",
@@ -42,6 +42,36 @@
     "category": "Tutorial",
     "created_at": "2026-01-28",
     "updated_at": "2026-01-28",
+    "status": "published",
+    "cover_image": "assets/img/blog/.gitkeep"
+  },
+  {
+    "id": "post_2026_01_minimalismo-brutalista",
+    "slug": "minimalismo-no-design-brutalista-contemporaneo",
+    "title": "O Minimalismo no Design Brutalista Contemporaneo",
+    "excerpt": "Notas sobre contraste, estrutura e intencao em interfaces autorais.",
+    "content": [
+      "Texto ficticio para compor o quarto bloco da grade editorial.",
+      "A direcao visual privilegia estrutura explicita, bordas e ritmo de leitura."
+    ],
+    "category": "Design",
+    "created_at": "2026-01-20",
+    "updated_at": "2026-01-20",
+    "status": "published",
+    "cover_image": "assets/img/blog/.gitkeep"
+  },
+  {
+    "id": "post_2026_01_strava-rotina",
+    "slug": "como-o-strava-mudou-minha-rotina-de-dev",
+    "title": "Como o Strava mudou minha rotina de dev",
+    "excerpt": "Relato ficticio sobre consistencia, energia e foco na semana de trabalho.",
+    "content": [
+      "Texto ficticio para completar a composicao de cards secundarios.",
+      "A secao reforca a narrativa pessoal integrada ao dashboard."
+    ],
+    "category": "Life",
+    "created_at": "2026-01-15",
+    "updated_at": "2026-01-15",
     "status": "published",
     "cover_image": "assets/img/blog/.gitkeep"
   }
