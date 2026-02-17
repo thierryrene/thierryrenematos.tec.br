@@ -1,0 +1,30 @@
+:root {
+  --color-bg: #f8f6f1;
+  --color-text: #1e2430;
+  --color-accent: #b85c38;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  background: linear-gradient(180deg, #f8f6f1 0%, #efe7da 100%);
+  color: var(--color-text);
+}
+
+header,
+main {
+  width: min(960px, 92vw);
+  margin: 0 auto;
+}
+
+header {
+  padding: 2.5rem 0 1rem;
+}
+
+main {
+  padding: 1rem 0 3rem;
+}
