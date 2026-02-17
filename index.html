@@ -1,26 +1,380 @@
-<!doctype html>
-<html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Thierry René Matos</title>
-    <meta
-      name="description"
-      content="Website oficial de Thierry René Matos."
-    />
-    <link rel="stylesheet" href="assets/css/styles.css" />
-  </head>
-  <body>
-    <header>
-      <h1>Thierry René Matos</h1>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Dashboard Pessoal - Astro Framework</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+        
+        :root {
+            --bg-color: #09090b;
+            --grid-border: #27272a;
+            --text-main: #f4f4f5;
+            --text-label: #71717a;
+            --item-hover: #18181b;
+            --accent: #f97316;
+            --empty-slot: rgba(24, 24, 27, 0.5);
+        }
+
+        body.theme-day {
+            --bg-color: #fafafa;
+            --grid-border: #d4d4d8;
+            --text-main: #09090b;
+            --text-label: #52525b;
+            --item-hover: #f4f4f5;
+            --empty-slot: rgba(228, 228, 231, 0.5);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            transition: background-color 0.5s ease, color 0.5s ease;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Estrutura de Borda Brutalista */
+        .brutalist-container {
+            border-left: 1px solid var(--grid-border);
+            border-top: 1px solid var(--grid-border);
+        }
+
+        .grid-item {
+            border-right: 1px solid var(--grid-border);
+            border-bottom: 1px solid var(--grid-border);
+            transition: background-color 0.3s ease, border-color 0.5s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 768px) {
+            .grid-item {
+                aspect-ratio: 1 / 1;
+            }
+            .grid-item.md\:col-span-2.md\:row-span-2 {
+                aspect-ratio: 1 / 1; 
+            }
+        }
+
+        .grid-item:hover {
+            background-color: var(--item-hover);
+        }
+
+        .label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-label);
+            margin-bottom: 0.75rem;
+            display: block;
+            font-weight: 600;
+        }
+
+        nav a.active-nav {
+            color: var(--accent);
+            position: relative;
+        }
+        
+        nav a.active-nav::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--accent);
+        }
+
+        .page-content {
+            display: none;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        /* Animação do Botão de Tema */
+        #theme-toggle svg {
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .theme-day #theme-toggle svg {
+            transform: rotate(180deg);
+        }
+
+        .post-body p {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navegação Superior -->
+    <header class="flex flex-wrap w-full sticky top-0 bg-[var(--bg-color)] z-50 border-b border-[var(--grid-border)]">
+        <div class="p-6 font-bold tracking-tighter text-xl border-r border-[var(--grid-border)] flex items-center">
+            MEU.PONTO
+        </div>
+        <nav class="flex-grow flex items-center gap-8 px-10 overflow-x-auto whitespace-nowrap">
+            <a href="#" onclick="showPage('dashboard')" id="nav-dashboard" class="label mb-0 hover:text-[var(--text-main)] transition-colors active-nav">Dashboard</a>
+            <a href="#" onclick="showPage('sobre')" id="nav-sobre" class="label mb-0 hover:text-[var(--text-main)] transition-colors">Sobre</a>
+            <a href="#" onclick="showPage('blog')" id="nav-blog" class="label mb-0 hover:text-[var(--text-main)] transition-colors">Blog</a>
+            <a href="#" onclick="showPage('contato')" id="nav-contato" class="label mb-0 hover:text-[var(--text-main)] transition-colors">Contato</a>
+        </nav>
+        <button id="theme-toggle" onclick="toggleThemeManual()" class="p-6 border-l border-[var(--grid-border)] hover:bg-[var(--item-hover)] transition-colors flex items-center justify-center">
+            <svg class="w-5 h-5 block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path class="sun-icon hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                <path class="moon-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+        </button>
     </header>
 
-    <main>
-      <section aria-label="Início do layout">
-        <p>Base inicial do projeto de reformulação.</p>
-      </section>
+    <main class="flex-grow p-4 md:p-12">
+        
+        <!-- PÁGINA: DASHBOARD -->
+        <div id="page-dashboard" class="page-content active max-w-7xl mx-auto">
+            <div class="brutalist-container grid grid-cols-1 md:grid-cols-5 dashboard-grid">
+                <div class="grid-item md:col-span-2 md:row-span-2 p-8 justify-between">
+                    <div>
+                        <span class="label">Informations</span>
+                        <h1 class="text-2xl md:text-3xl lg:text-4xl font-semibold leading-tight tracking-tight">
+                            About my life,<br>
+                            my works & what I am<br>
+                            expecting from the future.
+                        </h1>
+                    </div>
+                    <div class="mt-auto flex items-center gap-3">
+                        <div id="time-dot" class="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
+                        <span id="time-status" class="text-[10px] font-mono uppercase tracking-[0.2em] opacity-50">Syncing...</span>
+                    </div>
+                </div>
+                <!-- Cards de API simplificados para o protótipo -->
+                <div class="grid-item p-6 justify-between"><span class="label">Threads</span><div class="font-medium">@username</div></div>
+                <div class="grid-item p-6 justify-between"><span class="label">Instagram</span><div class="w-full h-full bg-zinc-500/10 border border-zinc-500/20 rounded-sm"></div></div>
+                <div class="grid-item p-6 justify-between"><span class="label">Strava</span><div class="text-3xl font-bold text-orange-500 italic mt-auto">12.4k</div></div>
+                <div class="grid-item p-6 justify-between"><span class="label">YouTube</span><div class="text-xs font-bold leading-none mt-auto">Último Vídeo</div></div>
+                <div class="grid-item p-6 justify-between"><span class="label">Listening Log</span><div class="flex gap-1 items-end h-12 mt-auto"><div class="w-2 bg-red-500 h-[80%]"></div><div class="w-2 bg-green-500 h-[40%]"></div><div class="w-2 bg-zinc-500 h-[90%]"></div></div></div>
+                <div class="grid-item p-6 justify-between"><span class="label">Spotify</span><div class="mt-auto flex items-center gap-2"><div class="w-2 h-2 bg-green-500 rounded-full animate-ping"></div><span class="text-[9px] font-bold uppercase">Live</span></div></div>
+                
+                <!-- Slots Vazios -->
+                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">GitHub</span></div>
+                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">LinkedIn</span></div>
+                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">X</span></div>
+                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">Letterboxd</span></div>
+                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">Dribbble</span></div>
+                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">Steam</span></div>
+                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">Twitch</span></div>
+                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">Behance</span></div>
+                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">Goodreads</span></div>
+                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">ProductHunt</span></div>
+            </div>
+        </div>
+
+        <!-- PÁGINA: SOBRE -->
+        <div id="page-sobre" class="page-content max-w-4xl mx-auto">
+            <div class="brutalist-container p-12">
+                <span class="label">Sobre</span>
+                <h2 class="text-5xl font-bold mb-8">Designer, Developer, Human.</h2>
+                <p class="text-xl opacity-80 leading-relaxed">Construindo experiências digitais baseadas em dados e design minimalista.</p>
+            </div>
+        </div>
+
+        <!-- PÁGINA: BLOG (LISTAGEM) -->
+        <div id="page-blog" class="page-content max-w-6xl mx-auto">
+            <div class="brutalist-container grid grid-cols-1 md:grid-cols-3">
+                <div class="grid-item p-12 md:col-span-3 aspect-auto md:aspect-auto">
+                    <span class="label">Journal</span>
+                    <h2 class="text-6xl font-bold italic tracking-tighter">Writing & Thoughts</h2>
+                </div>
+
+                <div class="grid-item md:col-span-2 p-10 aspect-auto md:aspect-auto flex-row gap-10 items-center justify-between group cursor-pointer" onclick="openPost('A era das Bento Grids: Por que a organização celular dominou a web.', '14. Fev. 2026', 'Design')">
+                    <div class="max-w-md">
+                        <span class="label">14. Fev. 2026 — Design</span>
+                        <h3 class="text-3xl font-bold mb-4 group-hover:text-[var(--accent)] transition-colors">A era das Bento Grids: Por que a organização celular dominou a web.</h3>
+                        <p class="text-sm opacity-60">Uma análise profunda sobre layouts modulares e UX.</p>
+                    </div>
+                    <div class="w-32 h-32 bg-[var(--accent)] opacity-20 hidden md:block"></div>
+                </div>
+
+                <div class="grid-item p-10 justify-between group cursor-pointer" onclick="openPost('Astro 5 e as Ilhas de Servidor.', '05. Fev. 2026', 'Tech')">
+                    <div>
+                        <span class="label">05. Fev. 2026 — Tech</span>
+                        <h3 class="text-xl font-bold group-hover:text-[var(--accent)] transition-colors">Astro 5 e as Ilhas de Servidor.</h3>
+                    </div>
+                    <div class="text-[10px] font-bold uppercase mt-4">Ler Artigo →</div>
+                </div>
+
+                <div class="grid-item p-8 justify-between group cursor-pointer" onclick="openPost('Integrando a API do Spotify em 10 minutos.', '28. Jan. 2026', 'Tutorial')">
+                    <div>
+                        <span class="label">28. Jan. 2026</span>
+                        <h3 class="text-lg font-bold group-hover:text-[var(--accent)] transition-colors">Integrando a API do Spotify em 10 minutos.</h3>
+                    </div>
+                </div>
+
+                <div class="grid-item p-8 justify-between group cursor-pointer" onclick="openPost('O Minimalismo no Design Brutalista Contemporâneo.', '20. Jan. 2026', 'Design')">
+                    <div>
+                        <span class="label">20. Jan. 2026</span>
+                        <h3 class="text-lg font-bold group-hover:text-[var(--accent)] transition-colors">O Minimalismo no Design Brutalista Contemporâneo.</h3>
+                    </div>
+                </div>
+
+                <div class="grid-item p-8 justify-between group cursor-pointer" onclick="openPost('Como o Strava mudou minha rotina de dev.', '15. Jan. 2026', 'Life')">
+                    <div>
+                        <span class="label">15. Jan. 2026</span>
+                        <h3 class="text-lg font-bold group-hover:text-[var(--accent)] transition-colors">Como o Strava mudou minha rotina de dev.</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PÁGINA: DETALHE DO POST (NOVA) -->
+        <div id="page-post" class="page-content max-w-5xl mx-auto">
+            <div class="brutalist-container">
+                <!-- Cabeçalho do Post -->
+                <div class="grid-item p-12 md:p-20 aspect-auto md:aspect-auto">
+                    <button onclick="showPage('blog')" class="label hover:text-[var(--accent)] transition-colors mb-12 flex items-center gap-2">
+                        ← Voltar para o blogue
+                    </button>
+                    <span id="post-meta" class="label text-[var(--accent)]">Data — Categoria</span>
+                    <h2 id="post-title" class="text-4xl md:text-6xl font-bold leading-none tracking-tighter mt-4">Título do Artigo</h2>
+                </div>
+
+                <!-- Conteúdo do Post -->
+                <div class="grid grid-cols-1 md:grid-cols-4">
+                    <div class="grid-item md:col-span-3 p-12 md:p-20 aspect-auto md:aspect-auto post-body">
+                        <div class="w-full h-64 bg-zinc-500/10 border border-zinc-500/20 mb-12 flex items-center justify-center italic opacity-30">
+                            
+                        </div>
+                        <p class="text-xl font-medium mb-10">Este é um parágrafo introdutório que explora a premissa central do artigo em questão, mantendo o tom técnico e direto do projeto MEU.PONTO.</p>
+                        <p>O design brutalista na web moderna não é apenas sobre estética crua; é sobre a priorização da estrutura e da clareza da informação sobre o ornamento desnecessário. Ao remover sombras suaves e gradientes complexos, permitimos que a hierarquia tipográfica e a organização espacial (como a grelha Bento) comuniquem a função de cada elemento.</p>
+                        <p>Ao utilizarmos o Astro 5, conseguimos entregar este conteúdo como HTML estático puro, garantindo que o tempo de carregamento seja quase instantâneo, independentemente da complexidade visual da grelha.</p>
+                        <blockquote class="border-l-4 border-[var(--accent)] pl-6 py-2 my-10 italic text-2xl font-light opacity-90">
+                            "A grelha não é uma prisão, é a fundação da liberdade visual."
+                        </blockquote>
+                        <p>Concluímos que a evolução do dashboard pessoal passa pela integração inteligente de APIs que conversam entre si num ambiente visualmente coerente e expansível.</p>
+                    </div>
+
+                    <!-- Barra Lateral do Post -->
+                    <div class="grid-item p-12 aspect-auto md:aspect-auto">
+                        <span class="label mb-6">Partilhar</span>
+                        <div class="flex flex-col gap-4">
+                            <a href="#" class="text-xs font-bold hover:text-[var(--accent)]">X / Twitter</a>
+                            <a href="#" class="text-xs font-bold hover:text-[var(--accent)]">LinkedIn</a>
+                            <a href="#" class="text-xs font-bold hover:text-[var(--accent)]">Threads</a>
+                        </div>
+                        
+                        <div class="mt-20">
+                            <span class="label mb-6">Relacionados</span>
+                            <div class="space-y-8">
+                                <a href="#" class="block text-sm font-bold hover:text-[var(--accent)]">A evolução do Design Modular em 2026.</a>
+                                <a href="#" class="block text-sm font-bold hover:text-[var(--accent)]">Astro vs Next: A batalha das ilhas.</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-contato" class="page-content max-w-2xl mx-auto">
+            <div class="brutalist-container p-12">
+                <span class="label">Contato</span>
+                <h2 class="text-4xl font-bold mb-8">Vamos criar algo.</h2>
+                <div class="space-y-4">
+                    <div class="p-6 border border-[var(--grid-border)]">ola@seuemail.com</div>
+                    <div class="p-6 border border-[var(--grid-border)]">LinkedIn: /in/usuario</div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
-    <script src="assets/js/main.js" defer></script>
-  </body>
+    <footer class="brutalist-container grid grid-cols-1 md:grid-cols-2 p-6 text-[10px] uppercase tracking-widest opacity-40 mt-auto">
+        <div class="flex items-center">Feito com Astro & Tailwind</div>
+        <div class="md:text-right flex items-center justify-end">© 2026 MEU.PONTO</div>
+    </footer>
+
+    <script>
+        let manualThemeOverride = false;
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active-nav'));
+            
+            const targetPage = document.getElementById('page-' + pageId);
+            if(targetPage) targetPage.classList.add('active');
+            
+            const navLink = document.getElementById('nav-' + pageId);
+            if(navLink) navLink.classList.add('active-nav');
+            
+            window.scrollTo(0, 0);
+        }
+
+        // Função para abrir um post específico
+        function openPost(title, date, category) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active-nav'));
+            
+            const postPage = document.getElementById('page-post');
+            document.getElementById('post-title').innerText = title;
+            document.getElementById('post-meta').innerText = date + " — " + category;
+            
+            postPage.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function toggleThemeManual() {
+            manualThemeOverride = true;
+            const body = document.body;
+            body.classList.toggle('theme-day');
+            updateThemeIcons();
+        }
+
+        function updateThemeIcons() {
+            const isDay = document.body.classList.contains('theme-day');
+            const sunIcon = document.querySelector('.sun-icon');
+            const moonIcon = document.querySelector('.moon-icon');
+            const statusText = document.getElementById('time-status');
+            const dot = document.getElementById('time-dot');
+
+            if (isDay) {
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+                if(statusText) statusText.innerText = "OVERRIDE — DAY MODE";
+                if(dot) dot.style.backgroundColor = "#fbbf24";
+            } else {
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+                if(statusText) statusText.innerText = "OVERRIDE — NIGHT MODE";
+                if(dot) dot.style.backgroundColor = "#818cf8";
+            }
+        }
+
+        function updateTheme() {
+            if (manualThemeOverride) return;
+            const now = new Date();
+            const hour = now.getHours();
+            const body = document.body;
+            const statusText = document.getElementById('time-status');
+            const dot = document.getElementById('time-dot');
+            const isDay = hour >= 6 && hour < 18;
+            if (isDay) {
+                body.classList.add('theme-day');
+                if(statusText) statusText.innerText = hour + ":00 — DAY MODE";
+                if(dot) dot.style.backgroundColor = "#fbbf24";
+            } else {
+                body.classList.remove('theme-day');
+                if(statusText) statusText.innerText = hour + ":00 — NIGHT MODE";
+                if(dot) dot.style.backgroundColor = "#818cf8";
+            }
+            updateThemeIcons();
+        }
+        updateTheme();
+        setInterval(updateTheme, 60000);
+    </script>
+</body>
 </html>
