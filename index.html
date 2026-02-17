@@ -21,6 +21,24 @@
             --item-hover: #18181b;
             --accent: #f97316;
             --empty-slot: rgba(24, 24, 27, 0.5);
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-5: 1.25rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-10: 2.5rem;
+            --space-12: 3rem;
+            --space-16: 4rem;
+            --border-width: 1px;
+            --radius-none: 0;
+            --card-padding: var(--space-6);
+            --card-padding-lg: var(--space-8);
+            --btn-height: 2.5rem;
+            --btn-padding-x: var(--space-4);
+            --btn-font-size: 0.75rem;
+            --btn-letter-spacing: 0.15em;
         }
 
         body.theme-day {
@@ -46,14 +64,16 @@
             border-top: 1px solid var(--grid-border);
         }
 
-        .grid-item {
-            border-right: 1px solid var(--grid-border);
-            border-bottom: 1px solid var(--grid-border);
+        .grid-item,
+        .ui-card {
+            border-right: var(--border-width) solid var(--grid-border);
+            border-bottom: var(--border-width) solid var(--grid-border);
             transition: background-color 0.3s ease, border-color 0.5s ease;
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            border-radius: var(--radius-none);
         }
 
         @media (min-width: 768px) {
@@ -70,14 +90,38 @@
             background-color: var(--item-hover);
         }
 
-        .label {
+        .label,
+        .ui-label {
             font-size: 0.65rem;
             text-transform: uppercase;
             letter-spacing: 0.15em;
             color: var(--text-label);
-            margin-bottom: 0.75rem;
+            margin-bottom: var(--space-3);
             display: block;
             font-weight: 600;
+        }
+
+        .ui-btn {
+            height: var(--btn-height);
+            padding: 0 var(--btn-padding-x);
+            font-size: var(--btn-font-size);
+            letter-spacing: var(--btn-letter-spacing);
+            text-transform: uppercase;
+            border: var(--border-width) solid var(--grid-border);
+            background: transparent;
+            color: var(--text-main);
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .ui-btn:hover,
+        .ui-btn:focus-visible {
+            background-color: var(--item-hover);
+        }
+
+        a:focus-visible,
+        button:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
         }
 
         nav a.active-nav {
@@ -317,21 +361,21 @@
     </main>
 
     <footer class="brutalist-container grid grid-cols-1 md:grid-cols-2 p-6 text-[10px] uppercase tracking-widest opacity-40 mt-auto">
-        <div class="flex items-center">Feito com HTML + Tailwind CDN</div>
-        <div class="md:text-right flex items-center justify-end">© 2009 ate hoje <a href="#" onclick="showPage('dashboard')" class="ml-1 hover:text-[var(--accent)] transition-colors">thierry</a></div>
+        <div class="flex items-center">Feito com amor ❤️ em uma tarde de domingo</div>
+        <div class="md:text-right flex items-center justify-end">de 2009 até hoje</div>
     </footer>
 
     <div id="comments-modal" class="modal-hidden fixed inset-0 z-[100] bg-black/70 p-4 md:p-10">
         <div class="max-w-3xl mx-auto border border-[var(--grid-border)] bg-[var(--bg-color)]">
             <div class="p-6 border-b border-[var(--grid-border)] flex items-center justify-between">
                 <h3 class="text-lg font-bold">Comentarios</h3>
-                <button class="text-xs uppercase tracking-[0.2em]" onclick="closeCommentsModal()">fechar</button>
+                <button class="ui-btn" onclick="closeCommentsModal()">fechar</button>
             </div>
             <div class="p-6 space-y-4 max-h-[60vh] overflow-auto" id="comments-list"></div>
             <form class="p-6 border-t border-[var(--grid-border)]" onsubmit="submitComment(event)">
                 <input type="text" id="comment-input" class="w-full p-3 bg-transparent border border-[var(--grid-border)] text-sm" placeholder="Escreva um comentario curto" required>
                 <div class="mt-4 flex justify-end">
-                    <button type="submit" class="text-xs uppercase tracking-[0.2em] px-4 py-2 border border-[var(--grid-border)] hover:bg-[var(--item-hover)]">Publicar</button>
+                    <button type="submit" class="ui-btn">Publicar</button>
                 </div>
             </form>
         </div>
@@ -341,13 +385,13 @@
         <div class="max-w-3xl mx-auto border border-[var(--grid-border)] bg-[var(--bg-color)]">
             <div class="p-6 border-b border-[var(--grid-border)] flex items-center justify-between">
                 <h3 class="text-lg font-bold">Mensagem privada</h3>
-                <button class="text-xs uppercase tracking-[0.2em]" onclick="closeMessageModal()">fechar</button>
+                <button class="ui-btn" onclick="closeMessageModal()">fechar</button>
             </div>
             <form class="p-6" onsubmit="submitPrivateMessage(event)">
                 <p class="text-xs opacity-70 mb-4">Interacao local para prototipo de UX. Em CMS real, isso deve usar backend autenticado.</p>
                 <textarea id="message-input" class="w-full min-h-40 p-3 bg-transparent border border-[var(--grid-border)] text-sm" placeholder="Escreva sua mensagem privada" required></textarea>
                 <div class="mt-4 flex justify-end">
-                    <button type="submit" class="text-xs uppercase tracking-[0.2em] px-4 py-2 border border-[var(--grid-border)] hover:bg-[var(--item-hover)]">Enviar</button>
+                    <button type="submit" class="ui-btn">Enviar</button>
                 </div>
             </form>
         </div>
@@ -370,7 +414,7 @@
                     id: 'post_2026_02_bento-grids',
                     slug: 'a-era-das-bento-grids',
                     title: 'A era das Bento Grids: por que a organizacao celular dominou a web',
-                    excerpt: 'Uma analise sobre layouts modulares, hierarquia visual e experiencia editorial.',
+                    excerpt: 'Uma analise profunda sobre layouts modulares, hierarquia visual e UX.',
                     content: [
                         'Este artigo e um conteudo ficticio para validar arquitetura editorial no website.',
                         'A logica de grid modular organiza leitura e reduz ruido visual.',
@@ -379,6 +423,62 @@
                     category: 'Design',
                     created_at: '2026-02-14',
                     updated_at: '2026-02-14',
+                    status: 'published'
+                },
+                {
+                    id: 'post_2026_02_astro-ilhas',
+                    slug: 'astro-5-e-as-ilhas-de-servidor',
+                    title: 'Astro 5 e as Ilhas de Servidor',
+                    excerpt: 'Panorama tecnico sobre renderizacao parcial e estrategia de paginas leves.',
+                    content: [
+                        'Conteudo ficticio para testes de card e pagina interna.',
+                        'O foco desta fase continua em HTML e JS puro, com migracao futura opcional.'
+                    ],
+                    category: 'Tech',
+                    created_at: '2026-02-05',
+                    updated_at: '2026-02-05',
+                    status: 'published'
+                },
+                {
+                    id: 'post_2026_01_spotify-api',
+                    slug: 'integrando-a-api-do-spotify',
+                    title: 'Integrando a API do Spotify em 10 minutos',
+                    excerpt: 'Passo a passo inicial para provar integracao sem perder a identidade visual.',
+                    content: [
+                        'Conteudo ficticio para validar variacoes de comprimento de texto.',
+                        'Os proximos passos incluem fallback robusto e estado de erro amigavel.'
+                    ],
+                    category: 'Tutorial',
+                    created_at: '2026-01-28',
+                    updated_at: '2026-01-28',
+                    status: 'published'
+                },
+                {
+                    id: 'post_2026_01_minimalismo-brutalista',
+                    slug: 'minimalismo-no-design-brutalista-contemporaneo',
+                    title: 'O Minimalismo no Design Brutalista Contemporaneo',
+                    excerpt: 'Notas sobre contraste, estrutura e intencao em interfaces autorais.',
+                    content: [
+                        'Texto ficticio para compor o quarto bloco da grade editorial.',
+                        'A direcao visual privilegia estrutura explicita, bordas e ritmo de leitura.'
+                    ],
+                    category: 'Design',
+                    created_at: '2026-01-20',
+                    updated_at: '2026-01-20',
+                    status: 'published'
+                },
+                {
+                    id: 'post_2026_01_strava-rotina',
+                    slug: 'como-o-strava-mudou-minha-rotina-de-dev',
+                    title: 'Como o Strava mudou minha rotina de dev',
+                    excerpt: 'Relato ficticio sobre consistencia, energia e foco na semana de trabalho.',
+                    content: [
+                        'Texto ficticio para completar a composicao de cards secundarios.',
+                        'A secao reforca a narrativa pessoal integrada ao dashboard.'
+                    ],
+                    category: 'Life',
+                    created_at: '2026-01-15',
+                    updated_at: '2026-01-15',
                     status: 'published'
                 }
             ],
@@ -615,7 +715,7 @@
                     data-filter-group="${group}"
                     data-filter-value="${value}"
                     onclick="setPhotoFilter('${group}', '${value}')"
-                    class="text-xs uppercase tracking-[0.15em] px-3 py-2 border border-[var(--grid-border)] ${isActive ? 'bg-[var(--item-hover)]' : ''}">
+                    class="ui-btn ${isActive ? 'bg-[var(--item-hover)]' : ''}">
                     ${label}
                 </button>
             `;
