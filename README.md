@@ -1,4 +1,4 @@
-## reformulacao do thierryrenematos.tec.br
+# reformulacao do thierryrenematos.tec.br
 
 ## Sobre o projeto
 O **Thierry Rene Matos** e o meu novo website pessoal: um dashboard biografico que organiza meu rastro digital em uma interface unica, brutalista e orientada a dados.
