@@ -169,6 +169,25 @@
             opacity: 0.85;
         }
 
+        @media (max-width: 767px) {
+            .page-shell {
+                width: 100%;
+            }
+
+            nav {
+                scrollbar-width: thin;
+            }
+
+            .grid-item,
+            .ui-card {
+                min-width: 0;
+            }
+
+            .post-body p {
+                overflow-wrap: anywhere;
+            }
+        }
+
         .modal-hidden {
             display: none;
         }
@@ -176,18 +195,18 @@
 </head>
 <body class="min-h-screen flex flex-col">
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:bg-[var(--bg-color)] focus:border focus:border-[var(--grid-border)] focus:px-3 focus:py-2">Pular para o conteudo</a>
-    <header class="flex flex-wrap w-full sticky top-0 bg-[var(--bg-color)] z-50 border-b border-[var(--grid-border)]">
-        <div class="p-6 font-bold tracking-tighter text-xl border-r border-[var(--grid-border)] flex items-center">
+    <header class="flex flex-wrap items-stretch w-full sticky top-0 bg-[var(--bg-color)] z-50 border-b border-[var(--grid-border)]">
+        <div class="p-4 md:p-6 font-bold tracking-tighter text-base md:text-xl border-r-0 md:border-r border-[var(--grid-border)] flex items-center min-h-[64px]">
             <a href="#" onclick="showPage('dashboard')" class="hover:text-[var(--accent)] transition-colors">thierry</a>
         </div>
-        <nav aria-label="Navegacao principal" class="flex-grow flex items-center gap-8 px-10 overflow-x-auto whitespace-nowrap">
+        <nav aria-label="Navegacao principal" class="order-3 md:order-none w-full md:w-auto flex-grow flex items-center gap-4 md:gap-8 px-4 md:px-10 py-3 md:py-0 border-t md:border-t-0 border-[var(--grid-border)] overflow-x-auto whitespace-nowrap">
             <a href="#" onclick="showPage('dashboard')" id="nav-dashboard" class="label mb-0 hover:text-[var(--text-main)] transition-colors active-nav">Dashboard</a>
             <a href="#" onclick="showPage('sobre')" id="nav-sobre" class="label mb-0 hover:text-[var(--text-main)] transition-colors">Sobre</a>
             <a href="#" onclick="showPage('fotografias')" id="nav-fotografias" class="label mb-0 hover:text-[var(--text-main)] transition-colors">Fotografias</a>
             <a href="#" onclick="showPage('blog')" id="nav-blog" class="label mb-0 hover:text-[var(--text-main)] transition-colors">Blog</a>
             <a href="#" onclick="showPage('contato')" id="nav-contato" class="label mb-0 hover:text-[var(--text-main)] transition-colors">Contato</a>
         </nav>
-        <button id="theme-toggle" onclick="toggleThemeManual()" class="p-6 border-l border-[var(--grid-border)] hover:bg-[var(--item-hover)] transition-colors flex items-center justify-center">
+        <button id="theme-toggle" onclick="toggleThemeManual()" class="ml-auto p-4 md:p-6 min-h-[64px] border-l border-[var(--grid-border)] hover:bg-[var(--item-hover)] transition-colors flex items-center justify-center">
             <svg class="w-5 h-5 block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path class="sun-icon hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
                 <path class="moon-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
@@ -198,7 +217,7 @@
     <main id="main-content" class="flex-grow p-4 md:p-12">
         <div id="page-dashboard" class="page-content page-shell active">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-5 dashboard-grid">
-                <div class="grid-item md:col-span-2 md:row-span-2 p-8 justify-between">
+                <div class="grid-item md:col-span-2 md:row-span-2 p-6 md:p-8 justify-between">
                     <div>
                         <span class="label">Informations</span>
                         <h1 class="text-2xl md:text-3xl lg:text-4xl font-semibold leading-tight tracking-tight">
@@ -233,7 +252,7 @@
 
         <div id="page-sobre" class="page-content page-shell">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-3">
-                <div class="grid-item md:col-span-3 p-12 md:p-16 aspect-auto md:aspect-auto">
+                <div class="grid-item md:col-span-3 p-6 md:p-12 lg:p-16 aspect-auto md:aspect-auto">
                     <span class="label">Sobre</span>
                     <h2 class="text-4xl md:text-6xl font-bold leading-none tracking-tighter mb-8">designer, developer, storyteller.</h2>
                     <p class="text-lg md:text-xl opacity-80 max-w-3xl leading-relaxed">
@@ -242,25 +261,25 @@
                     </p>
                 </div>
 
-                <div class="grid-item p-8 justify-between">
+                <div class="grid-item p-6 md:p-8 justify-between">
                     <span class="label">Foco Atual</span>
                     <h3 class="text-2xl font-bold leading-tight">Produtos digitais com linguagem editorial e dados vivos.</h3>
                     <p class="text-sm opacity-70 mt-4">Prototipos, interfaces e direcao visual orientada a comportamento.</p>
                 </div>
 
-                <div class="grid-item p-8 justify-between">
+                <div class="grid-item p-6 md:p-8 justify-between">
                     <span class="label">Base</span>
                     <h3 class="text-2xl font-bold leading-tight">Design de interface, front-end e estrategia de conteudo.</h3>
                     <p class="text-sm opacity-70 mt-4">Combinando consistencia tecnica e sensibilidade narrativa.</p>
                 </div>
 
-                <div class="grid-item p-8 justify-between">
+                <div class="grid-item p-6 md:p-8 justify-between">
                     <span class="label">Direcao</span>
                     <h3 class="text-2xl font-bold leading-tight">Construir um website pessoal vivo e modular.</h3>
                     <p class="text-sm opacity-70 mt-4">Sistema visual escalavel para portfolio, blog e atualizacoes de rotina.</p>
                 </div>
 
-                <div class="grid-item md:col-span-2 p-10 aspect-auto md:aspect-auto">
+                <div class="grid-item md:col-span-2 p-6 md:p-10 aspect-auto md:aspect-auto">
                     <span class="label">Linha do Tempo (ficticia)</span>
                     <div class="space-y-8 mt-4">
                         <div>
@@ -278,7 +297,7 @@
                     </div>
                 </div>
 
-                <div class="grid-item p-10 justify-between">
+                <div class="grid-item p-6 md:p-10 justify-between">
                     <span class="label">Metricas (ficticias)</span>
                     <div class="space-y-5 mt-4">
                         <div><div class="text-3xl font-bold">+48</div><div class="text-xs uppercase tracking-[0.2em] opacity-60">Projetos</div></div>
@@ -291,7 +310,7 @@
 
         <div id="page-fotografias" class="page-content page-shell">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-4">
-                <div class="grid-item md:col-span-4 p-12 md:p-16 aspect-auto md:aspect-auto">
+                <div class="grid-item md:col-span-4 p-6 md:p-12 lg:p-16 aspect-auto md:aspect-auto">
                     <span class="label">Fotografias</span>
                     <h2 class="text-4xl md:text-6xl font-bold tracking-tighter leading-none mb-8">acervo pessoal</h2>
                     <p class="text-lg md:text-xl opacity-80 max-w-4xl leading-relaxed">
@@ -314,9 +333,9 @@
 
         <div id="page-blog" class="page-content page-shell">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-3">
-                <div class="grid-item p-12 md:col-span-3 aspect-auto md:aspect-auto">
+                <div class="grid-item p-6 md:p-12 md:col-span-3 aspect-auto md:aspect-auto">
                     <span class="label">meu.ponto - meu ponto de vista</span>
-                    <h2 class="text-6xl font-bold italic tracking-tighter">Writing & Thoughts</h2>
+                    <h2 class="text-4xl md:text-6xl font-bold italic tracking-tighter">Writing & Thoughts</h2>
                 </div>
                 <div id="blog-list" class="contents"></div>
             </div>
@@ -324,7 +343,7 @@
 
         <div id="page-post" class="page-content page-shell">
             <div class="brutalist-container">
-                <div class="grid-item p-12 md:p-20 aspect-auto md:aspect-auto">
+                <div class="grid-item p-6 md:p-12 lg:p-20 aspect-auto md:aspect-auto">
                     <button onclick="showPage('blog')" class="label hover:text-[var(--accent)] transition-colors mb-12 flex items-center gap-2">
                         <- Voltar para o blogue
                     </button>
@@ -333,14 +352,14 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-4">
-                    <div class="grid-item md:col-span-3 p-12 md:p-20 aspect-auto md:aspect-auto post-body">
+                    <div class="grid-item md:col-span-3 p-6 md:p-12 lg:p-20 aspect-auto md:aspect-auto post-body">
                         <div class="w-full h-64 bg-zinc-500/10 border border-zinc-500/20 mb-12 flex items-center justify-center italic opacity-30">
                             capa de artigo
                         </div>
                         <div id="post-body-content"></div>
                     </div>
 
-                    <div class="grid-item p-12 aspect-auto md:aspect-auto">
+                    <div class="grid-item p-6 md:p-12 aspect-auto md:aspect-auto">
                         <span class="label mb-6">Partilhar</span>
                         <div class="flex flex-col gap-4">
                             <a href="#" class="text-xs font-bold hover:text-[var(--accent)]">X / Twitter</a>
@@ -348,7 +367,7 @@
                             <a href="#" class="text-xs font-bold hover:text-[var(--accent)]">Threads</a>
                         </div>
 
-                        <div class="mt-20">
+                        <div class="mt-10 md:mt-20">
                             <span class="label mb-6">Relacionados</span>
                             <div class="space-y-8" id="post-related"></div>
                         </div>
@@ -358,9 +377,9 @@
         </div>
 
         <div id="page-contato" class="page-content page-shell">
-            <div class="brutalist-container p-12">
+            <div class="brutalist-container p-6 md:p-12">
                 <span class="label">Contato</span>
-                <h2 class="text-4xl font-bold mb-8">Vamos criar algo.</h2>
+                <h2 class="text-3xl md:text-4xl font-bold mb-8">Vamos criar algo.</h2>
                 <div class="space-y-4">
                     <div class="p-6 border border-[var(--grid-border)]">ola@seuemail.com</div>
                     <div class="p-6 border border-[var(--grid-border)]">LinkedIn: /in/usuario</div>
@@ -371,7 +390,7 @@
 
     <footer class="brutalist-container grid grid-cols-1 md:grid-cols-2 p-6 text-[10px] uppercase tracking-widest opacity-40 mt-auto">
         <div class="flex items-center">Feito com amor ❤️ em uma tarde de domingo</div>
-        <div class="md:text-right flex items-center justify-end">de 2009 até hoje</div>
+        <div class="md:text-right flex items-center justify-start md:justify-end">de 2009 até hoje</div>
     </footer>
 
     <div id="comments-modal" class="modal-hidden fixed inset-0 z-[100] bg-black/70 p-4 md:p-10" role="dialog" aria-modal="true" aria-label="Modal de comentarios">
@@ -798,14 +817,14 @@
                 `;
 
             return `
-                <article class="grid-item photo-item ${colSpan} p-8 md:p-10 aspect-auto md:aspect-auto justify-between" data-photo-id="${photo.id}">
+                <article class="grid-item photo-item ${colSpan} p-6 md:p-10 aspect-auto md:aspect-auto justify-between" data-photo-id="${photo.id}">
                     <div>
                         <span class="label">${essay ? essay.name : 'Ensaio'} - ${photo.year} - ${mediaType}</span>
                         ${mediaBlock}
                         <h3 class="${titleSize} font-bold mb-3">${photo.title}</h3>
                         <p class="text-sm opacity-70">${photo.description}</p>
                     </div>
-                    <div class="mt-6 pt-4 border-t border-[var(--grid-border)] flex items-center gap-5">
+                    <div class="mt-6 pt-4 border-t border-[var(--grid-border)] flex flex-wrap items-center gap-4">
                         <button type="button" onclick="togglePhotoLike('${photo.id}')" class="text-xl leading-none hover:scale-110 transition-transform" title="Curtir" aria-label="Curtir foto">${likeEmoji}</button>
                         <span class="text-[10px] uppercase tracking-[0.2em] opacity-60 mr-2">${likeModel.count}</span>
                         <button type="button" onclick="openCommentsModal('${photo.id}')" class="text-xl leading-none hover:scale-110 transition-transform" title="Comentarios" aria-label="Abrir comentarios">💬</button>
@@ -827,7 +846,7 @@
 
             if (!photos.length) {
                 root.innerHTML = `
-                    <div class="grid-item md:col-span-4 p-10 aspect-auto md:aspect-auto">
+                    <div class="grid-item md:col-span-4 p-6 md:p-10 aspect-auto md:aspect-auto">
                         <span class="label">Sem resultado</span>
                         <p class="text-sm opacity-70">Nao ha fotografias para o filtro selecionado.</p>
                     </div>
@@ -938,7 +957,7 @@
         function renderBlogCard(post, index) {
             if (index === 0) {
                 return `
-                    <article class="grid-item md:col-span-2 p-10 aspect-auto md:aspect-auto flex-row gap-10 items-center justify-between group cursor-pointer" onclick="openPostById('${post.id}')">
+                    <article class="grid-item md:col-span-2 p-6 md:p-10 aspect-auto md:aspect-auto flex-col md:flex-row gap-6 md:gap-10 items-start md:items-center justify-between group cursor-pointer" onclick="openPostById('${post.id}')">
                         <div class="max-w-md">
                             <span class="label">${formatDatePt(post.created_at)} - ${post.category}</span>
                             <h3 class="text-3xl font-bold mb-4 group-hover:text-[var(--accent)] transition-colors">${post.title}</h3>
@@ -950,7 +969,7 @@
             }
 
             return `
-                <article class="grid-item p-8 justify-between group cursor-pointer" onclick="openPostById('${post.id}')">
+                <article class="grid-item p-6 md:p-8 justify-between group cursor-pointer" onclick="openPostById('${post.id}')">
                     <div>
                         <span class="label">${formatDatePt(post.created_at)} - ${post.category}</span>
                         <h3 class="text-lg font-bold group-hover:text-[var(--accent)] transition-colors">${post.title}</h3>
@@ -966,7 +985,7 @@
 
             if (!posts.length) {
                 root.innerHTML = `
-                    <div class="grid-item md:col-span-3 p-10 aspect-auto md:aspect-auto">
+                    <div class="grid-item md:col-span-3 p-6 md:p-10 aspect-auto md:aspect-auto">
                         <span class="label">Sem posts</span>
                         <p class="text-sm opacity-70">Nenhum post publicado no momento.</p>
                     </div>

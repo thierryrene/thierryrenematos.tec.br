@@ -53,6 +53,13 @@ Observacao:
 - padronizar estilo de botao e card por classes base reutilizaveis;
 - evitar estilos duplicados quando houver classe base equivalente.
 
+### 4.4 Diretrizes mobile obrigatorias
+- Header deve manter logo, navegacao e toggle de tema utilizaveis sem sobreposicao em <768px.
+- Navegacao horizontal em mobile pode ter scroll, mas sem cortar links ou foco visivel.
+- Titulos e blocos de texto devem escalar em mobile (`text-*` e `p-*` responsivos) para evitar overflow.
+- Cards interativos (fotos/blog) devem aceitar quebra de linha e `flex-wrap` para icones/metadados.
+- Espacamento base em mobile deve priorizar `p-6` ou menor; expansao para `p-8/p-10/p-12` apenas em `md+`.
+
 Referencia:
 - `docs/design-system.md`
 
@@ -125,6 +132,7 @@ Quando evoluir para producao:
 
 ## 9. Requisitos nao-funcionais obrigatorios
 - Mobile-first: base funcional primeiro em telas pequenas.
+- Mobile QA minimo em 360px, 390px e 768px sem overflow horizontal nao intencional.
 - Acessibilidade: semantica correta, foco visivel, contraste adequado, `alt` em midias.
 - Performance: midias otimizadas e `loading=\"lazy\"` quando aplicavel.
 - SEO basico: `title`, `meta description` e hierarquia de headings consistente.
@@ -138,4 +146,4 @@ Referencia:
 3. integrar primeiros dados reais de forma segura;
 4. avaliar migracao para framework em etapa futura, com decisao tecnica separada.
 
-Documento revisado em: 2026-02-17
+Documento revisado em: 2026-02-23

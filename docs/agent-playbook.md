@@ -32,6 +32,13 @@ Nao fazer nesta fase:
 - Fotografias com filtros por ensaio/ano.
 - Interacoes de prototipo em fotografias: likes, comentarios e mensagem privada (modo local).
 
+### 4.1 Guardrails mobile (obrigatorio em toda task de layout)
+- Comecar validacao por mobile (<768px) antes de ajustar desktop.
+- Evitar `p-10/p-12` como base em mobile; usar escala progressiva (`p-6 md:p-10` etc.).
+- Em header/nav, garantir area de toque adequada e ausencia de sobreposicao entre logo, menu e toggle.
+- Em cards com acoes (likes/comentarios/partilha), usar `flex-wrap` quando houver risco de estouro horizontal.
+- Validar rapidamente em larguras de 360px e 390px antes de encerrar.
+
 ## 5. Seguranca e dados
 - Nao expor chaves/tokens no client.
 - Usar placeholders quando nao houver backend disponivel.
