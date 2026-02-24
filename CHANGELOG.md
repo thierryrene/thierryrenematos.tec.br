@@ -18,6 +18,14 @@ Este arquivo segue o padrao Keep a Changelog e versionamento semantico.
 - Estrutura do footer refinada no desktop: proporcao de colunas, alinhamento e espacamento ajustados para leitura horizontal mais limpa.
 - Ajuste fino no desktop: segundo bloco do footer alinhado como o primeiro, evitando texto colado na borda.
 - UX mobile pass 2: affordance para menu auto-oculto, suporte a `prefers-reduced-motion`, modais com foco/ESC/backdrop/lock de scroll, preservacao de rolagem em interacoes de fotos e safe-area para notch.
+- Texto do bloco informativo principal da dashboard traduzido para PT-BR.
+- Dashboard no mobile ajustada para proporcao fixa 1:1 nos blocos da grid.
+- Transicao de paginas com padrao fade + slide aplicada na navegacao, com fallback para `prefers-reduced-motion`.
+- Correcao da inicializacao da transicao de paginas: estado inicial ativo com `opacity: 1`.
+- Transicao de paginas refinada com duracao maior e easing mais suave.
+- Loader inicial adicionado antes da exibicao do website, com fallback de carregamento e suporte a reduced motion.
+- Loader inicial configurado para exibicao minima de 2 segundos.
+- Secao de contato evoluida para formulario realista com validacao, feedback de envio e fallback funcional via `mailto`.
 
 ### Planned
 - Consolidacao do prototipo HTML com melhorias de acessibilidade e semantica.

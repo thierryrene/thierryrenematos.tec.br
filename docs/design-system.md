@@ -69,6 +69,13 @@ Classe base: `.icon-btn`
 - fundo transparente com feedback visual em hover/focus
 - usado para likes/comentarios/mensagem em cards de fotografias
 
+### Form controls
+Classes base: `.ui-input`, `.ui-textarea`, `.ui-select`
+- borda brutalista com `--grid-border`
+- foco visivel por `--accent`
+- placeholder com contraste legivel
+- uso padrao em formularios de contato
+
 ## 3. Regras de uso
 - Nao usar valores hardcoded de espacamento quando houver token equivalente.
 - Reutilizar classes base (`.ui-btn`, `.ui-card`, `.ui-label`) antes de criar variacoes.

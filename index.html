@@ -63,6 +63,10 @@
             padding: 0;
         }
 
+        body.is-loading > *:not(#site-loader) {
+            visibility: hidden;
+        }
+
         body.modal-open {
             overflow: hidden;
         }
@@ -134,6 +138,56 @@
             background-color: var(--item-hover);
         }
 
+        .ui-input,
+        .ui-textarea,
+        .ui-select {
+            width: 100%;
+            border: var(--border-width) solid var(--grid-border);
+            background: transparent;
+            color: var(--text-main);
+            padding: var(--space-3) var(--space-4);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .ui-textarea {
+            min-height: 9rem;
+            resize: vertical;
+        }
+
+        .ui-input::placeholder,
+        .ui-textarea::placeholder {
+            color: var(--text-label);
+            opacity: 0.9;
+        }
+
+        .ui-input:focus-visible,
+        .ui-textarea:focus-visible,
+        .ui-select:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 0;
+            border-color: var(--accent);
+        }
+
+        .contact-meta {
+            border: var(--border-width) solid var(--grid-border);
+            padding: var(--space-4);
+            font-size: 0.82rem;
+        }
+
+        .form-status {
+            font-size: 0.78rem;
+            letter-spacing: 0.04em;
+        }
+
+        .form-status[data-state='success'] {
+            color: #22c55e;
+        }
+
+        .form-status[data-state='error'] {
+            color: #f87171;
+        }
+
         .icon-btn {
             width: 2.75rem;
             height: 2.75rem;
@@ -178,10 +232,48 @@
 
         .page-content {
             display: none;
+            opacity: 0;
         }
 
         .page-content.active {
             display: block;
+            opacity: 1;
+        }
+
+        .page-content.page-transition-in {
+            animation: page-fade-in 420ms cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+
+        .page-content.page-transition-out {
+            animation: page-fade-out 320ms cubic-bezier(0.4, 0, 0.2, 1) both;
+            pointer-events: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 5;
+        }
+
+        @keyframes page-fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes page-fade-out {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
         }
 
         .page-shell {
@@ -256,11 +348,8 @@
             }
 
             .dashboard-grid > .grid-item {
-                min-height: var(--dashboard-slot-mobile-height);
-            }
-
-            .dashboard-grid > .grid-item.dashboard-hero {
-                min-height: var(--dashboard-hero-mobile-height);
+                aspect-ratio: 1 / 1;
+                min-height: 0;
             }
 
             header nav {
@@ -356,14 +445,81 @@
             .animate-ping {
                 animation: none !important;
             }
+
+            .page-content.page-transition-in,
+            .page-content.page-transition-out {
+                animation: none !important;
+            }
+
+            .loader-dot {
+                animation: none !important;
+            }
+
+            #site-loader {
+                transition: none !important;
+            }
         }
 
         .modal-hidden {
             display: none;
         }
+
+        #site-loader {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-color);
+            color: var(--text-main);
+            transition: opacity 0.35s ease, visibility 0.35s ease;
+        }
+
+        #site-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loader-wrap {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            border: var(--border-width) solid var(--grid-border);
+            padding: var(--space-4) var(--space-6);
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            font-size: 0.7rem;
+        }
+
+        .loader-dot {
+            width: 0.55rem;
+            height: 0.55rem;
+            border-radius: 9999px;
+            background: var(--accent);
+            animation: loader-pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes loader-pulse {
+            0%, 100% {
+                opacity: 0.35;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="is-loading min-h-screen flex flex-col">
+    <div id="site-loader" role="status" aria-live="polite" aria-label="Carregando pagina">
+        <div class="loader-wrap">
+            <div class="loader-dot"></div>
+            <span>Carregando</span>
+        </div>
+    </div>
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:bg-[var(--bg-color)] focus:border focus:border-[var(--grid-border)] focus:px-3 focus:py-2">Pular para o conteudo</a>
     <header class="flex flex-wrap items-stretch w-full sticky top-0 bg-[var(--bg-color)] z-50 border-b border-[var(--grid-border)]">
         <div class="p-4 md:p-6 font-bold tracking-tighter text-base md:text-xl border-r-0 md:border-r border-[var(--grid-border)] flex items-center min-h-[64px]">
@@ -385,16 +541,16 @@
         </button>
     </header>
 
-    <main id="main-content" class="flex-grow p-4 md:p-12">
+    <main id="main-content" class="relative flex-grow p-4 md:p-12">
         <div id="page-dashboard" class="page-content page-shell active">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-5 dashboard-grid">
                 <div class="grid-item dashboard-hero md:col-span-2 md:row-span-2 p-6 md:p-8 justify-between">
                     <div>
                         <span class="label">Informations</span>
                         <h1 class="text-2xl md:text-3xl lg:text-4xl font-semibold leading-tight tracking-tight">
-                            About my life,<br>
-                            my works & what I am<br>
-                            expecting from the future.
+                            Sobre minha vida,<br>
+                            meus trabalhos e o que<br>
+                            espero para o futuro.
                         </h1>
                     </div>
                     <div class="mt-auto flex items-center gap-3">
@@ -548,12 +704,71 @@
         </div>
 
         <div id="page-contato" class="page-content page-shell">
-            <div class="brutalist-container p-6 md:p-12">
-                <span class="label">Contato</span>
-                <h2 class="text-3xl md:text-4xl font-bold mb-8">Vamos criar algo.</h2>
-                <div class="space-y-4">
-                    <div class="p-6 border border-[var(--grid-border)]">ola@seuemail.com</div>
-                    <div class="p-6 border border-[var(--grid-border)]">LinkedIn: /in/usuario</div>
+            <div class="brutalist-container grid grid-cols-1 md:grid-cols-3">
+                <div class="grid-item md:col-span-3 p-6 md:p-10 aspect-auto md:aspect-auto">
+                    <span class="label">Contato</span>
+                    <h2 class="text-3xl md:text-5xl font-bold leading-none tracking-tighter mb-6">Vamos criar algo real.</h2>
+                    <p class="text-sm md:text-base opacity-75 max-w-3xl">Preencha o formulario para conversarmos sobre produto, design, front-end ou colaboracoes editoriais. Resposta esperada em ate 2 dias uteis.</p>
+                </div>
+
+                <div class="grid-item md:col-span-2 p-6 md:p-10 aspect-auto md:aspect-auto">
+                    <form id="contact-form" class="space-y-5" onsubmit="handleContactSubmit(event)" novalidate>
+                        <input type="text" name="company_website" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+                        <div>
+                            <label for="contact-name" class="label">Nome</label>
+                            <input id="contact-name" name="name" type="text" class="ui-input" placeholder="Seu nome completo" minlength="2" required>
+                        </div>
+
+                        <div>
+                            <label for="contact-email" class="label">E-mail</label>
+                            <input id="contact-email" name="email" type="email" class="ui-input" placeholder="voce@email.com" required>
+                        </div>
+
+                        <div>
+                            <label for="contact-subject" class="label">Assunto</label>
+                            <select id="contact-subject" name="subject" class="ui-select" required>
+                                <option value="">Selecione um tema</option>
+                                <option value="Projeto de website">Projeto de website</option>
+                                <option value="Consultoria de UX/UI">Consultoria de UX/UI</option>
+                                <option value="Parceria de conteudo">Parceria de conteudo</option>
+                                <option value="Outro assunto">Outro assunto</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="contact-message" class="label">Mensagem</label>
+                            <textarea id="contact-message" name="message" class="ui-textarea" placeholder="Conte um pouco sobre contexto, objetivo e prazo." minlength="20" maxlength="1200" required></textarea>
+                        </div>
+
+                        <label class="flex items-start gap-3 text-xs opacity-75 leading-relaxed">
+                            <input id="contact-consent" name="consent" type="checkbox" class="mt-0.5" required>
+                            <span>Concordo em ser contactado por e-mail com base nas informacoes enviadas neste formulario.</span>
+                        </label>
+
+                        <div class="flex flex-wrap items-center gap-4 pt-1">
+                            <button id="contact-submit-btn" type="submit" class="ui-btn">Enviar mensagem</button>
+                            <p id="contact-status" class="form-status" data-state="idle" aria-live="polite">Pronto para enviar.</p>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="grid-item p-6 md:p-10 aspect-auto md:aspect-auto">
+                    <span class="label">Canais diretos</span>
+                    <div class="space-y-4">
+                        <div class="contact-meta">
+                            <div class="text-[10px] uppercase tracking-[0.2em] opacity-60 mb-2">E-mail</div>
+                            <a class="hover:text-[var(--accent)] break-all" href="mailto:ola@seuemail.com">ola@seuemail.com</a>
+                        </div>
+                        <div class="contact-meta">
+                            <div class="text-[10px] uppercase tracking-[0.2em] opacity-60 mb-2">LinkedIn</div>
+                            <a class="hover:text-[var(--accent)] break-all" href="#" aria-label="LinkedIn perfil">linkedin.com/in/usuario</a>
+                        </div>
+                        <div class="contact-meta">
+                            <div class="text-[10px] uppercase tracking-[0.2em] opacity-60 mb-2">SLA</div>
+                            <p class="opacity-80">Retorno em ate 2 dias uteis.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -604,6 +819,10 @@
         let scrollTicking = false;
         let activeModalId = null;
         let lastFocusedElement = null;
+        const PAGE_TRANSITION_MS = 420;
+        const LOADER_MIN_MS = 2000;
+        const loaderStartAt = Date.now();
+        const CONTACT_TARGET_EMAIL = 'ola@seuemail.com';
 
         const storageKeys = {
             likes: 'thierry.likes.v1',
@@ -823,17 +1042,53 @@
             messages: {}
         };
 
-        function showPage(pageId) {
-            document.querySelectorAll('.page-content').forEach((page) => page.classList.remove('active'));
+        function updateActiveNav(navId) {
             document.querySelectorAll('nav a').forEach((link) => link.classList.remove('active-nav'));
-
-            const targetPage = document.getElementById('page-' + pageId);
-            if (targetPage) targetPage.classList.add('active');
-
-            const navLink = document.getElementById('nav-' + pageId);
+            if (!navId) return;
+            const navLink = document.getElementById('nav-' + navId);
             if (navLink) navLink.classList.add('active-nav');
+        }
+
+        function transitionToPage(pageId, options = {}) {
+            const { navId = pageId, updateNav = true } = options;
+            const targetPage = document.getElementById('page-' + pageId);
+            if (!targetPage) return;
+
+            if (updateNav) {
+                updateActiveNav(navId);
+            } else {
+                updateActiveNav(null);
+            }
+
+            const currentPage = document.querySelector('.page-content.active');
+            if (!currentPage || currentPage === targetPage) {
+                targetPage.classList.add('active');
+                targetPage.classList.remove('page-transition-out');
+                targetPage.classList.add('page-transition-in');
+                window.setTimeout(() => targetPage.classList.remove('page-transition-in'), PAGE_TRANSITION_MS);
+                window.scrollTo(0, 0);
+                return;
+            }
+
+            currentPage.classList.remove('page-transition-in');
+            currentPage.classList.add('page-transition-out');
+
+            targetPage.classList.remove('page-transition-out');
+            targetPage.classList.add('active', 'page-transition-in');
+
+            window.setTimeout(() => {
+                currentPage.classList.remove('active', 'page-transition-out');
+            }, PAGE_TRANSITION_MS);
+
+            window.setTimeout(() => {
+                targetPage.classList.remove('page-transition-in');
+            }, PAGE_TRANSITION_MS);
 
             window.scrollTo(0, 0);
+        }
+
+        function showPage(pageId) {
+            transitionToPage(pageId, { navId: pageId, updateNav: true });
         }
 
         function formatDatePt(dateValue) {
@@ -857,6 +1112,68 @@
 
         function writeStorage(key, value) {
             localStorage.setItem(key, JSON.stringify(value));
+        }
+
+        function setContactStatus(message, state = 'idle') {
+            const status = document.getElementById('contact-status');
+            if (!status) return;
+            status.dataset.state = state;
+            status.textContent = message;
+        }
+
+        function handleContactSubmit(event) {
+            event.preventDefault();
+            const form = event.currentTarget;
+            const submitBtn = document.getElementById('contact-submit-btn');
+            if (!(form instanceof HTMLFormElement) || !submitBtn) return;
+
+            const honeypot = form.elements.namedItem('company_website');
+            if (honeypot && honeypot.value) {
+                setContactStatus('Falha ao validar envio. Tente novamente.', 'error');
+                return;
+            }
+
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                setContactStatus('Revise os campos obrigatorios antes de enviar.', 'error');
+                return;
+            }
+
+            const formData = new FormData(form);
+            const payload = {
+                name: String(formData.get('name') || '').trim(),
+                email: String(formData.get('email') || '').trim(),
+                subject: String(formData.get('subject') || '').trim(),
+                message: String(formData.get('message') || '').trim()
+            };
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+            setContactStatus('Preparando seu e-mail...', 'idle');
+
+            try {
+                const subject = `[Contato] ${payload.subject}`;
+                const body =
+`Nome: ${payload.name}
+E-mail: ${payload.email}
+
+Mensagem:
+${payload.message}`;
+
+                const mailtoUrl = `mailto:${CONTACT_TARGET_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.location.href = mailtoUrl;
+
+                setContactStatus('Sua aplicacao de e-mail foi aberta. Se preferir, envie direto para ola@seuemail.com.', 'success');
+                form.reset();
+            } catch (error) {
+                console.error('falha ao processar formulario de contato', error);
+                setContactStatus('Nao foi possivel iniciar o envio. Tente novamente em instantes.', 'error');
+            } finally {
+                window.setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Enviar mensagem';
+                }, 700);
+            }
         }
 
         function getFocusableElements(container) {
@@ -1263,10 +1580,6 @@
 
             activePostId = postId;
 
-            document.querySelectorAll('.page-content').forEach((p) => p.classList.remove('active'));
-            document.querySelectorAll('nav a').forEach((a) => a.classList.remove('active-nav'));
-
-            const postPage = document.getElementById('page-post');
             const postMeta = document.getElementById('post-meta');
             const postTitle = document.getElementById('post-title');
             const postBody = document.getElementById('post-body-content');
@@ -1281,8 +1594,7 @@
                 .map((item) => `<a href="#" onclick="openPostById('${item.id}')" class="block text-sm font-bold hover:text-[var(--accent)]">${item.title}</a>`)
                 .join('');
 
-            postPage.classList.add('active');
-            window.scrollTo(0, 0);
+            transitionToPage('post', { updateNav: false });
         }
 
         function toggleThemeManual() {
@@ -1365,6 +1677,18 @@
             });
         }
 
+        function hideSiteLoader() {
+            const loader = document.getElementById('site-loader');
+            if (!loader) return;
+            const elapsed = Date.now() - loaderStartAt;
+            const remaining = Math.max(0, LOADER_MIN_MS - elapsed);
+            window.setTimeout(() => {
+                loader.classList.add('hidden');
+                document.body.classList.remove('is-loading');
+                window.setTimeout(() => loader.remove(), 420);
+            }, remaining);
+        }
+
         updateTheme();
         bootstrapContent();
         handleMobileNavScroll();
@@ -1373,6 +1697,12 @@
         document.addEventListener('keydown', handleModalKeydown);
         document.getElementById('comments-modal').addEventListener('click', handleModalBackdropClick);
         document.getElementById('message-modal').addEventListener('click', handleModalBackdropClick);
+        if (document.readyState === 'complete') {
+            hideSiteLoader();
+        } else {
+            window.addEventListener('load', hideSiteLoader, { once: true });
+            window.setTimeout(hideSiteLoader, LOADER_MIN_MS + 1200);
+        }
         setInterval(updateTheme, 60000);
     </script>
 </body>
