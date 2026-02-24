@@ -1,0 +1,180 @@
+{
+  "a11y": {
+    "skip_content": "Pular para o conteudo"
+  },
+  "loader": {
+    "message": "Carregando",
+    "aria": "Website carregando"
+  },
+  "lang": {
+    "pt_aria": "Alterar idioma para portugues",
+    "en_aria": "Switch language to English"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "about": "Sobre",
+    "photos": "Fotografias",
+    "blog": "Blog",
+    "contact": "Contato"
+  },
+  "hero": {
+    "label": "Informacoes",
+    "title_html": "Designer, developer e<br>observador da vida.<br>Construo meu.ponto."
+  },
+  "about": {
+    "label": "Sobre",
+    "title": "uma vida em construcao constante.",
+    "intro": "Este website e meu arquivo vivo: um lugar para organizar o que eu construo, estudo, fotografo e escrevo. Prefiro tratar carreira e vida como uma unica narrativa: tecnica, autoral e humana ao mesmo tempo.",
+    "focus": {
+      "label": "Foco Atual",
+      "title": "Transformar sinais do cotidiano em produto digital com identidade.",
+      "body": "Interface, conteudo e sistema visual trabalhando juntos, sem excesso."
+    },
+    "base": {
+      "label": "Base",
+      "title": "Design de interface, front-end e estrategia editorial.",
+      "body": "Do conceito ao codigo, com foco em clareza, ritmo e performance."
+    },
+    "direction": {
+      "label": "Direcao",
+      "title": "Construir um ecossistema pessoal, nao apenas um portfolio.",
+      "body": "meu.ponto como laboratorio continuo de pensamento, produto e presenca digital."
+    },
+    "timeline": {
+      "label": "Linha do Tempo",
+      "y2009": "Inicio da minha presenca digital e da vontade de construir em endereco proprio.",
+      "y2024": "Consolidacao de um fluxo autoral: notas, ensaios visuais e escrita recorrente.",
+      "y2026": "Thierry Rene Matos vira plataforma biografica: brutalista, modular e orientada a dados."
+    },
+    "principles": {
+      "label": "Principios",
+      "p1": "Clareza antes de volume",
+      "p2": "Identidade antes de tendencia",
+      "p3": "Consistencia antes de pressa"
+    }
+  },
+  "blog": {
+    "hero": {
+      "label": "meu.ponto - meu ponto de vista",
+      "title": "Writing & Thoughts"
+    },
+    "read_article": "Ler Artigo ->",
+    "empty": {
+      "label": "Sem posts",
+      "body": "Nenhum post publicado no momento."
+    }
+  },
+  "post": {
+    "back": "<- Voltar para o blogue",
+    "share": "Partilhar",
+    "related": "Relacionados"
+  },
+  "photos": {
+    "filter": {
+      "essay": "Ensaio",
+      "year": "Ano",
+      "all": "Todos"
+    },
+    "media": {
+      "image_placeholder": "foto placeholder",
+      "video_placeholder": "video placeholder ▶",
+      "alt_fallback": "Midia da galeria"
+    },
+    "empty": {
+      "label": "Sem resultado",
+      "body": "Nao ha fotografias para o filtro selecionado."
+    }
+  },
+  "contact": {
+    "section_label": "Contato",
+    "title": "Vamos criar algo real.",
+    "intro": "Preencha o formulario para conversarmos sobre produto, design, front-end ou colaboracoes editoriais. Resposta esperada em ate 2 dias uteis.",
+    "direct": {
+      "label": "Canais diretos",
+      "email_label": "E-mail",
+      "linkedin_label": "LinkedIn",
+      "sla_label": "SLA",
+      "sla_text": "Retorno em ate 2 dias uteis."
+    },
+    "form": {
+      "name": {
+        "label": "Nome",
+        "placeholder": "Seu nome completo"
+      },
+      "email": {
+        "label": "E-mail",
+        "placeholder": "voce@email.com"
+      },
+      "subject": {
+        "label": "Assunto",
+        "options": {
+          "empty": "Selecione um tema",
+          "website": "Projeto de website",
+          "ux": "Consultoria de UX/UI",
+          "content": "Parceria de conteudo",
+          "other": "Outro assunto"
+        }
+      },
+      "message": {
+        "label": "Mensagem",
+        "placeholder": "Conte um pouco sobre contexto, objetivo e prazo."
+      },
+      "consent": "Concordo em ser contactado por e-mail com base nas informacoes enviadas neste formulario.",
+      "submit": "Enviar mensagem",
+      "submit_sending": "Enviando...",
+      "status": {
+        "ready": "Pronto para enviar.",
+        "validation_error": "Falha ao validar envio. Tente novamente.",
+        "required_error": "Revise os campos obrigatorios antes de enviar.",
+        "preparing": "Preparando seu e-mail...",
+        "success": "Sua aplicacao de e-mail foi aberta. Se preferir, envie direto para ola@seuemail.com.",
+        "send_error": "Nao foi possivel iniciar o envio. Tente novamente em instantes."
+      }
+    },
+    "mail": {
+      "subject_prefix": "Contato",
+      "name_label": "Nome",
+      "email_label": "E-mail",
+      "message_label": "Mensagem"
+    }
+  },
+  "modals": {
+    "comments": {
+      "title": "Comentarios",
+      "placeholder": "Escreva um comentario curto",
+      "submit": "Publicar",
+      "empty": "Sem comentarios ainda. Seja a primeira pessoa a comentar."
+    },
+    "message": {
+      "title": "Mensagem privada",
+      "help": "Interacao local para prototipo de UX. Em CMS real, isso deve usar backend autenticado.",
+      "placeholder": "Escreva sua mensagem privada",
+      "submit": "Enviar"
+    }
+  },
+  "actions": {
+    "like": "Curtir",
+    "like_photo": "Curtir foto",
+    "comments": "Comentarios",
+    "open_comments": "Abrir comentarios",
+    "private_message": "Mensagem privada",
+    "send_private_message": "Enviar mensagem privada"
+  },
+  "theme": {
+    "toggle_aria": "Alternar tema claro e escuro",
+    "status": {
+      "syncing": "Sincronizando...",
+      "day": "MODO DIA",
+      "night": "MODO NOITE",
+      "override_day": "OVERRIDE - MODO DIA",
+      "override_night": "OVERRIDE - MODO NOITE"
+    }
+  },
+  "common": {
+    "close": "fechar"
+  },
+  "footer": {
+    "left": "Feito com amor em uma tarde de domingo",
+    "right": "de 2009 ate hoje"
+  }
+}

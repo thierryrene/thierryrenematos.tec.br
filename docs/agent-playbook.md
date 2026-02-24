@@ -12,6 +12,7 @@
 - CSS customizado com variaveis
 - JavaScript puro
 - Conteudo em `data/*.json` (posts/fotos/ensaios/midia)
+- Script principal externo em `assets/js/main.js` (evitar JS inline em `index.html`).
 
 Nao fazer nesta fase:
 - adotar Astro (ou outro framework) sem aprovacao explicita;
@@ -27,6 +28,7 @@ Nao fazer nesta fase:
 ## 4. Requisitos de comportamento
 - Tema automatico por horario.
 - Override manual com persistencia em `localStorage`.
+- Troca de idioma `pt-BR`/`en-US` com persistencia em `localStorage`.
 - Navegacao clara entre Dashboard, Sobre, Blog e Contato.
 - Estados de fallback para blocos de dados externos.
 - Fotografias com filtros por ensaio/ano.

@@ -25,6 +25,7 @@ Regras:
 - nao introduzir framework frontend agora;
 - nao introduzir build pipeline obrigatorio agora;
 - manter a base simples, legivel e facil de editar.
+- manter JavaScript desacoplado do HTML, carregado por arquivo externo (`assets/js/main.js`).
 
 ## 3. Itens removidos da especificacao (nao considerar por enquanto)
 Os itens abaixo estao explicitamente fora do escopo atual:
@@ -92,6 +93,12 @@ Diretriz:
 - manter navegacao clara entre secoes;
 - preservar semantica HTML;
 - preparar conteudo para futura separacao em rotas fisicas, sem obrigatoriedade nesta fase.
+
+### 6.3 Internacionalizacao (i18n)
+- Idiomas ativos: `pt-BR` e `en-US`.
+- Conteudo textual deve ser gerenciado por dicionarios JSON em `data/i18n/`.
+- UI deve permitir troca de idioma com persistencia em `localStorage`.
+- `html[lang]` deve refletir o idioma ativo para acessibilidade/SEO.
 
 ### 6.1 Modelo de dados local (preparacao para CMS)
 O conteudo deve ser mantido em arquivos JSON no diretorio `data/`:

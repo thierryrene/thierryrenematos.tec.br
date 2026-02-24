@@ -26,6 +26,10 @@ Este arquivo segue o padrao Keep a Changelog e versionamento semantico.
 - Loader inicial adicionado antes da exibicao do website, com fallback de carregamento e suporte a reduced motion.
 - Loader inicial configurado para exibicao minima de 2 segundos.
 - Secao de contato evoluida para formulario realista com validacao, feedback de envio e fallback funcional via `mailto`.
+- Bloco informativo da grid e secao Sobre atualizados com narrativa biografica em PT-BR inspirada na referencia editorial de `sive.rs/about`.
+- Mecanismo de idioma `pt-BR`/`en-US` implementado com toggle na interface, persistencia local e dicionarios em `data/i18n/*.json`.
+- JavaScript desacoplado do `index.html` para `assets/js/main.js`, facilitando leitura e manutencao sem alterar comportamento funcional.
+- Botoes de idioma padronizados com o mesmo padrao visual dos controles do header (incluindo toggle de tema), com estado ativo acessivel via `aria-pressed`.
 
 ### Planned
 - Consolidacao do prototipo HTML com melhorias de acessibilidade e semantica.

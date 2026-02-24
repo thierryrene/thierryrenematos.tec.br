@@ -1,0 +1,180 @@
+{
+  "a11y": {
+    "skip_content": "Skip to content"
+  },
+  "loader": {
+    "message": "Loading",
+    "aria": "Website loading"
+  },
+  "lang": {
+    "pt_aria": "Mudar idioma para portugues",
+    "en_aria": "Switch language to English"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "about": "About",
+    "photos": "Photography",
+    "blog": "Blog",
+    "contact": "Contact"
+  },
+  "hero": {
+    "label": "Information",
+    "title_html": "Designer, developer, and<br>observer of life.<br>I build meu.ponto."
+  },
+  "about": {
+    "label": "About",
+    "title": "a life in constant progress.",
+    "intro": "This website is my living archive: a place to organize what I build, study, photograph, and write. I prefer to treat career and life as one story: technical, personal, and human at the same time.",
+    "focus": {
+      "label": "Current Focus",
+      "title": "Turning everyday signals into digital products with identity.",
+      "body": "Interface, content, and visual systems working together without noise."
+    },
+    "base": {
+      "label": "Foundation",
+      "title": "Interface design, front-end, and editorial strategy.",
+      "body": "From concept to code, with focus on clarity, rhythm, and performance."
+    },
+    "direction": {
+      "label": "Direction",
+      "title": "Building a personal ecosystem, not just a portfolio.",
+      "body": "meu.ponto as a continuous lab for thought, product, and digital presence."
+    },
+    "timeline": {
+      "label": "Timeline",
+      "y2009": "Start of my digital presence and the desire to build on my own domain.",
+      "y2024": "Consolidation of an author workflow: notes, visual essays, and recurring writing.",
+      "y2026": "Thierry Rene Matos becomes a biographical platform: brutalist, modular, and data-driven."
+    },
+    "principles": {
+      "label": "Principles",
+      "p1": "Clarity before volume",
+      "p2": "Identity before trend",
+      "p3": "Consistency before speed"
+    }
+  },
+  "blog": {
+    "hero": {
+      "label": "meu.ponto - my point of view",
+      "title": "Writing & Thoughts"
+    },
+    "read_article": "Read Article ->",
+    "empty": {
+      "label": "No posts",
+      "body": "No published posts right now."
+    }
+  },
+  "post": {
+    "back": "<- Back to blog",
+    "share": "Share",
+    "related": "Related"
+  },
+  "photos": {
+    "filter": {
+      "essay": "Essay",
+      "year": "Year",
+      "all": "All"
+    },
+    "media": {
+      "image_placeholder": "photo placeholder",
+      "video_placeholder": "video placeholder ▶",
+      "alt_fallback": "Gallery media"
+    },
+    "empty": {
+      "label": "No results",
+      "body": "No photography found for the selected filter."
+    }
+  },
+  "contact": {
+    "section_label": "Contact",
+    "title": "Let's build something real.",
+    "intro": "Fill out the form so we can talk about product, design, front-end, or editorial collaborations. Expected response within 2 business days.",
+    "direct": {
+      "label": "Direct channels",
+      "email_label": "Email",
+      "linkedin_label": "LinkedIn",
+      "sla_label": "SLA",
+      "sla_text": "Response within 2 business days."
+    },
+    "form": {
+      "name": {
+        "label": "Name",
+        "placeholder": "Your full name"
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "you@email.com"
+      },
+      "subject": {
+        "label": "Subject",
+        "options": {
+          "empty": "Select a topic",
+          "website": "Website project",
+          "ux": "UX/UI consulting",
+          "content": "Content partnership",
+          "other": "Other topic"
+        }
+      },
+      "message": {
+        "label": "Message",
+        "placeholder": "Share context, goal, and timeline."
+      },
+      "consent": "I agree to be contacted by email based on the information submitted in this form.",
+      "submit": "Send message",
+      "submit_sending": "Sending...",
+      "status": {
+        "ready": "Ready to send.",
+        "validation_error": "Validation failed. Please try again.",
+        "required_error": "Please review required fields before sending.",
+        "preparing": "Preparing your email...",
+        "success": "Your email app was opened. If needed, send directly to ola@seuemail.com.",
+        "send_error": "Could not start sending. Please try again shortly."
+      }
+    },
+    "mail": {
+      "subject_prefix": "Contact",
+      "name_label": "Name",
+      "email_label": "Email",
+      "message_label": "Message"
+    }
+  },
+  "modals": {
+    "comments": {
+      "title": "Comments",
+      "placeholder": "Write a short comment",
+      "submit": "Publish",
+      "empty": "No comments yet. Be the first to comment."
+    },
+    "message": {
+      "title": "Private message",
+      "help": "Local interaction for UX prototyping. In production this should use an authenticated backend.",
+      "placeholder": "Write your private message",
+      "submit": "Send"
+    }
+  },
+  "actions": {
+    "like": "Like",
+    "like_photo": "Like photo",
+    "comments": "Comments",
+    "open_comments": "Open comments",
+    "private_message": "Private message",
+    "send_private_message": "Send private message"
+  },
+  "theme": {
+    "toggle_aria": "Toggle light and dark theme",
+    "status": {
+      "syncing": "Syncing...",
+      "day": "DAY MODE",
+      "night": "NIGHT MODE",
+      "override_day": "OVERRIDE - DAY MODE",
+      "override_night": "OVERRIDE - NIGHT MODE"
+    }
+  },
+  "common": {
+    "close": "close"
+  },
+  "footer": {
+    "left": "Made with love on a Sunday afternoon",
+    "right": "from 2009 to today"
+  }
+}
