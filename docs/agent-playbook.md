@@ -38,6 +38,7 @@ Nao fazer nesta fase:
 - Em header/nav, garantir area de toque adequada e ausencia de sobreposicao entre logo, menu e toggle.
 - Em cards com acoes (likes/comentarios/partilha), usar `flex-wrap` quando houver risco de estouro horizontal.
 - Validar rapidamente em larguras de 360px e 390px antes de encerrar.
+- Dashboard mobile deve permanecer em coluna unica (opcao 1), mantendo altura minima estavel em cards vazios.
 
 ## 5. Seguranca e dados
 - Nao expor chaves/tokens no client.

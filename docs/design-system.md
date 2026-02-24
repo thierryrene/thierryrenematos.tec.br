@@ -36,6 +36,8 @@ Este documento define os tokens e padroes de interface para manter consistencia 
 - `--btn-padding-x: var(--space-4)`
 - `--btn-font-size: 0.75rem`
 - `--btn-letter-spacing: 0.15em`
+- `--dashboard-slot-mobile-height: clamp(10rem, 45vw, 12rem)`
+- `--dashboard-hero-mobile-height: clamp(15rem, 70vw, 20rem)`
 
 ## 2. Padroes de componentes
 
@@ -61,10 +63,20 @@ Classe base: `.ui-label`
 - tracking alto
 - cor `--text-label`
 
+### Acao por icone
+Classe base: `.icon-btn`
+- alvo de toque minimo recomendado para mobile (44px+)
+- fundo transparente com feedback visual em hover/focus
+- usado para likes/comentarios/mensagem em cards de fotografias
+
 ## 3. Regras de uso
 - Nao usar valores hardcoded de espacamento quando houver token equivalente.
 - Reutilizar classes base (`.ui-btn`, `.ui-card`, `.ui-label`) antes de criar variacoes.
 - Manter bordas como estrutura visual obrigatoria do layout.
+- Em mobile, usar tokens de altura da dashboard para manter slots vazios estaveis.
+- Footer deve seguir malha com celulas em `.ui-card`, incluindo mobile.
+- Quando houver animacoes, prever fallback para `prefers-reduced-motion`.
+- Modais devem preservar foco no dialog e bloquear scroll de fundo enquanto abertos.
 
 ## 4. Do / Dont
 - Do: usar `var(--space-*)` para `margin`, `padding`, `gap`.

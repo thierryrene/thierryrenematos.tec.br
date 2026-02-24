@@ -56,9 +56,12 @@ Observacao:
 ### 4.4 Diretrizes mobile obrigatorias
 - Header deve manter logo, navegacao e toggle de tema utilizaveis sem sobreposicao em <768px.
 - Navegacao horizontal em mobile pode ter scroll, mas sem cortar links ou foco visivel.
+- Header pode auto-ocultar ao scroll descendente no mobile, com affordance visual para retorno.
 - Titulos e blocos de texto devem escalar em mobile (`text-*` e `p-*` responsivos) para evitar overflow.
 - Cards interativos (fotos/blog) devem aceitar quebra de linha e `flex-wrap` para icones/metadados.
 - Espacamento base em mobile deve priorizar `p-6` ou menor; expansao para `p-8/p-10/p-12` apenas em `md+`.
+- Dashboard mobile oficial (opcao 1): coluna unica com slots estaveis por `min-height`, incluindo blocos vazios.
+- Respeitar safe-area (`env(safe-area-inset-*)`) em header/footer/modais quando aplicavel.
 
 Referencia:
 - `docs/design-system.md`

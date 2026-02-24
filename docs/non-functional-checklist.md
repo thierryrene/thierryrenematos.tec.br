@@ -9,6 +9,8 @@ Este checklist deve ser validado em cada mudanca relevante de layout/conteudo.
 - [ ] Header sem sobreposicao de logo/menu/toggle em 360px e 390px.
 - [ ] Sem overflow horizontal acidental (exceto nav com scroll horizontal intencional).
 - [ ] Titulos longos e grupos de acoes com quebra/flex-wrap quando necessario.
+- [ ] Header auto-oculto no mobile com affordance visual de retorno.
+- [ ] Safe-area (notch/home indicator) respeitada em header/footer/modais.
 
 ## 2. Acessibilidade (a11y)
 - [ ] Semantica estrutural correta (`header`, `nav`, `main`, `section`, `footer`).
@@ -16,6 +18,8 @@ Este checklist deve ser validado em cada mudanca relevante de layout/conteudo.
 - [ ] Contraste minimo AA entre texto e fundo.
 - [ ] `alt` obrigatorio para imagens de conteudo.
 - [ ] Hierarquia de headings sem saltos confusos.
+- [ ] Modais com ESC, clique no backdrop e foco preso (trap focus).
+- [ ] `prefers-reduced-motion` respeitado em animacoes/transicoes.
 
 ## 3. Performance
 - [ ] Imagens com dimensoes coerentes e compressao adequada.

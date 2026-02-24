@@ -41,6 +41,8 @@
             --btn-font-size: 0.75rem;
             --btn-letter-spacing: 0.15em;
             --page-max-width: 90rem;
+            --dashboard-slot-mobile-height: clamp(10rem, 45vw, 12rem);
+            --dashboard-hero-mobile-height: clamp(15rem, 70vw, 20rem);
         }
 
         body.theme-day {
@@ -59,6 +61,10 @@
             transition: background-color 0.5s ease, color 0.5s ease;
             margin: 0;
             padding: 0;
+        }
+
+        body.modal-open {
+            overflow: hidden;
         }
 
         .brutalist-container {
@@ -103,6 +109,14 @@
             font-weight: 600;
         }
 
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            min-height: 2.5rem;
+            padding-left: var(--space-2);
+            padding-right: var(--space-2);
+        }
+
         .ui-btn {
             height: var(--btn-height);
             padding: 0 var(--btn-padding-x);
@@ -118,6 +132,27 @@
         .ui-btn:hover,
         .ui-btn:focus-visible {
             background-color: var(--item-hover);
+        }
+
+        .icon-btn {
+            width: 2.75rem;
+            height: 2.75rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            line-height: 1;
+            border: var(--border-width) solid transparent;
+            background: transparent;
+            color: var(--text-main);
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .icon-btn:hover,
+        .icon-btn:focus-visible {
+            border-color: var(--grid-border);
+            background-color: var(--item-hover);
+            transform: scale(1.03);
         }
 
         a:focus-visible,
@@ -169,6 +204,35 @@
             opacity: 0.85;
         }
 
+        .grid-slot-empty::after {
+            content: 'aguardando integracao';
+            margin-top: auto;
+            font-size: 0.62rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-label);
+            opacity: 0.65;
+        }
+
+        .site-footer .footer-cell {
+            min-height: 4rem;
+            justify-content: center;
+            padding: var(--space-4) var(--space-6);
+            font-size: 0.625rem;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            opacity: 0.45;
+        }
+
+        .site-footer .footer-cell.footer-cell-right {
+            justify-content: flex-start;
+            text-align: left;
+        }
+
+        .mobile-nav-hint {
+            display: none;
+        }
+
         @media (max-width: 767px) {
             .page-shell {
                 width: 100%;
@@ -176,6 +240,14 @@
 
             nav {
                 scrollbar-width: thin;
+                -webkit-overflow-scrolling: touch;
+                scroll-snap-type: x proximity;
+                touch-action: pan-x;
+            }
+
+            .nav-link {
+                scroll-snap-align: start;
+                min-height: 2.75rem;
             }
 
             .grid-item,
@@ -183,8 +255,106 @@
                 min-width: 0;
             }
 
+            .dashboard-grid > .grid-item {
+                min-height: var(--dashboard-slot-mobile-height);
+            }
+
+            .dashboard-grid > .grid-item.dashboard-hero {
+                min-height: var(--dashboard-hero-mobile-height);
+            }
+
+            header nav {
+                max-height: 5rem;
+                opacity: 1;
+                transform: translateY(0);
+                overflow-y: hidden;
+                transition: max-height 0.25s ease, opacity 0.2s ease, transform 0.25s ease, padding 0.25s ease, border-color 0.25s ease;
+            }
+
+            body.mobile-nav-hidden header nav {
+                max-height: 0;
+                opacity: 0;
+                transform: translateY(-0.5rem);
+                padding-top: 0;
+                padding-bottom: 0;
+                border-top-color: transparent;
+            }
+
+            body.mobile-nav-hidden .mobile-nav-hint {
+                display: flex;
+                order: 4;
+                width: 100%;
+                justify-content: center;
+                align-items: center;
+                border-top: 1px solid var(--grid-border);
+                height: 0.75rem;
+            }
+
+            body.mobile-nav-hidden .mobile-nav-hint::before {
+                content: '';
+                width: 2.25rem;
+                height: 2px;
+                background: var(--grid-border);
+                opacity: 0.9;
+            }
+
+            .site-footer .footer-cell {
+                min-height: 3.5rem;
+                padding: var(--space-4);
+            }
+
+            header {
+                padding-top: env(safe-area-inset-top);
+            }
+
+            .site-footer {
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+
+            #comments-modal,
+            #message-modal {
+                padding-top: calc(var(--space-4) + env(safe-area-inset-top));
+                padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+            }
+
             .post-body p {
                 overflow-wrap: anywhere;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .site-footer {
+                grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+            }
+
+            .site-footer .footer-cell {
+                min-height: 3.75rem;
+                padding: 0 var(--space-6);
+                justify-content: center;
+            }
+
+            .site-footer .footer-cell:first-child {
+                text-align: left;
+            }
+
+            .site-footer .footer-cell.footer-cell-right {
+                justify-content: center;
+                text-align: left;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #theme-toggle svg,
+            .grid-item,
+            .ui-card,
+            .ui-btn,
+            .icon-btn,
+            header nav {
+                transition: none !important;
+            }
+
+            .animate-ping {
+                animation: none !important;
             }
         }
 
@@ -200,13 +370,14 @@
             <a href="#" onclick="showPage('dashboard')" class="hover:text-[var(--accent)] transition-colors">thierry</a>
         </div>
         <nav aria-label="Navegacao principal" class="order-3 md:order-none w-full md:w-auto flex-grow flex items-center gap-4 md:gap-8 px-4 md:px-10 py-3 md:py-0 border-t md:border-t-0 border-[var(--grid-border)] overflow-x-auto whitespace-nowrap">
-            <a href="#" onclick="showPage('dashboard')" id="nav-dashboard" class="label mb-0 hover:text-[var(--text-main)] transition-colors active-nav">Dashboard</a>
-            <a href="#" onclick="showPage('sobre')" id="nav-sobre" class="label mb-0 hover:text-[var(--text-main)] transition-colors">Sobre</a>
-            <a href="#" onclick="showPage('fotografias')" id="nav-fotografias" class="label mb-0 hover:text-[var(--text-main)] transition-colors">Fotografias</a>
-            <a href="#" onclick="showPage('blog')" id="nav-blog" class="label mb-0 hover:text-[var(--text-main)] transition-colors">Blog</a>
-            <a href="#" onclick="showPage('contato')" id="nav-contato" class="label mb-0 hover:text-[var(--text-main)] transition-colors">Contato</a>
+            <a href="#" onclick="showPage('dashboard')" id="nav-dashboard" class="label nav-link mb-0 hover:text-[var(--text-main)] transition-colors active-nav">Dashboard</a>
+            <a href="#" onclick="showPage('sobre')" id="nav-sobre" class="label nav-link mb-0 hover:text-[var(--text-main)] transition-colors">Sobre</a>
+            <a href="#" onclick="showPage('fotografias')" id="nav-fotografias" class="label nav-link mb-0 hover:text-[var(--text-main)] transition-colors">Fotografias</a>
+            <a href="#" onclick="showPage('blog')" id="nav-blog" class="label nav-link mb-0 hover:text-[var(--text-main)] transition-colors">Blog</a>
+            <a href="#" onclick="showPage('contato')" id="nav-contato" class="label nav-link mb-0 hover:text-[var(--text-main)] transition-colors">Contato</a>
         </nav>
-        <button id="theme-toggle" onclick="toggleThemeManual()" class="ml-auto p-4 md:p-6 min-h-[64px] border-l border-[var(--grid-border)] hover:bg-[var(--item-hover)] transition-colors flex items-center justify-center">
+        <div class="mobile-nav-hint" aria-hidden="true"></div>
+        <button id="theme-toggle" onclick="toggleThemeManual()" aria-label="Alternar tema claro e escuro" class="ml-auto p-4 md:p-6 min-h-[64px] border-l border-[var(--grid-border)] hover:bg-[var(--item-hover)] transition-colors flex items-center justify-center">
             <svg class="w-5 h-5 block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path class="sun-icon hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
                 <path class="moon-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
@@ -217,7 +388,7 @@
     <main id="main-content" class="flex-grow p-4 md:p-12">
         <div id="page-dashboard" class="page-content page-shell active">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-5 dashboard-grid">
-                <div class="grid-item md:col-span-2 md:row-span-2 p-6 md:p-8 justify-between">
+                <div class="grid-item dashboard-hero md:col-span-2 md:row-span-2 p-6 md:p-8 justify-between">
                     <div>
                         <span class="label">Informations</span>
                         <h1 class="text-2xl md:text-3xl lg:text-4xl font-semibold leading-tight tracking-tight">
@@ -237,16 +408,16 @@
                 <div class="grid-item p-6 justify-between"><span class="label">YouTube</span><div class="text-xs font-bold leading-none mt-auto">Ultimo Video</div></div>
                 <div class="grid-item p-6 justify-between"><span class="label">Listening Log</span><div class="flex gap-1 items-end h-12 mt-auto"><div class="w-2 bg-red-500 h-[80%]"></div><div class="w-2 bg-green-500 h-[40%]"></div><div class="w-2 bg-zinc-500 h-[90%]"></div></div></div>
                 <div class="grid-item p-6 justify-between"><span class="label">Spotify</span><div class="mt-auto flex items-center gap-2"><div class="w-2 h-2 bg-green-500 rounded-full animate-ping"></div><span class="text-[9px] font-bold uppercase">Live</span></div></div>
-                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">GitHub</span></div>
-                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">LinkedIn</span></div>
-                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">X</span></div>
-                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">Letterboxd</span></div>
-                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">Dribbble</span></div>
-                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">Steam</span></div>
-                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">Twitch</span></div>
-                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">Behance</span></div>
-                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">Goodreads</span></div>
-                <div class="grid-item p-6 bg-[var(--empty-slot)]"><span class="label">ProductHunt</span></div>
+                <div class="grid-item grid-slot-empty p-6 bg-[var(--empty-slot)]"><span class="label">GitHub</span></div>
+                <div class="grid-item grid-slot-empty p-6 bg-[var(--empty-slot)]"><span class="label">LinkedIn</span></div>
+                <div class="grid-item grid-slot-empty p-6 bg-[var(--empty-slot)]"><span class="label">X</span></div>
+                <div class="grid-item grid-slot-empty p-6 bg-[var(--empty-slot)]"><span class="label">Letterboxd</span></div>
+                <div class="grid-item grid-slot-empty p-6 bg-[var(--empty-slot)]"><span class="label">Dribbble</span></div>
+                <div class="grid-item grid-slot-empty p-6 bg-[var(--empty-slot)]"><span class="label">Steam</span></div>
+                <div class="grid-item grid-slot-empty p-6 bg-[var(--empty-slot)]"><span class="label">Twitch</span></div>
+                <div class="grid-item grid-slot-empty p-6 bg-[var(--empty-slot)]"><span class="label">Behance</span></div>
+                <div class="grid-item grid-slot-empty p-6 bg-[var(--empty-slot)]"><span class="label">Goodreads</span></div>
+                <div class="grid-item grid-slot-empty p-6 bg-[var(--empty-slot)]"><span class="label">ProductHunt</span></div>
             </div>
         </div>
 
@@ -388,9 +559,9 @@
         </div>
     </main>
 
-    <footer class="brutalist-container grid grid-cols-1 md:grid-cols-2 p-6 text-[10px] uppercase tracking-widest opacity-40 mt-auto">
-        <div class="flex items-center">Feito com amor ❤️ em uma tarde de domingo</div>
-        <div class="md:text-right flex items-center justify-start md:justify-end">de 2009 até hoje</div>
+    <footer class="brutalist-container site-footer grid grid-cols-1 md:grid-cols-2 mt-auto">
+        <div class="ui-card footer-cell">Feito com amor ❤️ em uma tarde de domingo</div>
+        <div class="ui-card footer-cell footer-cell-right">de 2009 até hoje</div>
     </footer>
 
     <div id="comments-modal" class="modal-hidden fixed inset-0 z-[100] bg-black/70 p-4 md:p-10" role="dialog" aria-modal="true" aria-label="Modal de comentarios">
@@ -429,6 +600,10 @@
         let manualThemeOverride = false;
         let activePhotoId = null;
         let activePostId = null;
+        let lastScrollY = 0;
+        let scrollTicking = false;
+        let activeModalId = null;
+        let lastFocusedElement = null;
 
         const storageKeys = {
             likes: 'thierry.likes.v1',
@@ -684,6 +859,86 @@
             localStorage.setItem(key, JSON.stringify(value));
         }
 
+        function getFocusableElements(container) {
+            return [...container.querySelectorAll('a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+                .filter((el) => !el.hasAttribute('hidden') && el.offsetParent !== null);
+        }
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+
+            if (activeModalId && activeModalId !== modalId) {
+                closeModal(activeModalId, { restoreFocus: false });
+            }
+
+            lastFocusedElement = document.activeElement;
+            modal.classList.remove('modal-hidden');
+            document.body.classList.add('modal-open');
+            activeModalId = modalId;
+
+            const focusables = getFocusableElements(modal);
+            const focusTarget = focusables[0] || modal;
+            if (!focusables.length && !modal.hasAttribute('tabindex')) {
+                modal.setAttribute('tabindex', '-1');
+            }
+            focusTarget.focus();
+        }
+
+        function closeModal(modalId, options = { restoreFocus: true }) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+
+            modal.classList.add('modal-hidden');
+
+            const stillOpen = document.querySelector('#comments-modal:not(.modal-hidden), #message-modal:not(.modal-hidden)');
+            if (!stillOpen) {
+                document.body.classList.remove('modal-open');
+                activeModalId = null;
+            } else {
+                activeModalId = stillOpen.id;
+            }
+
+            if (options.restoreFocus && lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+                lastFocusedElement.focus();
+            }
+        }
+
+        function handleModalKeydown(event) {
+            if (!activeModalId) return;
+
+            const modal = document.getElementById(activeModalId);
+            if (!modal || modal.classList.contains('modal-hidden')) return;
+
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                if (activeModalId === 'comments-modal') closeCommentsModal();
+                if (activeModalId === 'message-modal') closeMessageModal();
+                return;
+            }
+
+            if (event.key !== 'Tab') return;
+
+            const focusables = getFocusableElements(modal);
+            if (!focusables.length) return;
+
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        }
+
+        function handleModalBackdropClick(event) {
+            if (event.target.id === 'comments-modal') closeCommentsModal();
+            if (event.target.id === 'message-modal') closeMessageModal();
+        }
+
         async function loadJson(path) {
             const response = await fetch(path, { cache: 'no-store' });
             if (!response.ok) throw new Error('falha ao carregar ' + path);
@@ -825,11 +1080,11 @@
                         <p class="text-sm opacity-70">${photo.description}</p>
                     </div>
                     <div class="mt-6 pt-4 border-t border-[var(--grid-border)] flex flex-wrap items-center gap-4">
-                        <button type="button" onclick="togglePhotoLike('${photo.id}')" class="text-xl leading-none hover:scale-110 transition-transform" title="Curtir" aria-label="Curtir foto">${likeEmoji}</button>
+                        <button type="button" onclick="togglePhotoLike('${photo.id}')" class="icon-btn" title="Curtir" aria-label="Curtir foto">${likeEmoji}</button>
                         <span class="text-[10px] uppercase tracking-[0.2em] opacity-60 mr-2">${likeModel.count}</span>
-                        <button type="button" onclick="openCommentsModal('${photo.id}')" class="text-xl leading-none hover:scale-110 transition-transform" title="Comentarios" aria-label="Abrir comentarios">💬</button>
+                        <button type="button" onclick="openCommentsModal('${photo.id}')" class="icon-btn" title="Comentarios" aria-label="Abrir comentarios">💬</button>
                         <span class="text-[10px] uppercase tracking-[0.2em] opacity-60 mr-2">${comments.length}</span>
-                        <button type="button" onclick="openMessageModal('${photo.id}')" class="text-xl leading-none hover:scale-110 transition-transform" title="Mensagem privada" aria-label="Enviar mensagem privada">✉️</button>
+                        <button type="button" onclick="openMessageModal('${photo.id}')" class="icon-btn" title="Mensagem privada" aria-label="Enviar mensagem privada">✉️</button>
                         <span class="text-[10px] uppercase tracking-[0.2em] opacity-60">${messages.length}</span>
                     </div>
                 </article>
@@ -863,22 +1118,28 @@
             renderPhotoGrid();
         }
 
+        function renderPhotoGridPreserveScroll() {
+            const currentY = window.scrollY;
+            renderPhotoGrid();
+            window.requestAnimationFrame(() => window.scrollTo(0, currentY));
+        }
+
         function togglePhotoLike(photoId) {
             const model = getPhotoLikeModel(photoId);
             model.liked = !model.liked;
             model.count = model.liked ? model.count + 1 : Math.max(0, model.count - 1);
             writeStorage(storageKeys.likes, state.likes);
-            renderPhotoGrid();
+            renderPhotoGridPreserveScroll();
         }
 
         function openCommentsModal(photoId) {
             activePhotoId = photoId;
-            document.getElementById('comments-modal').classList.remove('modal-hidden');
+            openModal('comments-modal');
             renderCommentsModal();
         }
 
         function closeCommentsModal() {
-            document.getElementById('comments-modal').classList.add('modal-hidden');
+            closeModal('comments-modal');
             activePhotoId = null;
         }
 
@@ -920,16 +1181,16 @@
             writeStorage(storageKeys.comments, state.comments);
             input.value = '';
             renderCommentsModal();
-            renderPhotoGrid();
+            renderPhotoGridPreserveScroll();
         }
 
         function openMessageModal(photoId) {
             activePhotoId = photoId;
-            document.getElementById('message-modal').classList.remove('modal-hidden');
+            openModal('message-modal');
         }
 
         function closeMessageModal() {
-            document.getElementById('message-modal').classList.add('modal-hidden');
+            closeModal('message-modal');
             activePhotoId = null;
             document.getElementById('message-input').value = '';
         }
@@ -951,7 +1212,7 @@
 
             writeStorage(storageKeys.messages, state.messages);
             closeMessageModal();
-            renderPhotoGrid();
+            renderPhotoGridPreserveScroll();
         }
 
         function renderBlogCard(post, index) {
@@ -1074,8 +1335,44 @@
             updateThemeIcons();
         }
 
+        function handleMobileNavScroll() {
+            const isMobile = window.innerWidth < 768;
+            if (!isMobile) {
+                document.body.classList.remove('mobile-nav-hidden');
+                lastScrollY = window.scrollY;
+                return;
+            }
+
+            const currentY = window.scrollY;
+            const delta = currentY - lastScrollY;
+            const nearTop = currentY < 24;
+
+            if (nearTop || delta < -8) {
+                document.body.classList.remove('mobile-nav-hidden');
+            } else if (delta > 8 && currentY > 64) {
+                document.body.classList.add('mobile-nav-hidden');
+            }
+
+            lastScrollY = currentY;
+        }
+
+        function onWindowScroll() {
+            if (scrollTicking) return;
+            scrollTicking = true;
+            window.requestAnimationFrame(() => {
+                handleMobileNavScroll();
+                scrollTicking = false;
+            });
+        }
+
         updateTheme();
         bootstrapContent();
+        handleMobileNavScroll();
+        window.addEventListener('scroll', onWindowScroll, { passive: true });
+        window.addEventListener('resize', handleMobileNavScroll);
+        document.addEventListener('keydown', handleModalKeydown);
+        document.getElementById('comments-modal').addEventListener('click', handleModalBackdropClick);
+        document.getElementById('message-modal').addEventListener('click', handleModalBackdropClick);
         setInterval(updateTheme, 60000);
     </script>
 </body>
