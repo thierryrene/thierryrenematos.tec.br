@@ -580,90 +580,72 @@
 
         .music-alert-toast {
             position: relative;
-            --music-liquid-accent: #7dd3fc;
-            --music-liquid-accent-soft: #93c5fd;
             width: 100%;
             display: grid;
-            grid-template-columns: 2.6rem minmax(0, 1fr) 2rem;
-            gap: var(--space-3);
+            grid-template-columns: 3.75rem minmax(0, 1fr) 1.25rem;
             align-items: center;
-            padding: var(--space-3) var(--space-4);
-            border: 1px solid rgba(255, 255, 255, 0.42);
-            border-radius: 0;
-            background: rgba(0, 0, 0, 0.42);
-            backdrop-filter: blur(14px) saturate(138%);
-            -webkit-backdrop-filter: blur(14px) saturate(138%);
+            gap: 0.875rem;
+            padding: 0.875rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
             box-shadow:
-                0 10px 24px rgba(0, 0, 0, 0.22),
-                inset 0 1px 0 rgba(255, 255, 255, 0.44);
+                0 15px 35px rgba(0, 0, 0, 0.5),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.05);
             opacity: 0;
-            transform: translateY(10px) scale(0.98);
+            transform: translateY(8px);
             transition: opacity 0.22s ease, transform 0.22s ease;
-            isolation: isolate;
-            overflow: hidden;
-        }
-
-        .music-alert-toast[data-state='paused'] {
-            opacity: 0.92;
-        }
-
-        .music-alert-glass-svg {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .music-alert-glass-frame {
-            opacity: 0.72;
-        }
-
-        .music-alert-glass-caustic {
-            opacity: 0.38;
-            transform-origin: center;
-            animation: music-alert-glass-float 3.2s ease-in-out infinite alternate;
-        }
-
-        .music-alert-glass-specular {
-            opacity: 0.62;
+            user-select: none;
         }
 
         .music-alert-toast.is-visible {
             opacity: 1;
-            transform: translateY(0) scale(1);
+            transform: translateY(0);
         }
 
         .music-alert-toast.is-leaving {
             opacity: 0;
-            transform: translateY(8px) scale(0.98);
+            transform: translateY(6px);
+        }
+
+        .music-alert-toast::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+            border-radius: 22px 22px 0 0;
+            pointer-events: none;
         }
 
         .music-alert-cover {
             position: relative;
             z-index: 1;
-            width: 2.6rem;
-            height: 2.6rem;
+            width: 3.75rem;
+            height: 3.75rem;
             object-fit: cover;
-            border: 1px solid rgba(255, 255, 255, 0.32);
-            border-radius: 0;
-            background: rgba(255, 255, 255, 0.14);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            flex-shrink: 0;
         }
 
         .music-alert-fallback-cover {
             position: relative;
             z-index: 1;
-            width: 2.6rem;
-            height: 2.6rem;
-            border: 1px solid rgba(255, 255, 255, 0.32);
-            border-radius: 0;
-            background: linear-gradient(135deg, rgba(255, 92, 92, 0.7), rgba(84, 185, 255, 0.7));
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
-            color: rgba(255, 255, 255, 0.9);
+            width: 3.75rem;
+            height: 3.75rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #fb7185, #22d3ee);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+            color: rgba(255, 255, 255, 0.92);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0.45rem;
+            padding: 0.9rem;
         }
 
         .music-alert-fallback-cover svg,
@@ -676,6 +658,7 @@
         .music-alert-content {
             position: relative;
             z-index: 1;
+            overflow: hidden;
         }
 
         a.music-alert-content {
@@ -690,119 +673,67 @@
         }
 
         .music-alert-label {
-            font-size: 0.55rem;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-            color: rgba(250, 250, 250, 0.8);
-            margin-bottom: 0.12rem;
+            display: none;
         }
 
         .music-alert-title {
-            font-size: 0.73rem;
-            font-weight: 700;
-            line-height: 1.25;
             color: #fff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            line-height: 1.2;
+            margin-bottom: 2px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .music-alert-artist {
-            font-size: 0.62rem;
-            line-height: 1.25;
-            color: rgba(250, 250, 250, 0.82);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+            font-weight: 400;
+            line-height: 1.2;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .music-alert-album {
-            font-size: 0.58rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.75rem;
+            font-style: italic;
+            margin-top: 1px;
             line-height: 1.2;
-            color: rgba(250, 250, 250, 0.7);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            margin-top: 0.1rem;
         }
 
         .music-alert-source {
-            font-size: 0.52rem;
-            line-height: 1.2;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            color: rgba(250, 250, 250, 0.72);
-            margin-top: 0.2rem;
+            display: none;
         }
 
         .music-alert-action {
             position: relative;
             z-index: 1;
-            width: 1.9rem;
-            height: 1.9rem;
-            border: 1px solid rgba(255, 255, 255, 0.34);
-            border-radius: 0;
-            background: rgba(255, 255, 255, 0.14);
-            color: rgba(255, 255, 255, 0.92);
+            width: 1.25rem;
+            height: 1.25rem;
+            color: rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0.45rem;
-        }
-
-        .music-alert-liquid-bar {
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--music-liquid-accent), var(--music-liquid-accent-soft));
-            opacity: 0.9;
-            transform-origin: left center;
-            animation: music-alert-liquid-progress 3s linear 1 forwards;
-            z-index: 2;
+            padding: 0;
         }
 
         body.theme-day .music-alert-toast {
-            border-color: rgba(113, 113, 122, 0.3);
-            background: rgba(0, 0, 0, 0.34);
+            border-color: rgba(113, 113, 122, 0.22);
+            background: rgba(255, 255, 255, 0.62);
             box-shadow:
-                0 10px 22px rgba(9, 9, 11, 0.12),
-                inset 0 1px 0 rgba(255, 255, 255, 0.78);
+                0 12px 26px rgba(9, 9, 11, 0.16),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.52);
         }
 
-        body.theme-day .music-alert-cover,
-        body.theme-day .music-alert-fallback-cover {
-            border-color: rgba(113, 113, 122, 0.28);
-            background: rgba(244, 244, 245, 0.72);
-        }
-
-        body.theme-day .music-alert-action {
-            border-color: rgba(113, 113, 122, 0.3);
-            background: rgba(255, 255, 255, 0.58);
-            color: rgba(39, 39, 42, 0.86);
-        }
-
-        @keyframes music-alert-glass-float {
-            0% {
-                transform: translateX(-4px) translateY(0);
-            }
-            100% {
-                transform: translateX(6px) translateY(-1px);
-            }
-        }
-
-        @keyframes music-alert-liquid-progress {
-            0% {
-                transform: scaleX(1);
-            }
-            100% {
-                transform: scaleX(0);
-            }
-        }
-
-        body.theme-day .music-alert-label {
-            color: rgba(39, 39, 42, 0.72);
+        body.theme-day .music-alert-toast::after {
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.28) 0%, transparent 100%);
         }
 
         body.theme-day .music-alert-title {
@@ -810,12 +741,43 @@
         }
 
         body.theme-day .music-alert-artist {
-            color: rgba(39, 39, 42, 0.76);
+            color: rgba(39, 39, 42, 0.68);
         }
 
-        body.theme-day .music-alert-album,
-        body.theme-day .music-alert-source {
-            color: rgba(39, 39, 42, 0.66);
+        body.theme-day .music-alert-album {
+            color: rgba(39, 39, 42, 0.52);
+        }
+
+        body.theme-day .music-alert-action {
+            color: rgba(39, 39, 42, 0.28);
+        }
+
+        body:not(.theme-day) .music-alert-toast {
+            border-color: rgba(255, 255, 255, 0.22);
+            background: rgba(4, 7, 12, 0.72);
+            box-shadow:
+                0 18px 38px rgba(0, 0, 0, 0.6),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+        }
+
+        body:not(.theme-day) .music-alert-toast::after {
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.09) 0%, transparent 100%);
+        }
+
+        body:not(.theme-day) .music-alert-title {
+            color: rgba(255, 255, 255, 0.96);
+        }
+
+        body:not(.theme-day) .music-alert-artist {
+            color: rgba(255, 255, 255, 0.74);
+        }
+
+        body:not(.theme-day) .music-alert-album {
+            color: rgba(255, 255, 255, 0.56);
+        }
+
+        body:not(.theme-day) .music-alert-action {
+            color: rgba(255, 255, 255, 0.3);
         }
 
         .mobile-nav-hint {
@@ -961,9 +923,7 @@
             }
 
             .lastfm-bars.is-playing .lastfm-bar,
-            #listening-log-card.lastfm-sync-pulse .lastfm-card-content,
-            .music-alert-glass-caustic,
-            .music-alert-liquid-bar {
+            #listening-log-card.lastfm-sync-pulse .lastfm-card-content {
                 animation: none !important;
             }
 
@@ -1143,7 +1103,19 @@
                 </div>
                 <div data-dashboard-card-id="threads" class="grid-item p-6 justify-between"><span class="label">Threads</span><div class="font-medium">@username</div></div>
                 <div data-dashboard-card-id="instagram" class="grid-item p-6 justify-between"><span class="label">Instagram</span><div class="w-full h-full bg-zinc-500/10 border border-zinc-500/20 rounded-sm"></div></div>
-                <div data-dashboard-card-id="strava" class="grid-item p-6 justify-between"><span class="label">Strava</span><div class="text-3xl font-bold text-orange-500 italic mt-auto">12.4k</div></div>
+                <div id="strava-card" data-dashboard-card-id="strava" class="grid-item p-6 justify-between">
+                    <span class="label">Strava</span>
+                    <div class="mt-auto">
+                        <a id="strava-activity-title" class="text-xs font-bold leading-tight hover:text-[var(--accent)]" href="https://www.strava.com" target="_blank" rel="noopener noreferrer">Sincronizando atividade...</a>
+                        <div id="strava-activity-meta" class="text-[10px] uppercase tracking-[0.12em] opacity-65 mt-2">aguardando update</div>
+                        <div id="strava-activity-summary" class="text-[10px] tracking-[0.08em] opacity-80 mt-2">sem dados</div>
+                        <div id="strava-km-total" class="text-3xl font-bold text-orange-500 italic mt-3">0.0 km</div>
+                        <div class="mt-1 flex items-center gap-3 text-[10px] tracking-[0.08em]">
+                            <span id="strava-km-latest" class="text-orange-500/80">ult 0.0 km</span>
+                            <span id="strava-km-week" class="text-orange-500 font-bold">sem 0.0 km</span>
+                        </div>
+                    </div>
+                </div>
                 <div data-dashboard-card-id="youtube" class="grid-item p-6 justify-between"><span class="label">YouTube</span><div class="text-xs font-bold leading-none mt-auto">Ultimo Video</div></div>
                 <div id="listening-log-card" data-dashboard-card-id="lastfm" class="grid-item p-6 justify-between cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-color)]" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="lastfm-day-modal" aria-label="Abrir historico de musicas tocadas hoje">
                     <div id="lastfm-bg" class="lastfm-card-bg" aria-hidden="true"></div>

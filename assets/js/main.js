@@ -12,10 +12,21 @@ const PAGE_TRANSITION_MS = 420;
 const LOADER_MIN_MS = 600;
 const LASTFM_REFRESH_PLAYING_MS = 10000;
 const LASTFM_REFRESH_IDLE_MS = 30000;
-const LASTFM_REFRESH_HIDDEN_MS = 60000;
+const LASTFM_REFRESH_OFFLINE_MS = 180000;
 const LASTFM_REFRESH_ERROR_MS = 45000;
+const LASTFM_REFRESH_ERROR_MAX_MS = 180000;
+const LASTFM_REFRESH_PLAYING_MAX_MS = 60000;
+const LASTFM_REFRESH_IDLE_MAX_MS = 150000;
+const LASTFM_REFRESH_JITTER_MS = 1200;
+const LASTFM_RECENT_LIGHT_LIMIT = 1;
+const LASTFM_RECENT_FULL_LIMIT = 100;
+const LASTFM_FULL_REFRESH_MAX_AGE_MS = 10 * 60 * 1000;
+const LASTFM_FOREGROUND_EVENT_MIN_GAP_MS = 8000;
+const LASTFM_FOREGROUND_EVENT_RETRY_MS = 5000;
 const GITHUB_REFRESH_VISIBLE_MS = 120000;
 const GITHUB_REFRESH_HIDDEN_MS = 300000;
+const STRAVA_REFRESH_VISIBLE_MS = 180000;
+const STRAVA_REFRESH_HIDDEN_MS = 480000;
 const DASHBOARD_REORDER_DEBOUNCE_MS = 180;
 const loaderStartAt = Date.now();
 const CONTACT_TARGET_EMAIL = 'ola@seuemail.com';
@@ -39,6 +50,7 @@ const APP_BASE_PATH = (() => {
 })();
 const LASTFM_ENDPOINT = `${APP_BASE_PATH}/api/lastfm-recent.php`;
 const GITHUB_ENDPOINT = `${APP_BASE_PATH}/api/github-activity.php`;
+const STRAVA_ENDPOINT = `${APP_BASE_PATH}/api/strava-activity.php`;
 const SUPPORTED_LOCALES = ['pt-BR', 'en-US'];
 const DEFAULT_LOCALE = 'pt-BR';
 const I18N_BASE_PATH = 'data/i18n';
@@ -48,12 +60,21 @@ let lastfmSyncTimer = null;
 let lastfmSyncInFlight = false;
 let lastfmTrackSnapshotKey = '';
 let lastfmTrackSnapshotHydrated = false;
+let lastfmAdaptiveUnchangedCycles = 0;
+let lastfmAdaptiveErrorStreak = 0;
+let lastfmAdaptiveTrackKey = '';
+let lastfmAdaptiveNowPlaying = false;
+let lastfmAdaptiveLastFullFetchAt = 0;
+let lastfmLastRequestAt = 0;
+let lastfmNowPlayingStartTs = 0;
+let lastfmNowPlayingStartKey = '';
 let musicAlertHideTimeout = null;
 let musicAlertRemoveTimeout = null;
-let musicAlertGlassSeq = 0;
 let dashboardReorderTimer = null;
 let githubSyncTimer = null;
 let githubSyncInFlight = false;
+let stravaSyncTimer = null;
+let stravaSyncInFlight = false;
 
 const DASHBOARD_CARD_PRIORITY = {
     lastfm: 1,
@@ -381,10 +402,13 @@ function scheduleDashboardCardsReorder() {
     }, DASHBOARD_REORDER_DEBOUNCE_MS);
 }
 
-function markDashboardCardUpdated(cardId, status = 'ok') {
+function markDashboardCardUpdated(cardId, status = 'ok', timestampMs = Date.now()) {
     const card = state.dashboardCards.get(cardId);
     if (!card) return;
-    card.lastUpdatedAt = Date.now();
+    const normalizedTimestamp = Number(timestampMs);
+    card.lastUpdatedAt = Number.isFinite(normalizedTimestamp) && normalizedTimestamp > 0
+        ? normalizedTimestamp
+        : Date.now();
     updateDashboardCardStatusLabel(cardId, status, card.lastUpdatedAt);
     scheduleDashboardCardsReorder();
 }
@@ -1207,6 +1231,11 @@ function renderLastfmDayModal() {
 function openLastfmDayModal() {
     renderLastfmDayModal();
     openModal('lastfm-day-modal');
+
+    const fullRefreshAge = Date.now() - lastfmAdaptiveLastFullFetchAt;
+    if (fullRefreshAge > LASTFM_FULL_REFRESH_MAX_AGE_MS && !lastfmSyncInFlight) {
+        runLastfmSyncCycle({ reason: 'modal-open', forceFullRecent: true, reschedule: false });
+    }
 }
 
 function closeLastfmDayModal() {
@@ -1234,52 +1263,6 @@ function removeMusicAlertToast(toastEl) {
     musicAlertRemoveTimeout = window.setTimeout(() => {
         if (toastEl.parentNode) toastEl.parentNode.removeChild(toastEl);
     }, 240);
-}
-
-function getLiquidAlertPalette(seedSource = '') {
-    const seed = String(seedSource || 'lastfm').toLowerCase();
-    let hash = 0;
-    for (let i = 0; i < seed.length; i += 1) {
-        hash = ((hash << 5) - hash + seed.charCodeAt(i)) | 0;
-    }
-    const baseHue = Math.abs(hash % 360);
-    const accent = `hsl(${baseHue} 86% 66%)`;
-    const accentSoft = `hsl(${(baseHue + 32) % 360} 88% 72%)`;
-    return { accent, accentSoft };
-}
-
-function createMusicAlertGlassSvg() {
-    const ns = 'http://www.w3.org/2000/svg';
-    const seq = ++musicAlertGlassSeq;
-    const gradientA = `musicGlassA${seq}`;
-    const gradientB = `musicGlassB${seq}`;
-    const blurA = `musicGlassBlur${seq}`;
-
-    const svg = document.createElementNS(ns, 'svg');
-    svg.setAttribute('class', 'music-alert-glass-svg');
-    svg.setAttribute('viewBox', '0 0 360 96');
-    svg.setAttribute('preserveAspectRatio', 'none');
-    svg.setAttribute('aria-hidden', 'true');
-    svg.innerHTML = `
-        <defs>
-            <linearGradient id="${gradientA}" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.62"/>
-                <stop offset="52%" stop-color="#ffffff" stop-opacity="0.12"/>
-                <stop offset="100%" stop-color="#ffffff" stop-opacity="0.04"/>
-            </linearGradient>
-            <radialGradient id="${gradientB}" cx="24%" cy="8%" r="62%">
-                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.48"/>
-                <stop offset="58%" stop-color="#ffffff" stop-opacity="0"/>
-            </radialGradient>
-            <filter id="${blurA}" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="6"/>
-            </filter>
-        </defs>
-        <rect class="music-alert-glass-frame" x="1" y="1" width="358" height="94" fill="url(#${gradientA})" stroke="rgba(255,255,255,0.28)" stroke-width="1"/>
-        <ellipse class="music-alert-glass-caustic" cx="82" cy="14" rx="120" ry="24" fill="url(#${gradientB})" filter="url(#${blurA})"/>
-        <path class="music-alert-glass-specular" d="M6 10 H170" fill="none" stroke="rgba(255,255,255,0.52)" stroke-width="1.2"/>
-    `;
-    return svg;
 }
 
 function createMusicAlertGlyph(type = 'play') {
@@ -1311,10 +1294,6 @@ function showMusicAlert(trackName, artistName, albumName, albumArt, trackUrl = '
     toast.dataset.state = nowPlaying ? 'playing' : 'paused';
     toast.setAttribute('role', 'status');
     toast.setAttribute('aria-label', `Agora tocando: ${trackName} por ${artistName || 'artista desconhecido'}${albumName ? ` no album ${albumName}` : ''}`);
-    const palette = getLiquidAlertPalette(`${trackName}${artistName}${albumName}`);
-    toast.style.setProperty('--music-liquid-accent', palette.accent);
-    toast.style.setProperty('--music-liquid-accent-soft', palette.accentSoft);
-    toast.appendChild(createMusicAlertGlassSvg());
 
     if (albumArt) {
         const coverImage = document.createElement('img');
@@ -1373,13 +1352,8 @@ function showMusicAlert(trackName, artistName, albumName, albumArt, trackUrl = '
     const action = document.createElement('div');
     action.className = 'music-alert-action';
     action.setAttribute('aria-hidden', 'true');
-    action.appendChild(createMusicAlertGlyph('play'));
+    action.appendChild(createMusicAlertGlyph('note'));
     toast.appendChild(action);
-
-    const liquidBar = document.createElement('div');
-    liquidBar.className = 'music-alert-liquid-bar';
-    liquidBar.setAttribute('aria-hidden', 'true');
-    toast.appendChild(liquidBar);
 
     const existingToast = alertStack.querySelector('.music-alert-toast');
     if (existingToast) existingToast.remove();
@@ -1411,12 +1385,31 @@ function notifyIfTrackChanged(trackName, artistName, albumName, albumArt, trackU
     showMusicAlert(trackName, artistName, albumName, albumArt, trackUrl, nowPlaying);
 }
 
-async function fetchLastfmRecent() {
+function getLastfmCardUpdateTimestamp(nowPlaying, playedAtUnix, trackKey = '') {
+    const playedAtMs = Number(playedAtUnix) > 0 ? Number(playedAtUnix) * 1000 : 0;
+    if (!nowPlaying) {
+        lastfmNowPlayingStartTs = 0;
+        lastfmNowPlayingStartKey = '';
+        return playedAtMs;
+    }
+
+    if (trackKey && trackKey !== lastfmNowPlayingStartKey) {
+        lastfmNowPlayingStartKey = trackKey;
+        lastfmNowPlayingStartTs = Date.now();
+    }
+    return lastfmNowPlayingStartTs > 0 ? lastfmNowPlayingStartTs : playedAtMs;
+}
+
+async function fetchLastfmRecent(options = {}) {
+    const requestedLimit = Number(options?.recentLimit || LASTFM_RECENT_LIGHT_LIMIT);
+    const recentLimit = Math.max(1, Math.min(LASTFM_RECENT_FULL_LIMIT, requestedLimit));
+    const endpointUrl = new URL(LASTFM_ENDPOINT, window.location.origin);
+    endpointUrl.searchParams.set('limit', String(recentLimit));
     const controller = new AbortController();
     const timeoutId = window.setTimeout(() => controller.abort(), 7000);
 
     try {
-        const response = await fetch(LASTFM_ENDPOINT, {
+        const response = await fetch(endpointUrl.toString(), {
             cache: 'no-store',
             signal: controller.signal
         });
@@ -1426,9 +1419,15 @@ async function fetchLastfmRecent() {
         }
 
         const payload = await response.json();
+        if (payload?.ok === false) {
+            throw new Error(String(payload?.error || 'lastfm_payload_error'));
+        }
         const track = payload?.track;
         const recent = Array.isArray(payload?.recent) ? payload.recent : [];
         state.lastfmRecent = recent;
+        if (recentLimit >= LASTFM_RECENT_FULL_LIMIT) {
+            lastfmAdaptiveLastFullFetchAt = Date.now();
+        }
         if (activeModalId === 'lastfm-day-modal') renderLastfmDayModal();
         const nowPlaying = Boolean(payload?.now_playing);
         const trackName = track?.name || '';
@@ -1437,8 +1436,11 @@ async function fetchLastfmRecent() {
         const albumArt = track?.album_art || '';
         const trackUrl = track?.url || '';
         const playedAtUnix = Number(track?.played_at_unix || 0);
+        const trackKey = getLastfmTrackSnapshotKey(trackName, artistName);
 
         if (!trackName && !artistName) {
+            lastfmNowPlayingStartTs = 0;
+            lastfmNowPlayingStartKey = '';
             updateLastfmCardUi({
                 trackLine: 'Sem escuta recente',
                 statusLabel: 'Idle',
@@ -1448,8 +1450,8 @@ async function fetchLastfmRecent() {
                 albumArt: '',
                 trackUrl: ''
             });
-            markDashboardCardUpdated('lastfm', 'ok');
-            return { ok: true, nowPlaying: false };
+            markDashboardCardUpdated('lastfm', 'ok', lastfmNowPlayingStartTs || Date.now());
+            return { ok: true, nowPlaying: false, trackKey: '', usedLimit: recentLimit };
         }
 
         const statusModel = getLastfmStatusModel(nowPlaying, playedAtUnix);
@@ -1463,8 +1465,13 @@ async function fetchLastfmRecent() {
             trackUrl
         });
         notifyIfTrackChanged(trackName, artistName, albumName, albumArt, trackUrl, nowPlaying);
-        markDashboardCardUpdated('lastfm', 'ok');
-        return { ok: true, nowPlaying };
+        markDashboardCardUpdated('lastfm', 'ok', getLastfmCardUpdateTimestamp(nowPlaying, playedAtUnix, trackKey));
+        return {
+            ok: true,
+            nowPlaying,
+            trackKey,
+            usedLimit: recentLimit
+        };
     } catch (error) {
         console.warn('falha ao sincronizar lastfm:', error.message);
         updateLastfmCardUi({
@@ -1477,7 +1484,7 @@ async function fetchLastfmRecent() {
             trackUrl: ''
         });
         markDashboardCardUpdated('lastfm', 'error');
-        return { ok: false, nowPlaying: false };
+        return { ok: false, nowPlaying: false, trackKey: '', usedLimit: recentLimit };
     } finally {
         window.clearTimeout(timeoutId);
     }
@@ -1535,6 +1542,9 @@ async function fetchGithubActivity() {
         }
 
         const payload = await response.json();
+        if (payload?.ok === false) {
+            throw new Error(String(payload?.error || 'github_payload_error'));
+        }
         const activity = payload?.activity || {};
         const username = payload?.username || 'github';
         const title = String(activity.title || '').trim();
@@ -1608,43 +1618,276 @@ function startGithubRealtimeSync() {
     });
 }
 
+function updateStravaCardUi(model) {
+    const titleEl = document.getElementById('strava-activity-title');
+    const metaEl = document.getElementById('strava-activity-meta');
+    const summaryEl = document.getElementById('strava-activity-summary');
+    const totalKmEl = document.getElementById('strava-km-total');
+    const latestKmEl = document.getElementById('strava-km-latest');
+    const weekKmEl = document.getElementById('strava-km-week');
+    if (!titleEl || !metaEl || !summaryEl || !totalKmEl || !latestKmEl || !weekKmEl) return;
+
+    titleEl.textContent = model.title;
+    titleEl.href = model.url || 'https://www.strava.com';
+    metaEl.textContent = model.meta;
+    summaryEl.textContent = model.summary;
+    const latestKm = Number(model.latestKm || 0);
+    const weekKm = Number(model.weekKm || 0);
+    totalKmEl.textContent = `${(latestKm + weekKm).toFixed(1)} km`;
+    latestKmEl.textContent = `ult ${latestKm.toFixed(1)} km`;
+    weekKmEl.textContent = `sem ${weekKm.toFixed(1)} km`;
+}
+
+function formatStravaDuration(totalSeconds) {
+    const safeSeconds = Math.max(0, Number(totalSeconds) || 0);
+    const hours = Math.floor(safeSeconds / 3600);
+    const minutes = Math.floor((safeSeconds % 3600) / 60);
+    if (hours > 0) return `${hours}h ${String(minutes).padStart(2, '0')}m`;
+    return `${minutes}m`;
+}
+
+async function fetchStravaActivity() {
+    try {
+        const response = await fetch(STRAVA_ENDPOINT, { cache: 'no-store' });
+        if (!response.ok) {
+            throw new Error(`strava endpoint error: ${response.status}`);
+        }
+
+        const payload = await response.json();
+        if (payload?.ok === false) {
+            throw new Error(String(payload?.error || 'strava_payload_error'));
+        }
+
+        const latest = payload?.latest_activity || {};
+        const week = payload?.week || {};
+        const athlete = payload?.athlete || {};
+        const latestName = String(latest?.name || '').trim();
+        const latestType = String(latest?.type || 'atividade').trim();
+        const latestUrl = String(latest?.url || '').trim();
+        const startedAt = String(latest?.start_date_local || '').trim();
+        const startedAgo = getRelativeMinutesLabelFromIso(startedAt);
+        const weekDistanceKm = Number(week?.distance_km || 0);
+        const weekCount = Number(week?.count || 0);
+        const weekMovingTimeSec = Number(week?.moving_time_sec || 0);
+        const latestDistanceKm = Number(latest?.distance_km || 0);
+        const latestMovingTimeSec = Number(latest?.moving_time_sec || 0);
+        const athleteName = String(athlete?.name || '').trim();
+
+        const title = latestName || `Atividade recente${athleteName ? ` de ${athleteName}` : ''}`;
+        const meta = [latestType, startedAgo].filter(Boolean).join(' • ') || 'atividade sincronizada';
+        const summary = weekCount > 0
+            ? `${weekCount} ativ. • ${weekDistanceKm.toFixed(1)} km • ${formatStravaDuration(weekMovingTimeSec)}`
+            : (latestName ? `ultima atividade • ${latestDistanceKm.toFixed(1)} km • ${formatStravaDuration(latestMovingTimeSec)}` : 'sem atividades');
+
+        updateStravaCardUi({
+            title,
+            url: latestUrl || 'https://www.strava.com',
+            meta,
+            summary,
+            latestKm: latestDistanceKm,
+            weekKm: weekDistanceKm
+        });
+
+        const updatedAtMs = Date.parse(startedAt);
+        markDashboardCardUpdated('strava', 'ok', Number.isFinite(updatedAtMs) ? updatedAtMs : Date.now());
+        return { ok: true };
+    } catch (error) {
+        console.warn('falha ao sincronizar strava:', error.message);
+        updateStravaCardUi({
+            title: 'Strava indisponivel',
+            url: 'https://www.strava.com',
+            meta: 'erro de sync',
+            summary: 'verifique credenciais',
+            latestKm: 0,
+            weekKm: 0
+        });
+        markDashboardCardUpdated('strava', 'error');
+        return { ok: false };
+    }
+}
+
+function clearStravaSyncTimer() {
+    if (!stravaSyncTimer) return;
+    window.clearTimeout(stravaSyncTimer);
+    stravaSyncTimer = null;
+}
+
+function getNextStravaSyncDelay() {
+    if (document.visibilityState === 'hidden') {
+        return STRAVA_REFRESH_HIDDEN_MS;
+    }
+    return STRAVA_REFRESH_VISIBLE_MS;
+}
+
+async function runStravaSyncCycle() {
+    if (stravaSyncInFlight) return;
+    stravaSyncInFlight = true;
+    await fetchStravaActivity();
+    stravaSyncInFlight = false;
+
+    clearStravaSyncTimer();
+    stravaSyncTimer = window.setTimeout(runStravaSyncCycle, getNextStravaSyncDelay());
+}
+
+function startStravaRealtimeSync() {
+    clearStravaSyncTimer();
+    runStravaSyncCycle();
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState !== 'visible') return;
+        clearStravaSyncTimer();
+        runStravaSyncCycle();
+    });
+}
+
 function clearLastfmSyncTimer() {
     if (!lastfmSyncTimer) return;
     window.clearTimeout(lastfmSyncTimer);
     lastfmSyncTimer = null;
 }
 
+function withLastfmJitter(delayMs) {
+    const baseDelay = Math.max(1000, Number(delayMs) || LASTFM_REFRESH_IDLE_MS);
+    const jitter = Math.floor(Math.random() * LASTFM_REFRESH_JITTER_MS);
+    return baseDelay + jitter;
+}
+
+function scheduleLastfmSync(delayMs, options = {}) {
+    clearLastfmSyncTimer();
+    lastfmSyncTimer = window.setTimeout(() => {
+        runLastfmSyncCycle({ reason: 'timer', ...options });
+    }, withLastfmJitter(delayMs));
+}
+
+function recordLastfmSyncOutcome(syncResult) {
+    if (!syncResult || !syncResult.ok) {
+        lastfmAdaptiveErrorStreak += 1;
+        return;
+    }
+
+    const nextTrackKey = String(syncResult.trackKey || '');
+    const nextNowPlaying = Boolean(syncResult.nowPlaying);
+    const hasPreviousSample = lastfmAdaptiveTrackKey !== '' || lastfmAdaptiveUnchangedCycles > 0 || lastfmAdaptiveNowPlaying;
+    const isSameTrack = hasPreviousSample
+        && nextTrackKey === lastfmAdaptiveTrackKey
+        && nextNowPlaying === lastfmAdaptiveNowPlaying;
+
+    lastfmAdaptiveUnchangedCycles = isSameTrack ? lastfmAdaptiveUnchangedCycles + 1 : 0;
+    lastfmAdaptiveTrackKey = nextTrackKey;
+    lastfmAdaptiveNowPlaying = nextNowPlaying;
+    lastfmAdaptiveErrorStreak = 0;
+
+    if (Number(syncResult.usedLimit || 0) >= LASTFM_RECENT_FULL_LIMIT) {
+        lastfmAdaptiveLastFullFetchAt = Date.now();
+    }
+}
+
 function getNextLastfmSyncDelay(syncResult) {
-    if (document.visibilityState === 'hidden') {
-        return LASTFM_REFRESH_HIDDEN_MS;
+    if (!navigator.onLine) {
+        return LASTFM_REFRESH_OFFLINE_MS;
     }
 
     if (!syncResult || !syncResult.ok) {
-        return LASTFM_REFRESH_ERROR_MS;
+        const retryFactor = Math.max(0, lastfmAdaptiveErrorStreak - 1);
+        const adaptiveErrorDelay = LASTFM_REFRESH_ERROR_MS * Math.pow(2, Math.min(2, retryFactor));
+        return Math.min(adaptiveErrorDelay, LASTFM_REFRESH_ERROR_MAX_MS);
     }
 
-    return syncResult.nowPlaying ? LASTFM_REFRESH_PLAYING_MS : LASTFM_REFRESH_IDLE_MS;
+    if (syncResult.nowPlaying) {
+        if (lastfmAdaptiveUnchangedCycles >= 10) return LASTFM_REFRESH_PLAYING_MAX_MS;
+        if (lastfmAdaptiveUnchangedCycles >= 6) return 40000;
+        if (lastfmAdaptiveUnchangedCycles >= 3) return 25000;
+        if (lastfmAdaptiveUnchangedCycles >= 1) return 15000;
+        return LASTFM_REFRESH_PLAYING_MS;
+    }
+
+    if (lastfmAdaptiveUnchangedCycles >= 6) return LASTFM_REFRESH_IDLE_MAX_MS;
+    if (lastfmAdaptiveUnchangedCycles >= 3) return 90000;
+    if (lastfmAdaptiveUnchangedCycles >= 1) return 60000;
+    return LASTFM_REFRESH_IDLE_MS;
 }
 
-async function runLastfmSyncCycle() {
+async function runLastfmSyncCycle(options = {}) {
+    const { forceFullRecent = false, reschedule = true, reason = 'timer' } = options;
     if (lastfmSyncInFlight) return;
+
+    if (document.visibilityState === 'hidden' && reason !== 'modal-open') {
+        clearLastfmSyncTimer();
+        return;
+    }
+
+    const isForegroundWakeReason = reason === 'visibility' || reason === 'focus' || reason === 'pageshow' || reason === 'online';
+    if (isForegroundWakeReason) {
+        const elapsedSinceLastRequest = Date.now() - lastfmLastRequestAt;
+        if (elapsedSinceLastRequest > 0 && elapsedSinceLastRequest < LASTFM_FOREGROUND_EVENT_MIN_GAP_MS) {
+            if (reschedule) scheduleLastfmSync(LASTFM_FOREGROUND_EVENT_RETRY_MS);
+            return;
+        }
+    }
+
+    lastfmLastRequestAt = Date.now();
+
+    if (!navigator.onLine) {
+        if (!lastfmTrackSnapshotHydrated) {
+            updateLastfmCardUi({
+                trackLine: 'Last.fm indisponivel',
+                statusLabel: 'Offline',
+                statusClass: 'text-zinc-500',
+                recent: [],
+                nowPlaying: false,
+                albumArt: '',
+                trackUrl: ''
+            });
+            markDashboardCardUpdated('lastfm', 'error');
+        }
+
+        const offlineResult = { ok: false, nowPlaying: false, trackKey: '', usedLimit: 0 };
+        recordLastfmSyncOutcome(offlineResult);
+        if (reschedule) {
+            scheduleLastfmSync(getNextLastfmSyncDelay(offlineResult));
+        }
+        return;
+    }
+
     lastfmSyncInFlight = true;
-    const syncResult = await fetchLastfmRecent();
+    const recentLimit = forceFullRecent || activeModalId === 'lastfm-day-modal'
+        ? LASTFM_RECENT_FULL_LIMIT
+        : LASTFM_RECENT_LIGHT_LIMIT;
+    const syncResult = await fetchLastfmRecent({ recentLimit });
     lastfmSyncInFlight = false;
 
-    const nextDelay = getNextLastfmSyncDelay(syncResult);
-    clearLastfmSyncTimer();
-    lastfmSyncTimer = window.setTimeout(runLastfmSyncCycle, nextDelay);
+    recordLastfmSyncOutcome(syncResult);
+    if (!reschedule) return;
+    scheduleLastfmSync(getNextLastfmSyncDelay(syncResult));
 }
 
 function startLastfmRealtimeSync() {
-    clearLastfmSyncTimer();
-    runLastfmSyncCycle();
+    runLastfmSyncCycle({ reason: 'bootstrap' });
 
     document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState !== 'visible') return;
+        if (document.visibilityState === 'visible') {
+            runLastfmSyncCycle({ reason: 'visibility', forceFullRecent: activeModalId === 'lastfm-day-modal' });
+            return;
+        }
         clearLastfmSyncTimer();
-        runLastfmSyncCycle();
+    });
+
+    window.addEventListener('online', () => {
+        runLastfmSyncCycle({ reason: 'online', forceFullRecent: activeModalId === 'lastfm-day-modal' });
+    });
+
+    window.addEventListener('offline', () => {
+        scheduleLastfmSync(LASTFM_REFRESH_OFFLINE_MS);
+    });
+
+    window.addEventListener('focus', () => {
+        if (document.visibilityState !== 'visible') return;
+        runLastfmSyncCycle({ reason: 'focus' });
+    });
+
+    window.addEventListener('pageshow', (event) => {
+        if (!event.persisted) return;
+        runLastfmSyncCycle({ reason: 'pageshow', forceFullRecent: activeModalId === 'lastfm-day-modal' });
     });
 }
 
@@ -2361,6 +2604,7 @@ async function initApp() {
     await bootstrapContent();
     startLastfmRealtimeSync();
     startGithubRealtimeSync();
+    startStravaRealtimeSync();
     applyRouteFromLocation({ replace: true, track: true });
     handleMobileNavScroll();
     window.addEventListener('scroll', onWindowScroll, { passive: true });

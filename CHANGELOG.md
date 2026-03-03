@@ -62,10 +62,16 @@ Este arquivo segue o padrao Keep a Changelog e versionamento semantico.
 - Card GitHub integrado com sync em tempo real via endpoint server-side (`/api/github-activity.php`), exibindo atividade pública recente (`Push/PR/Issue/Create`), metadata temporal e participação automática na ordenação ao vivo do dashboard.
 - Card GitHub evoluído com contagem de commits da semana atual e mini-grid semanal em verde (7 dias), alimentado por série `week.commits` do endpoint.
 - Card GitHub atualizado para exibir também o último repositório favoritado (com estrela), via novo bloco `starred` no endpoint.
+- Endurecimento da integração GitHub contra falhas upstream/rate limit: endpoint com contrato estável (`ok: false` sem quebrar JSON), cache em arquivo `data/github-activity-cache.json` (TTL 10min) e fallback para cache stale quando disponível.
+- Integracao Last.fm sem cache em arquivo: endpoint voltou para leitura direta da API em tempo real, mantendo contrato de resposta estavel para o frontend.
+- Card Last.fm: `upd HH:MM` agora usa o inicio da faixa (quando disponivel) em vez do horario do polling; sincronizacao ganhou throttle anti-burst em eventos de foco/visibilidade e pausa de polling com aba oculta para reduzir hits sem perder realtime ao voltar.
+- Card Strava integrado com endpoint server-side (`/api/strava-activity.php`): OAuth via refresh token, resumo da semana (atividades/distancia/tempo), ultima atividade com link e sync periodico no dashboard.
+- Card Strava refinado: quando a semana atual nao tem atividades, o destaque de km passa a considerar a ultima atividade registrada; endpoint ganhou cache de payload (`data/strava-activity-cache.json`, TTL 10min) com fallback stale para reduzir falhas por expiracao de acesso.
 - Card `Listening Log` recebeu pass de UX visual: blocos internos com estrutura brutalista (track/visualizer/status), animações sutis de sincronizacao e equalizer em `Now Playing`, com fallback em `prefers-reduced-motion`.
 - Simplificacao visual no card `Listening Log`: boxes internos removidos para manter apenas o conteudo (faixa, barras e status), preservando animacoes e estados.
 - Card `Listening Log` simplificado no status: removidos borda/chip e icone musical, mantendo apenas o texto de estado (`Now Playing`, `Offline`, etc.).
 - Sincronizacao do card `Listening Log` alterada para modo quase em tempo real com polling adaptativo: 10s em `Now Playing`, 30s em idle, 60s com aba em segundo plano e retry de 45s em erro, evitando requests concorrentes.
+- Polling do Last.fm evoluido para backoff adaptativo por estabilidade (aumenta intervalo quando a faixa nao muda), pausa inteligente por visibilidade/rede (`visibilitychange`, `online`, `offline`, `focus`, `pageshow`) e sync leve (`limit=4`) vs completo (`limit=100` no modal), reduzindo hits sem cache persistente e mantendo resposta quase realtime.
 - Alerta em tempo real de troca de musica adicionado: toast glass no canto do rodape com faixa/artista/capa, exibido apenas quando a musica muda e auto-dismiss em 3 segundos.
 - Estetica do toast de troca de musica evoluida para `liquid glass`: refração mais evidente, highlights internos, brilho especular animado e profundidade de vidro com suporte a `prefers-reduced-motion`.
 - Card `Listening Log` agora abre modal com historico das musicas tocadas no dia, agrupando duplicadas por faixa+artista e exibindo contagem por item.
@@ -75,6 +81,9 @@ Este arquivo segue o padrao Keep a Changelog e versionamento semantico.
 - Links de referencia do Last.fm adicionados nos blocos textuais de musica/artista/album: card principal, itens do modal diario e conteudo textual do toast de notificacao.
 - Toast de musica recebeu camada vetorial SVG para liquid glass (caustic/reflexo/borda optica) e icones em SVG, aproximando o visual do padrao Apple sem arredondamentos.
 - Fundo do toast de musica simplificado: gradientes removidos e base alterada para preto translúcido, preservando blur e camadas de vidro.
+- Notificacao de musica alinhada ao layout de `notification_example.html`: estrutura minimal com capa 60x60, tipografia em 3 linhas (musica/artista/album) e icone musical discreto na lateral.
+- Notificacao de musica refinada para dark mode com contraste ampliado: base mais escura/translúcida, reflexo superior calibrado e hierarquia de texto ajustada para leitura em baixa luminosidade.
+- Correcao visual no light mode da notificacao de musica: fundo de vidro mais claro, tipografia em tons escuros e contraste ajustado (mantendo dark mode inalterado).
 
 ### Planned
 - Consolidacao do prototipo HTML com melhorias de acessibilidade e semantica.
