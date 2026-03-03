@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>thierry</title>
+    <title>Thierry Rene Matos - Dashboard Biografico, meu.ponto e Galeria</title>
     <meta name="description" content="Website pessoal de thierry com dashboard biografico, blog meu.ponto e galeria autoral de fotografias e videos.">
     <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex, max-image-preview:none, max-snippet:0, max-video-preview:0">
     <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex, max-image-preview:none, max-snippet:0, max-video-preview:0">
@@ -18,7 +18,7 @@
             --bg-color: #09090b;
             --grid-border: #27272a;
             --text-main: #f4f4f5;
-            --text-label: #71717a;
+            --text-label: #a1a1aa;
             --item-hover: #18181b;
             --accent: #f97316;
             --empty-slot: rgba(24, 24, 27, 0.5);
@@ -50,6 +50,7 @@
             --grid-border: #d4d4d8;
             --text-main: #09090b;
             --text-label: #52525b;
+            --accent: #c2410c;
             --item-hover: #f4f4f5;
             --empty-slot: rgba(228, 228, 231, 0.5);
         }
@@ -536,20 +537,20 @@
     <a id="skip-link" href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:bg-[var(--bg-color)] focus:border focus:border-[var(--grid-border)] focus:px-3 focus:py-2">Pular para o conteudo</a>
     <header class="flex flex-wrap items-stretch w-full sticky top-0 bg-[var(--bg-color)] z-50 border-b border-[var(--grid-border)]">
         <div class="p-4 md:p-6 font-bold tracking-tighter text-base md:text-xl border-r-0 md:border-r border-[var(--grid-border)] flex items-center min-h-[64px]">
-            <a href="#" onclick="showPage('dashboard')" class="hover:text-[var(--accent)] transition-colors">thierry</a>
+            <a href="#" data-page="dashboard" class="hover:text-[var(--accent)] transition-colors">thierry</a>
         </div>
         <nav aria-label="Navegacao principal" class="order-3 md:order-none w-full md:w-auto flex-grow flex items-center gap-4 md:gap-8 px-4 md:px-10 py-3 md:py-0 border-t md:border-t-0 border-[var(--grid-border)] overflow-x-auto whitespace-nowrap">
-            <a href="#" onclick="showPage('dashboard')" id="nav-dashboard" class="label nav-link mb-0 hover:text-[var(--text-main)] transition-colors active-nav">Dashboard</a>
-            <a href="#" onclick="showPage('sobre')" id="nav-sobre" class="label nav-link mb-0 hover:text-[var(--text-main)] transition-colors">Sobre</a>
-            <a href="#" onclick="showPage('fotografias')" id="nav-fotografias" class="label nav-link mb-0 hover:text-[var(--text-main)] transition-colors">Fotografias</a>
-            <a href="#" onclick="showPage('blog')" id="nav-blog" class="label nav-link mb-0 hover:text-[var(--text-main)] transition-colors">Blog</a>
-            <a href="#" onclick="showPage('contato')" id="nav-contato" class="label nav-link mb-0 hover:text-[var(--text-main)] transition-colors">Contato</a>
+            <a href="#" data-page="dashboard" id="nav-dashboard" class="label nav-link mb-0 hover:text-[var(--text-main)] transition-colors active-nav">Dashboard</a>
+            <a href="#" data-page="sobre" id="nav-sobre" class="label nav-link mb-0 hover:text-[var(--text-main)] transition-colors">Sobre</a>
+            <a href="#" data-page="fotografias" id="nav-fotografias" class="label nav-link mb-0 hover:text-[var(--text-main)] transition-colors">Fotografias</a>
+            <a href="#" data-page="blog" id="nav-blog" class="label nav-link mb-0 hover:text-[var(--text-main)] transition-colors">Blog</a>
+            <a href="#" data-page="contato" id="nav-contato" class="label nav-link mb-0 hover:text-[var(--text-main)] transition-colors">Contato</a>
         </nav>
         <div class="mobile-nav-hint" aria-hidden="true"></div>
         <div class="ml-auto flex items-stretch">
-            <button id="lang-pt" type="button" class="lang-toggle-btn p-4 md:p-6 min-h-[64px] border-l border-[var(--grid-border)] hover:bg-[var(--item-hover)] transition-colors flex items-center justify-center" onclick="setLocale('pt-BR')" aria-label="Alterar idioma para portugues" aria-pressed="true">PT</button>
-            <button id="lang-en" type="button" class="lang-toggle-btn p-4 md:p-6 min-h-[64px] border-l border-[var(--grid-border)] hover:bg-[var(--item-hover)] transition-colors flex items-center justify-center" onclick="setLocale('en-US')" aria-label="Switch language to English" aria-pressed="false">EN</button>
-            <button id="theme-toggle" onclick="toggleThemeManual()" aria-label="Alternar tema claro e escuro" class="p-4 md:p-6 min-h-[64px] border-l border-[var(--grid-border)] hover:bg-[var(--item-hover)] transition-colors flex items-center justify-center">
+            <button id="lang-pt" type="button" data-locale="pt-BR" class="lang-toggle-btn p-4 md:p-6 min-h-[64px] border-l border-[var(--grid-border)] hover:bg-[var(--item-hover)] transition-colors flex items-center justify-center" aria-label="Alterar idioma para portugues" aria-pressed="true">PT</button>
+            <button id="lang-en" type="button" data-locale="en-US" class="lang-toggle-btn p-4 md:p-6 min-h-[64px] border-l border-[var(--grid-border)] hover:bg-[var(--item-hover)] transition-colors flex items-center justify-center" aria-label="Switch language to English" aria-pressed="false">EN</button>
+            <button id="theme-toggle" type="button" aria-label="Alternar tema claro e escuro" class="p-4 md:p-6 min-h-[64px] border-l border-[var(--grid-border)] hover:bg-[var(--item-hover)] transition-colors flex items-center justify-center">
                 <svg class="w-5 h-5 block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path class="sun-icon hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
                     <path class="moon-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
@@ -559,7 +560,7 @@
     </header>
 
     <main id="main-content" class="relative flex-grow p-4 md:p-12">
-        <div id="page-dashboard" class="page-content page-shell active">
+        <section id="page-dashboard" class="page-content page-shell active" aria-labelledby="hero-title">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-5 dashboard-grid">
                 <div class="grid-item dashboard-hero md:col-span-2 md:row-span-2 p-6 md:p-8 justify-between">
                     <div>
@@ -592,9 +593,9 @@
                 <div class="grid-item grid-slot-empty p-6 bg-[var(--empty-slot)]"><span class="label">Goodreads</span></div>
                 <div class="grid-item grid-slot-empty p-6 bg-[var(--empty-slot)]"><span class="label">ProductHunt</span></div>
             </div>
-        </div>
+        </section>
 
-        <div id="page-sobre" class="page-content page-shell">
+        <section id="page-sobre" class="page-content page-shell" aria-labelledby="about-title">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-3">
                 <div class="grid-item md:col-span-3 p-6 md:p-12 lg:p-16 aspect-auto md:aspect-auto">
                     <span id="about-label" class="label">Sobre</span>
@@ -650,20 +651,20 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div id="page-fotografias" class="page-content page-shell">
+        <section id="page-fotografias" class="page-content page-shell" aria-labelledby="photos-title">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-4">
                 <div class="grid-item md:col-span-4 p-6 md:p-12 lg:p-16 aspect-auto md:aspect-auto">
                     <span class="label">Fotografias</span>
-                    <h2 class="text-4xl md:text-6xl font-bold tracking-tighter leading-none mb-8">acervo pessoal</h2>
+                    <h2 id="photos-title" class="text-4xl md:text-6xl font-bold tracking-tighter leading-none mb-8">acervo pessoal</h2>
                     <p class="text-lg md:text-xl opacity-80 max-w-4xl leading-relaxed">
                         Esta secao centraliza minhas fotografias pessoais no meu proprio website.
                         A proposta e publicar ensaios, registros de rotina e viagens sem depender de redes sociais como plataforma principal.
                     </p>
                 </div>
 
-                <div class="grid-item md:col-span-4 p-8 md:p-10 aspect-auto md:aspect-auto">
+                <div class="grid-item md:col-span-4 p-6 md:p-10 aspect-auto md:aspect-auto">
                     <span class="label">Filtros</span>
                     <div class="flex flex-col gap-6">
                         <div class="flex flex-wrap gap-3 items-center" id="photo-essay-filters"></div>
@@ -673,9 +674,9 @@
 
                 <div id="photo-grid" class="contents"></div>
             </div>
-        </div>
+        </section>
 
-        <div id="page-blog" class="page-content page-shell">
+        <section id="page-blog" class="page-content page-shell" aria-labelledby="blog-hero-title">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-3">
                 <div class="grid-item p-6 md:p-12 md:col-span-3 aspect-auto md:aspect-auto">
                     <span id="blog-hero-label" class="label">meu.ponto - meu ponto de vista</span>
@@ -683,12 +684,12 @@
                 </div>
                 <div id="blog-list" class="contents"></div>
             </div>
-        </div>
+        </section>
 
-        <div id="page-post" class="page-content page-shell">
+        <section id="page-post" class="page-content page-shell" aria-labelledby="post-title">
             <div class="brutalist-container">
                 <div class="grid-item p-6 md:p-12 lg:p-20 aspect-auto md:aspect-auto">
-                    <button id="post-back-button" onclick="showPage('blog')" class="label hover:text-[var(--accent)] transition-colors mb-12 flex items-center gap-2">
+                    <button id="post-back-button" type="button" data-page="blog" class="label hover:text-[var(--accent)] transition-colors mb-12 flex items-center gap-2">
                         <- Voltar para o blogue
                     </button>
                     <span id="post-meta" class="label text-[var(--accent)]">Data - Categoria</span>
@@ -697,7 +698,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-4">
                     <div class="grid-item md:col-span-3 p-6 md:p-12 lg:p-20 aspect-auto md:aspect-auto post-body">
-                        <div class="w-full h-64 bg-zinc-500/10 border border-zinc-500/20 mb-12 flex items-center justify-center italic opacity-30">
+                        <div id="post-cover" class="w-full h-64 bg-zinc-500/10 border border-zinc-500/20 mb-12 flex items-center justify-center italic opacity-30">
                             capa de artigo
                         </div>
                         <div id="post-body-content"></div>
@@ -706,9 +707,9 @@
                     <div class="grid-item p-6 md:p-12 aspect-auto md:aspect-auto">
                         <span id="post-share-label" class="label mb-6">Partilhar</span>
                         <div class="flex flex-col gap-4">
-                            <a href="#" class="text-xs font-bold hover:text-[var(--accent)]">X / Twitter</a>
-                            <a href="#" class="text-xs font-bold hover:text-[var(--accent)]">LinkedIn</a>
-                            <a href="#" class="text-xs font-bold hover:text-[var(--accent)]">Threads</a>
+                            <button type="button" data-share-platform="x" class="text-left text-xs font-bold hover:text-[var(--accent)]">X / Twitter</button>
+                            <button type="button" data-share-platform="linkedin" class="text-left text-xs font-bold hover:text-[var(--accent)]">LinkedIn</button>
+                            <button type="button" data-share-platform="threads" class="text-left text-xs font-bold hover:text-[var(--accent)]">Threads</button>
                         </div>
 
                         <div class="mt-10 md:mt-20">
@@ -718,9 +719,9 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div id="page-contato" class="page-content page-shell">
+        <section id="page-contato" class="page-content page-shell" aria-labelledby="contact-section-title">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-3">
                 <div class="grid-item md:col-span-3 p-6 md:p-10 aspect-auto md:aspect-auto">
                     <span id="contact-section-label" class="label">Contato</span>
@@ -729,7 +730,7 @@
                 </div>
 
                 <div class="grid-item md:col-span-2 p-6 md:p-10 aspect-auto md:aspect-auto">
-                    <form id="contact-form" class="space-y-5" onsubmit="handleContactSubmit(event)" novalidate>
+                    <form id="contact-form" class="space-y-5" novalidate>
                         <input type="text" name="company_website" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
 
                         <div>
@@ -779,7 +780,7 @@
                         </div>
                         <div class="contact-meta">
                             <div id="contact-direct-linkedin-label" class="text-[10px] uppercase tracking-[0.2em] opacity-60 mb-2">LinkedIn</div>
-                            <a class="hover:text-[var(--accent)] break-all" href="#" aria-label="LinkedIn perfil">linkedin.com/in/usuario</a>
+                            <a class="hover:text-[var(--accent)] break-all" href="https://linkedin.com/in/usuario" aria-label="LinkedIn perfil">linkedin.com/in/usuario</a>
                         </div>
                         <div class="contact-meta">
                             <div id="contact-direct-sla-label" class="text-[10px] uppercase tracking-[0.2em] opacity-60 mb-2">SLA</div>
@@ -788,7 +789,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     </main>
 
     <footer class="brutalist-container site-footer grid grid-cols-1 md:grid-cols-2 mt-auto">
@@ -796,14 +797,15 @@
         <div id="footer-right" class="ui-card footer-cell footer-cell-right">de 2009 até hoje</div>
     </footer>
 
-    <div id="comments-modal" class="modal-hidden fixed inset-0 z-[100] bg-black/70 p-4 md:p-10" role="dialog" aria-modal="true" aria-label="Modal de comentarios">
+    <div id="comments-modal" class="modal-hidden fixed inset-0 z-[100] bg-black/70 p-4 md:p-10" role="dialog" aria-modal="true" aria-labelledby="comments-modal-title">
         <div class="max-w-3xl mx-auto border border-[var(--grid-border)] bg-[var(--bg-color)]">
             <div class="p-6 border-b border-[var(--grid-border)] flex items-center justify-between">
                 <h3 id="comments-modal-title" class="text-lg font-bold">Comentarios</h3>
-                <button id="comments-modal-close" class="ui-btn" onclick="closeCommentsModal()">fechar</button>
+                <button id="comments-modal-close" type="button" class="ui-btn">fechar</button>
             </div>
             <div class="p-6 space-y-4 max-h-[60vh] overflow-auto" id="comments-list"></div>
-            <form class="p-6 border-t border-[var(--grid-border)]" onsubmit="submitComment(event)">
+            <form id="comments-form" class="p-6 border-t border-[var(--grid-border)]">
+                <label for="comment-input" class="sr-only">Comentario</label>
                 <input type="text" id="comment-input" class="w-full p-3 bg-transparent border border-[var(--grid-border)] text-sm" placeholder="Escreva um comentario curto" required>
                 <div class="mt-4 flex justify-end">
                     <button id="comments-submit" type="submit" class="ui-btn">Publicar</button>
@@ -812,13 +814,13 @@
         </div>
     </div>
 
-    <div id="message-modal" class="modal-hidden fixed inset-0 z-[100] bg-black/70 p-4 md:p-10" role="dialog" aria-modal="true" aria-label="Modal de mensagem privada">
+    <div id="message-modal" class="modal-hidden fixed inset-0 z-[100] bg-black/70 p-4 md:p-10" role="dialog" aria-modal="true" aria-labelledby="message-modal-title" aria-describedby="message-modal-help">
         <div class="max-w-3xl mx-auto border border-[var(--grid-border)] bg-[var(--bg-color)]">
             <div class="p-6 border-b border-[var(--grid-border)] flex items-center justify-between">
                 <h3 id="message-modal-title" class="text-lg font-bold">Mensagem privada</h3>
-                <button id="message-modal-close" class="ui-btn" onclick="closeMessageModal()">fechar</button>
+                <button id="message-modal-close" type="button" class="ui-btn">fechar</button>
             </div>
-            <form class="p-6" onsubmit="submitPrivateMessage(event)">
+            <form id="message-form" class="p-6">
                 <p id="message-modal-help" class="text-xs opacity-70 mb-4">Interacao local para prototipo de UX. Em CMS real, isso deve usar backend autenticado.</p>
                 <textarea id="message-input" class="w-full min-h-40 p-3 bg-transparent border border-[var(--grid-border)] text-sm" placeholder="Escreva sua mensagem privada" required></textarea>
                 <div class="mt-4 flex justify-end">

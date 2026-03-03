@@ -6,6 +6,20 @@ Este arquivo segue o padrao Keep a Changelog e versionamento semantico.
 
 ## [Unreleased]
 ### Changed
+- Correcao de seguranca e desacoplamento no frontend: remocao de handlers inline (`onclick`/`onsubmit`/`onerror`) do HTML e migracao para `addEventListener` em `assets/js/main.js`.
+- Persistencia do override manual de tema via `localStorage` (`thierry.theme.v1`), com restauracao automatica na inicializacao.
+- Mitigacao de XSS em renderizacoes dinamicas (comentarios e conteudo de post) com montagem via DOM API/texto e escape de interpolacoes HTML.
+- Acessibilidade melhorada nos cards do blog: suporte de teclado (`Enter`/`Espaco`) e semantica interativa (`role="button"`, `tabindex="0"`).
+- Wrappers principais de pagina atualizados para `<section>` com `aria-labelledby`, reforcando semantica estrutural.
+- Ajustes de UI para conformidade: `title` descritivo, bloco de filtros com padding mobile revisado (`p-6 md:p-10`) e token de contraste do tema claro para `--accent`.
+- `data/media-map.json` alinhado ao schema de conteudo com adicao de `slug` e `status` nos itens existentes.
+- Loader inicial reduzido para minimizar atraso artificial de exibicao (`LOADER_MIN_MS` de 2000ms para 600ms).
+- UX pass de interacoes do post e modais: acoes de compartilhamento passaram para botoes com handlers dedicados e links placeholder foram removidos.
+- Acessibilidade dos dialogs refinada com `aria-labelledby`/`aria-describedby` e label explicita no campo de comentario.
+- Corrigida condicao de corrida na troca de idioma com controle de requisicao ativa (`localeRequestId`), evitando sobrescrita por resposta antiga.
+- Restauracao de foco de modais robustecida com fallback para controles da foto e fallback final em `#photo-grid`.
+- Pagina de post passa a consumir capa de `data/media-map.json` (owner `post`) com fallback visual quando ausente/erro.
+- i18n atualizado com novas chaves `blog.open_post` e `post.cover_fallback` em `pt-BR` e `en-US`.
 - Especificacao tecnica revisada para oficializar a stack atual: HTML + Tailwind via CDN + JavaScript puro.
 - Remocao de requisitos prematuros (Astro, ilhas, server:defer, Content Collections, Astro Actions e Edge Functions) do escopo atual.
 - README e playbook de agentes alinhados com a estrategia de simplicidade da fase atual.

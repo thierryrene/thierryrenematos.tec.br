@@ -58,6 +58,7 @@
       "label": "meu.ponto - meu ponto de vista",
       "title": "Writing & Thoughts"
     },
+    "open_post": "Abrir post",
     "read_article": "Ler Artigo ->",
     "empty": {
       "label": "Sem posts",
@@ -67,7 +68,8 @@
   "post": {
     "back": "<- Voltar para o blogue",
     "share": "Partilhar",
-    "related": "Relacionados"
+    "related": "Relacionados",
+    "cover_fallback": "capa de artigo"
   },
   "photos": {
     "filter": {

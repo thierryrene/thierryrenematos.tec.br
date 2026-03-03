@@ -1,6 +1,7 @@
 [
   {
     "id": "media_blog_cover_default",
+    "slug": "media-blog-cover-default",
     "owner_type": "post",
     "owner_id": "post_2026_02_bento-grids",
     "path": "assets/img/blog/.gitkeep",
@@ -9,10 +10,12 @@
     "caption": "Placeholder para capa de post",
     "credit": "Arquivo pessoal",
     "created_at": "2026-02-17",
-    "updated_at": "2026-02-17"
+    "updated_at": "2026-02-17",
+    "status": "published"
   },
   {
     "id": "media_photo_2026_ensaio_01_001",
+    "slug": "media-photo-2026-ensaio-01-001",
     "owner_type": "photo",
     "owner_id": "photo_2026_ensaio_01_001",
     "path": "assets/img/fotografias/.gitkeep",
@@ -21,6 +24,7 @@
     "caption": "Cidade em contraste",
     "credit": "thierry",
     "created_at": "2026-02-17",
-    "updated_at": "2026-02-17"
+    "updated_at": "2026-02-17",
+    "status": "published"
   }
 ]

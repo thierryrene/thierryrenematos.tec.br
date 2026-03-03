@@ -58,6 +58,7 @@
       "label": "meu.ponto - my point of view",
       "title": "Writing & Thoughts"
     },
+    "open_post": "Open post",
     "read_article": "Read Article ->",
     "empty": {
       "label": "No posts",
@@ -67,7 +68,8 @@
   "post": {
     "back": "<- Back to blog",
     "share": "Share",
-    "related": "Related"
+    "related": "Related",
+    "cover_fallback": "article cover"
   },
   "photos": {
     "filter": {

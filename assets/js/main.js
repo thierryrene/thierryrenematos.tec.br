@@ -5,8 +5,10 @@ let lastScrollY = 0;
 let scrollTicking = false;
 let activeModalId = null;
 let lastFocusedElement = null;
+let lastFocusFallbackSelector = '';
+let localeRequestId = 0;
 const PAGE_TRANSITION_MS = 420;
-const LOADER_MIN_MS = 2000;
+const LOADER_MIN_MS = 600;
 const loaderStartAt = Date.now();
 const CONTACT_TARGET_EMAIL = 'ola@seuemail.com';
 const SUPPORTED_LOCALES = ['pt-BR', 'en-US'];
@@ -19,7 +21,8 @@ const storageKeys = {
     likes: 'thierry.likes.v1',
     comments: 'thierry.comments.v1',
     messages: 'thierry.messages.v1',
-    locale: 'thierry.locale.v1'
+    locale: 'thierry.locale.v1',
+    theme: 'thierry.theme.v1'
 };
 
 const FALLBACK_DATA = {
@@ -251,14 +254,27 @@ function t(key, fallback = '') {
     return translated === undefined || translated === null ? fallback : String(translated);
 }
 
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+}
+
+function escapeAttr(value) {
+    return escapeHtml(value).replaceAll('`', '&#96;');
+}
+
 async function loadLocaleMessages(locale) {
     try {
         const response = await fetch(`${I18N_BASE_PATH}/${locale}.json`, { cache: 'no-store' });
         if (!response.ok) throw new Error(`falha i18n ${locale}`);
-        localeMessages = await response.json();
+        return await response.json();
     } catch (error) {
         console.warn('erro ao carregar traducoes, mantendo texto atual:', error.message);
-        localeMessages = {};
+        return {};
     }
 }
 
@@ -268,10 +284,16 @@ function setText(selector, key, fallback = '') {
     element.textContent = t(key, fallback);
 }
 
-function setHTML(selector, key, fallback = '') {
+function setMultilineTextWithBr(selector, key, fallback = '') {
     const element = document.querySelector(selector);
     if (!element) return;
-    element.innerHTML = t(key, fallback);
+    const value = t(key, fallback);
+    const lines = String(value).split(/<br\s*\/?>/gi);
+    element.innerHTML = '';
+    lines.forEach((line, index) => {
+        if (index > 0) element.appendChild(document.createElement('br'));
+        element.appendChild(document.createTextNode(line));
+    });
 }
 
 function setPlaceholder(selector, key, fallback = '') {
@@ -308,7 +330,7 @@ function applyLocaleToStaticContent() {
     setText('#nav-contato', 'nav.contact', 'Contato');
 
     setText('#hero-label', 'hero.label', 'Informacoes');
-    setHTML('#hero-title', 'hero.title_html', 'Designer, developer e<br>observador da vida.<br>Construo meu.ponto.');
+    setMultilineTextWithBr('#hero-title', 'hero.title_html', 'Designer, developer e<br>observador da vida.<br>Construo meu.ponto.');
     setText('#time-status', 'theme.status.syncing', 'Syncing...');
 
     setText('#about-label', 'about.label', 'Sobre');
@@ -389,9 +411,13 @@ function applyLocaleToStaticContent() {
 async function setLocale(locale, options = {}) {
     const normalized = normalizeLocale(locale);
     if (!SUPPORTED_LOCALES.includes(normalized)) return;
-    currentLocale = normalized;
 
-    await loadLocaleMessages(currentLocale);
+    const requestId = ++localeRequestId;
+    const messages = await loadLocaleMessages(normalized);
+    if (requestId !== localeRequestId) return;
+
+    currentLocale = normalized;
+    localeMessages = messages;
     applyLocaleToStaticContent();
     updateLocaleButtons();
 
@@ -553,6 +579,11 @@ function openModal(modalId) {
     }
 
     lastFocusedElement = document.activeElement;
+    if (lastFocusedElement?.dataset?.photoId && lastFocusedElement?.dataset?.action) {
+        lastFocusFallbackSelector = `[data-action="${lastFocusedElement.dataset.action}"][data-photo-id="${lastFocusedElement.dataset.photoId}"]`;
+    } else {
+        lastFocusFallbackSelector = '';
+    }
     modal.classList.remove('modal-hidden');
     document.body.classList.add('modal-open');
     activeModalId = modalId;
@@ -579,8 +610,25 @@ function closeModal(modalId, options = { restoreFocus: true }) {
         activeModalId = stillOpen.id;
     }
 
-    if (options.restoreFocus && lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
-        lastFocusedElement.focus();
+    if (options.restoreFocus) {
+        if (lastFocusedElement && lastFocusedElement.isConnected && typeof lastFocusedElement.focus === 'function') {
+            lastFocusedElement.focus();
+            return;
+        }
+
+        if (lastFocusFallbackSelector) {
+            const fallbackTarget = document.querySelector(lastFocusFallbackSelector);
+            if (fallbackTarget && typeof fallbackTarget.focus === 'function') {
+                fallbackTarget.focus();
+                return;
+            }
+        }
+
+        const photoGrid = document.getElementById('photo-grid');
+        if (photoGrid) {
+            photoGrid.setAttribute('tabindex', '-1');
+            photoGrid.focus();
+        }
     }
 }
 
@@ -677,9 +725,8 @@ function createFilterButton(group, value, label, isActive) {
             type="button"
             data-filter-group="${group}"
             data-filter-value="${value}"
-            onclick="setPhotoFilter('${group}', '${value}')"
             class="ui-btn ${isActive ? 'bg-[var(--item-hover)]' : ''}">
-            ${label}
+            ${escapeHtml(label)}
         </button>
     `;
 }
@@ -691,13 +738,13 @@ function renderPhotoFilters() {
     const years = [...new Set(getPublishedPhotos().map((photo) => String(photo.year)))].sort((a, b) => Number(b) - Number(a));
 
     const essayButtons = [
-        `<span class="text-[10px] uppercase tracking-[0.2em] opacity-60">${t('photos.filter.essay', 'Ensaio')}</span>`,
+        `<span class="text-[10px] uppercase tracking-[0.2em] opacity-60">${escapeHtml(t('photos.filter.essay', 'Ensaio'))}</span>`,
         createFilterButton('essay', 'all', t('photos.filter.all', 'Todos'), state.photoFilters.essay === 'all'),
         ...essays.map((essay) => createFilterButton('essay', essay.id, essay.name, state.photoFilters.essay === essay.id))
     ];
 
     const yearButtons = [
-        `<span class="text-[10px] uppercase tracking-[0.2em] opacity-60">${t('photos.filter.year', 'Ano')}</span>`,
+        `<span class="text-[10px] uppercase tracking-[0.2em] opacity-60">${escapeHtml(t('photos.filter.year', 'Ano'))}</span>`,
         createFilterButton('year', 'all', t('photos.filter.all', 'Todos'), state.photoFilters.year === 'all'),
         ...years.map((year) => createFilterButton('year', year, year, state.photoFilters.year === year))
     ];
@@ -736,41 +783,60 @@ function renderPhotoCard(photo, large = false) {
     const mediaLabel = mediaType === 'video'
         ? t('photos.media.video_placeholder', 'video placeholder ▶')
         : t('photos.media.image_placeholder', 'foto placeholder');
-    const imageAlt = photo.alt || photo.title || t('photos.media.alt_fallback', 'Midia da galeria');
+    const mediaEntry = state.mediaMap.find((entry) => entry.owner_type === 'photo' && entry.owner_id === photo.id);
+    const imageSrc = mediaEntry?.path || photo.image || '';
+    const imageAlt = mediaEntry?.alt || photo.alt || photo.title || t('photos.media.alt_fallback', 'Midia da galeria');
+    const mediaCaption = mediaEntry?.caption || photo.description || '';
+    const mediaCredit = mediaEntry?.credit || '';
+    const metaParts = [`${essay ? essay.name : t('photos.filter.essay', 'Ensaio')} - ${photo.year} - ${mediaType}`];
+    if (mediaCredit) metaParts.push(`credit: ${mediaCredit}`);
+    const escapedPostId = escapeAttr(photo.id);
+    const escapedImageSrc = escapeAttr(imageSrc);
+    const escapedImageAlt = escapeAttr(imageAlt);
     const mediaBlock = mediaType === 'image'
         ? `
             <div class="relative w-full ${imageHeight} bg-zinc-500/10 border border-zinc-500/20 mb-6 overflow-hidden">
-                <img src="${photo.image || ''}" alt="${imageAlt}" loading="lazy" decoding="async" class="w-full h-full object-cover"
-                    onerror="this.style.display='none'; this.parentElement.querySelector('[data-fallback]').style.display='flex';">
+                <img data-photo-media="true" src="${escapedImageSrc}" alt="${escapedImageAlt}" loading="lazy" decoding="async" class="w-full h-full object-cover">
                 <div data-fallback class="absolute inset-0 hidden items-center justify-center text-[10px] uppercase tracking-[0.2em] opacity-50">
-                    ${mediaLabel}
+                    ${escapeHtml(mediaLabel)}
                 </div>
             </div>
         `
         : `
             <div class="w-full ${imageHeight} bg-zinc-500/10 border border-zinc-500/20 mb-6 flex items-center justify-center text-[10px] uppercase tracking-[0.2em] opacity-50">
-                ${mediaLabel}
+                ${escapeHtml(mediaLabel)}
             </div>
         `;
 
     return `
-        <article class="grid-item photo-item ${colSpan} p-6 md:p-10 aspect-auto md:aspect-auto justify-between" data-photo-id="${photo.id}">
+        <article class="grid-item photo-item ${colSpan} p-6 md:p-10 aspect-auto md:aspect-auto justify-between" data-photo-id="${escapedPostId}">
             <div>
-                <span class="label">${essay ? essay.name : t('photos.filter.essay', 'Ensaio')} - ${photo.year} - ${mediaType}</span>
+                <span class="label">${escapeHtml(metaParts.join(' - '))}</span>
                 ${mediaBlock}
-                <h3 class="${titleSize} font-bold mb-3">${photo.title}</h3>
-                <p class="text-sm opacity-70">${photo.description}</p>
+                <h3 class="${titleSize} font-bold mb-3">${escapeHtml(photo.title)}</h3>
+                <p class="text-sm opacity-70">${escapeHtml(mediaCaption)}</p>
             </div>
             <div class="mt-6 pt-4 border-t border-[var(--grid-border)] flex flex-wrap items-center gap-4">
-                <button type="button" onclick="togglePhotoLike('${photo.id}')" class="icon-btn" title="${t('actions.like', 'Curtir')}" aria-label="${t('actions.like_photo', 'Curtir foto')}">${likeEmoji}</button>
+                <button type="button" data-action="toggle-like" data-photo-id="${escapedPostId}" class="icon-btn" title="${escapeAttr(t('actions.like', 'Curtir'))}" aria-label="${escapeAttr(t('actions.like_photo', 'Curtir foto'))}">${likeEmoji}</button>
                 <span class="text-[10px] uppercase tracking-[0.2em] opacity-60 mr-2">${likeModel.count}</span>
-                <button type="button" onclick="openCommentsModal('${photo.id}')" class="icon-btn" title="${t('actions.comments', 'Comentarios')}" aria-label="${t('actions.open_comments', 'Abrir comentarios')}">💬</button>
+                <button type="button" data-action="open-comments" data-photo-id="${escapedPostId}" class="icon-btn" title="${escapeAttr(t('actions.comments', 'Comentarios'))}" aria-label="${escapeAttr(t('actions.open_comments', 'Abrir comentarios'))}">💬</button>
                 <span class="text-[10px] uppercase tracking-[0.2em] opacity-60 mr-2">${comments.length}</span>
-                <button type="button" onclick="openMessageModal('${photo.id}')" class="icon-btn" title="${t('actions.private_message', 'Mensagem privada')}" aria-label="${t('actions.send_private_message', 'Enviar mensagem privada')}">✉️</button>
+                <button type="button" data-action="open-message" data-photo-id="${escapedPostId}" class="icon-btn" title="${escapeAttr(t('actions.private_message', 'Mensagem privada'))}" aria-label="${escapeAttr(t('actions.send_private_message', 'Enviar mensagem privada'))}">✉️</button>
                 <span class="text-[10px] uppercase tracking-[0.2em] opacity-60">${messages.length}</span>
             </div>
         </article>
     `;
+}
+
+function wirePhotoMediaFallback() {
+    const images = document.querySelectorAll('img[data-photo-media]');
+    images.forEach((image) => {
+        image.addEventListener('error', () => {
+            image.style.display = 'none';
+            const fallback = image.parentElement?.querySelector('[data-fallback]');
+            if (fallback) fallback.style.display = 'flex';
+        }, { once: true });
+    });
 }
 
 function renderPhotoGrid() {
@@ -792,6 +858,7 @@ function renderPhotoGrid() {
     }
 
     root.innerHTML = photos.map((photo, index) => renderPhotoCard(photo, index === 0)).join('');
+    wirePhotoMediaFallback();
 }
 
 function setPhotoFilter(group, value) {
@@ -828,21 +895,31 @@ function closeCommentsModal() {
 function renderCommentsModal() {
     const list = document.getElementById('comments-list');
     const comments = getPhotoComments(activePhotoId);
+    list.innerHTML = '';
+
     if (!comments.length) {
-        list.innerHTML = `<p class="text-sm opacity-70">${t('modals.comments.empty', 'Sem comentarios ainda. Seja a primeira pessoa a comentar.')}</p>`;
+        const empty = document.createElement('p');
+        empty.className = 'text-sm opacity-70';
+        empty.textContent = t('modals.comments.empty', 'Sem comentarios ainda. Seja a primeira pessoa a comentar.');
+        list.appendChild(empty);
         return;
     }
 
-    list.innerHTML = comments
-        .slice()
-        .reverse()
-        .map((comment) => `
-            <div class="border border-[var(--grid-border)] p-4">
-                <div class="text-[10px] uppercase tracking-[0.2em] opacity-60 mb-2">${formatDate(comment.created_at)}</div>
-                <p class="text-sm leading-relaxed">${comment.text}</p>
-            </div>
-        `)
-        .join('');
+    comments.slice().reverse().forEach((comment) => {
+        const item = document.createElement('div');
+        item.className = 'border border-[var(--grid-border)] p-4';
+
+        const meta = document.createElement('div');
+        meta.className = 'text-[10px] uppercase tracking-[0.2em] opacity-60 mb-2';
+        meta.textContent = formatDate(comment.created_at);
+
+        const text = document.createElement('p');
+        text.className = 'text-sm leading-relaxed';
+        text.textContent = String(comment.text || '');
+
+        item.append(meta, text);
+        list.appendChild(item);
+    });
 }
 
 function submitComment(event) {
@@ -900,11 +977,16 @@ function submitPrivateMessage(event) {
 function renderBlogCard(post, index) {
     if (index === 0) {
         return `
-            <article class="grid-item md:col-span-2 p-6 md:p-10 aspect-auto md:aspect-auto flex-col md:flex-row gap-6 md:gap-10 items-start md:items-center justify-between group cursor-pointer" onclick="openPostById('${post.id}')">
+            <article
+                class="grid-item md:col-span-2 p-6 md:p-10 aspect-auto md:aspect-auto flex-col md:flex-row gap-6 md:gap-10 items-start md:items-center justify-between group cursor-pointer"
+                data-open-post="${escapeAttr(post.id)}"
+                role="button"
+                tabindex="0"
+                aria-label="${escapeAttr(t('blog.open_post', 'Abrir post'))}: ${escapeAttr(post.title)}">
                 <div class="max-w-md">
-                    <span class="label">${formatDate(post.created_at)} - ${post.category}</span>
-                    <h3 class="text-3xl font-bold mb-4 group-hover:text-[var(--accent)] transition-colors">${post.title}</h3>
-                    <p class="text-sm opacity-60">${post.excerpt}</p>
+                    <span class="label">${escapeHtml(formatDate(post.created_at))} - ${escapeHtml(post.category)}</span>
+                    <h3 class="text-3xl font-bold mb-4 group-hover:text-[var(--accent)] transition-colors">${escapeHtml(post.title)}</h3>
+                    <p class="text-sm opacity-60">${escapeHtml(post.excerpt)}</p>
                 </div>
                 <div class="w-32 h-32 bg-[var(--accent)] opacity-20 hidden md:block"></div>
             </article>
@@ -912,12 +994,17 @@ function renderBlogCard(post, index) {
     }
 
     return `
-        <article class="grid-item p-6 md:p-8 justify-between group cursor-pointer" onclick="openPostById('${post.id}')">
+        <article
+            class="grid-item p-6 md:p-8 justify-between group cursor-pointer"
+            data-open-post="${escapeAttr(post.id)}"
+            role="button"
+            tabindex="0"
+            aria-label="${escapeAttr(t('blog.open_post', 'Abrir post'))}: ${escapeAttr(post.title)}">
             <div>
-                <span class="label">${formatDate(post.created_at)} - ${post.category}</span>
-                <h3 class="text-lg font-bold group-hover:text-[var(--accent)] transition-colors">${post.title}</h3>
+                <span class="label">${escapeHtml(formatDate(post.created_at))} - ${escapeHtml(post.category)}</span>
+                <h3 class="text-lg font-bold group-hover:text-[var(--accent)] transition-colors">${escapeHtml(post.title)}</h3>
             </div>
-            <div class="text-[10px] font-bold uppercase mt-4">${t('blog.read_article', 'Ler Artigo ->')}</div>
+            <div class="text-[10px] font-bold uppercase mt-4">${escapeHtml(t('blog.read_article', 'Ler Artigo ->'))}</div>
         </article>
     `;
 }
@@ -947,25 +1034,116 @@ function openPostById(postId) {
 
     const postMeta = document.getElementById('post-meta');
     const postTitle = document.getElementById('post-title');
+    const postCover = document.getElementById('post-cover');
     const postBody = document.getElementById('post-body-content');
     const postRelated = document.getElementById('post-related');
 
     postMeta.innerText = `${formatDate(post.created_at)} - ${post.category}`;
     postTitle.innerText = post.title;
-    postBody.innerHTML = post.content.map((paragraph) => `<p>${paragraph}</p>`).join('');
+
+    if (postCover) {
+        const coverEntry = state.mediaMap.find((entry) => entry.owner_type === 'post' && entry.owner_id === post.id);
+        postCover.innerHTML = '';
+        postCover.className = 'w-full h-64 bg-zinc-500/10 border border-zinc-500/20 mb-12';
+
+        if (coverEntry?.path) {
+            const figure = document.createElement('figure');
+            figure.className = 'w-full h-full m-0';
+
+            const image = document.createElement('img');
+            image.src = coverEntry.path;
+            image.alt = coverEntry.alt || post.title;
+            image.loading = 'lazy';
+            image.decoding = 'async';
+            image.className = 'w-full h-full object-cover';
+
+            image.addEventListener('error', () => {
+                postCover.className = 'w-full h-64 bg-zinc-500/10 border border-zinc-500/20 mb-12 flex items-center justify-center italic opacity-30';
+                postCover.textContent = t('post.cover_fallback', 'capa de artigo');
+            }, { once: true });
+
+            figure.appendChild(image);
+            if (coverEntry.caption) {
+                const caption = document.createElement('figcaption');
+                caption.className = 'text-xs opacity-70 mt-2';
+                caption.textContent = coverEntry.caption;
+                figure.appendChild(caption);
+            }
+
+            postCover.appendChild(figure);
+        } else {
+            postCover.className = 'w-full h-64 bg-zinc-500/10 border border-zinc-500/20 mb-12 flex items-center justify-center italic opacity-30';
+            postCover.textContent = t('post.cover_fallback', 'capa de artigo');
+        }
+    }
+
+    postBody.innerHTML = '';
+    const content = Array.isArray(post.content) ? post.content : [];
+    content.forEach((paragraph) => {
+        const p = document.createElement('p');
+        p.textContent = String(paragraph || '');
+        postBody.appendChild(p);
+    });
 
     const relatedPosts = getPublishedPosts().filter((item) => item.id !== post.id).slice(0, 2);
-    postRelated.innerHTML = relatedPosts
-        .map((item) => `<a href="#" onclick="openPostById('${item.id}')" class="block text-sm font-bold hover:text-[var(--accent)]">${item.title}</a>`)
-        .join('');
+    postRelated.innerHTML = '';
+    relatedPosts.forEach((item) => {
+        const link = document.createElement('a');
+        link.href = '#';
+        link.dataset.relatedPostId = item.id;
+        link.className = 'block text-sm font-bold hover:text-[var(--accent)]';
+        link.textContent = item.title;
+        postRelated.appendChild(link);
+    });
 
     transitionToPage('post', { updateNav: false });
+}
+
+function getShareUrl(platform) {
+    const post = state.posts.find((item) => item.id === activePostId);
+    const title = post?.title || document.title;
+    const canonical = window.location.href;
+    const encodedUrl = encodeURIComponent(canonical);
+    const encodedText = encodeURIComponent(title);
+
+    if (platform === 'x') return `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
+    if (platform === 'linkedin') return `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+    if (platform === 'threads') return `https://www.threads.net/intent/post?text=${encodedText}%20${encodedUrl}`;
+    return '';
+}
+
+function handleShareClick(event) {
+    const button = event.target.closest('button[data-share-platform]');
+    if (!button) return;
+
+    const platform = button.getAttribute('data-share-platform');
+    if (!platform) return;
+    const shareUrl = getShareUrl(platform);
+    if (!shareUrl) return;
+
+    if (navigator.share) {
+        navigator.share({ title: document.title, url: window.location.href }).catch(() => {});
+        return;
+    }
+
+    window.open(shareUrl, '_blank', 'noopener,noreferrer');
 }
 
 function toggleThemeManual() {
     manualThemeOverride = true;
     const body = document.body;
     body.classList.toggle('theme-day');
+    const themeMode = body.classList.contains('theme-day') ? 'day' : 'night';
+    localStorage.setItem(storageKeys.theme, themeMode);
+    updateThemeIcons();
+}
+
+function applyStoredThemeOverride() {
+    const storedTheme = localStorage.getItem(storageKeys.theme);
+    if (storedTheme !== 'day' && storedTheme !== 'night') return;
+
+    manualThemeOverride = true;
+    document.body.classList.toggle('theme-day', storedTheme === 'day');
     updateThemeIcons();
 }
 
@@ -1054,11 +1232,108 @@ function hideSiteLoader() {
     }, remaining);
 }
 
+function handleNavigationClick(event) {
+    const navTarget = event.target.closest('[data-page]');
+    if (!navTarget) return;
+    event.preventDefault();
+    const pageId = navTarget.getAttribute('data-page');
+    if (pageId) showPage(pageId);
+}
+
+function handleLocaleClick(event) {
+    const localeButton = event.target.closest('[data-locale]');
+    if (!localeButton) return;
+    const locale = localeButton.getAttribute('data-locale');
+    if (locale) setLocale(locale);
+}
+
+function handlePhotoActionsClick(event) {
+    const target = event.target.closest('[data-action]');
+    if (!target) return;
+    const action = target.getAttribute('data-action');
+    const photoId = target.getAttribute('data-photo-id');
+    if (!photoId) return;
+
+    if (action === 'toggle-like') togglePhotoLike(photoId);
+    if (action === 'open-comments') openCommentsModal(photoId);
+    if (action === 'open-message') openMessageModal(photoId);
+}
+
+function handlePhotoFilterClick(event) {
+    const button = event.target.closest('button[data-filter-group][data-filter-value]');
+    if (!button) return;
+    const group = button.getAttribute('data-filter-group');
+    const value = button.getAttribute('data-filter-value');
+    if (group && value) setPhotoFilter(group, value);
+}
+
+function handleBlogListClick(event) {
+    const card = event.target.closest('[data-open-post]');
+    if (!card) return;
+    const postId = card.getAttribute('data-open-post');
+    if (postId) openPostById(postId);
+}
+
+function handleBlogListKeydown(event) {
+    const card = event.target.closest('[data-open-post]');
+    if (!card) return;
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    const postId = card.getAttribute('data-open-post');
+    if (postId) openPostById(postId);
+}
+
+function handleRelatedPostClick(event) {
+    const link = event.target.closest('[data-related-post-id]');
+    if (!link) return;
+    event.preventDefault();
+    const postId = link.getAttribute('data-related-post-id');
+    if (postId) openPostById(postId);
+}
+
+function bindStaticUIEvents() {
+    document.addEventListener('click', handleNavigationClick);
+
+    const langPt = document.getElementById('lang-pt');
+    const langEn = document.getElementById('lang-en');
+    const themeToggle = document.getElementById('theme-toggle');
+    const contactForm = document.getElementById('contact-form');
+    const commentsClose = document.getElementById('comments-modal-close');
+    const messageClose = document.getElementById('message-modal-close');
+    const commentsForm = document.getElementById('comments-form');
+    const messageForm = document.getElementById('message-form');
+    const photoEssayFilters = document.getElementById('photo-essay-filters');
+    const photoYearFilters = document.getElementById('photo-year-filters');
+    const photoGrid = document.getElementById('photo-grid');
+    const blogList = document.getElementById('blog-list');
+    const postRelated = document.getElementById('post-related');
+    const postPage = document.getElementById('page-post');
+
+    langPt?.addEventListener('click', handleLocaleClick);
+    langEn?.addEventListener('click', handleLocaleClick);
+    themeToggle?.addEventListener('click', toggleThemeManual);
+    contactForm?.addEventListener('submit', handleContactSubmit);
+    commentsClose?.addEventListener('click', closeCommentsModal);
+    messageClose?.addEventListener('click', closeMessageModal);
+    commentsForm?.addEventListener('submit', submitComment);
+    messageForm?.addEventListener('submit', submitPrivateMessage);
+    photoEssayFilters?.addEventListener('click', handlePhotoFilterClick);
+    photoYearFilters?.addEventListener('click', handlePhotoFilterClick);
+    photoGrid?.addEventListener('click', handlePhotoActionsClick);
+    blogList?.addEventListener('click', handleBlogListClick);
+    blogList?.addEventListener('keydown', handleBlogListKeydown);
+    postRelated?.addEventListener('click', handleRelatedPostClick);
+    postPage?.addEventListener('click', handleShareClick);
+}
+
 async function initApp() {
+    bindStaticUIEvents();
+
     const storedLocale = localStorage.getItem(storageKeys.locale);
     const browserLocale = navigator.language || DEFAULT_LOCALE;
     await setLocale(storedLocale || browserLocale, { skipPersist: false });
 
+    applyStoredThemeOverride();
     updateTheme();
     await bootstrapContent();
     handleMobileNavScroll();
