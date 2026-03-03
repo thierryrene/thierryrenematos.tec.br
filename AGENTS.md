@@ -16,6 +16,7 @@ No contexto de conteudo, `meu.ponto` e o nome editorial do blog ("meu ponto de v
 - Garantir acessibilidade minima (contraste AA, foco visivel, semantica HTML).
 - Registrar mudancas relevantes no `CHANGELOG.md`.
 - Registrar ao final de cada sessao os updates do projeto na nota diaria do Obsidian (`Diário de Trabalho`), sempre por atualizacao manual de texto (sem scripts de automacao).
+- Sempre que houver `commit` e `push`, atualizar a nota diaria do Obsidian na mesma sessao (sem excecao).
 - Ao atualizar o diario, preencher tambem os campos estruturados de coleta para reports (`commits_qtd`, `pushes_qtd`, `arquivos_alterados_qtd`, `status_sessao`, `proximo_passo`).
 - Usar convencao de commits com emoji.
 
@@ -25,7 +26,7 @@ No contexto de conteudo, `meu.ponto` e o nome editorial do blog ("meu ponto de v
 3. Implementar com foco em performance e manutencao.
 4. Validar comportamento e nao regressao.
 5. Atualizar `CHANGELOG.md` quando aplicavel.
-6. Atualizar a nota diaria do Obsidian com resumo objetivo da sessao (manual, sem script).
+6. Quando houver `commit` e `push`, atualizar obrigatoriamente a nota diaria do Obsidian na mesma sessao (manual, sem script).
 7. Garantir que os dados estruturados do diario estejam completos para consolidacao futura de relatorios.
 
 ## Guardrails de implementacao
