@@ -2,6 +2,45 @@
 
 Data de referencia: 2026-02-17
 
+## Atualizacao para proxima sessao (2026-03-03)
+
+### Objetivo imediato
+- Substituicao de slot concluida: `ProductHunt` -> `Samsung Health` na dashboard.
+- Proximo passo: integrar dados reais do Samsung Health.
+
+### TODO - Samsung Health (continuidade)
+1. Definir fonte de dados para MVP
+- Opcao A: export manual do Samsung Health (CSV/JSON) e normalizacao local.
+- Opcao B: Health Connect (Android) com pipeline de export para arquivo local.
+
+2. Definir contrato de payload do card
+- `latest_activity`: tipo, distancia_km, moving_time_sec, start_date, source.
+- `week`: count, distance_km, moving_time_sec.
+- `cache`: hit/stale/updated_at.
+
+3. Implementar endpoint server-side
+- Criar `api/samsung-health.php`.
+- Ler arquivo normalizado em `data/samsung-health.json`.
+- Retornar fallback estavel (`ok: false` com contrato completo).
+
+4. Adicionar cache tecnico de payload
+- Arquivo: `data/samsung-health-cache.json`.
+- TTL inicial sugerido: 10 min.
+- Em falha de leitura/processamento, responder cache stale quando disponivel.
+
+5. Integrar frontend do card
+- Adicionar `SAMSUNG_HEALTH_ENDPOINT` em `assets/js/main.js`.
+- Sincronizacao com polling mais lento (5-10 min).
+- Atualizar card com:
+  - destaque de km (ultima atividade + semana)
+  - meta temporal da ultima atividade
+  - estado de erro sem quebrar ordenacao.
+
+6. Validacao final
+- Testar endpoint no container PHP.
+- Validar `node --check assets/js/main.js` e `php -l api/samsung-health.php`.
+- Atualizar `api/README.md` e `CHANGELOG.md`.
+
 ## O que foi feito por ultimo
 
 1. Padronizacao de largura entre paginas internas

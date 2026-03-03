@@ -139,6 +139,8 @@ Quando evoluir para producao:
 - evitar mudancas de escopo amplo em tarefas pequenas;
 - manter consistencia visual com a grade e tema definidos;
 - atualizar `CHANGELOG.md` em mudancas relevantes.
+- registrar os updates da sessao na nota diaria do Obsidian (`Diário de Trabalho`) por edicao manual de texto, sem automacao por script.
+- padronizar coleta manual no diario com campos estruturados minimos para reports: `commits_qtd`, `pushes_qtd`, `arquivos_alterados_qtd`, `status_sessao`, `proximo_passo`.
 
 ## 9. Requisitos nao-funcionais obrigatorios
 - Mobile-first: base funcional primeiro em telas pequenas.

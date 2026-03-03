@@ -67,6 +67,7 @@ Este arquivo segue o padrao Keep a Changelog e versionamento semantico.
 - Card Last.fm: `upd HH:MM` agora usa o inicio da faixa (quando disponivel) em vez do horario do polling; sincronizacao ganhou throttle anti-burst em eventos de foco/visibilidade e pausa de polling com aba oculta para reduzir hits sem perder realtime ao voltar.
 - Card Strava integrado com endpoint server-side (`/api/strava-activity.php`): OAuth via refresh token, resumo da semana (atividades/distancia/tempo), ultima atividade com link e sync periodico no dashboard.
 - Card Strava refinado: quando a semana atual nao tem atividades, o destaque de km passa a considerar a ultima atividade registrada; endpoint ganhou cache de payload (`data/strava-activity-cache.json`, TTL 10min) com fallback stale para reduzir falhas por expiracao de acesso.
+- Slot `ProductHunt` substituido por `Samsung Health` na grid da dashboard, mantendo compatibilidade com ordenacao dinamica dos cards.
 - Card `Listening Log` recebeu pass de UX visual: blocos internos com estrutura brutalista (track/visualizer/status), animações sutis de sincronizacao e equalizer em `Now Playing`, com fallback em `prefers-reduced-motion`.
 - Simplificacao visual no card `Listening Log`: boxes internos removidos para manter apenas o conteudo (faixa, barras e status), preservando animacoes e estados.
 - Card `Listening Log` simplificado no status: removidos borda/chip e icone musical, mantendo apenas o texto de estado (`Now Playing`, `Offline`, etc.).

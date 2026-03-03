@@ -52,6 +52,8 @@ Nao fazer nesta fase:
 - Layout continua coerente com a grade brutalista.
 - Semantica e acessibilidade minima preservadas.
 - `CHANGELOG.md` atualizado quando aplicavel.
+- Nota diaria do Obsidian atualizada com os principais updates da sessao (atualizacao manual, sem uso de script).
+- Bloco estruturado de coleta preenchido na nota (`commits_qtd`, `pushes_qtd`, `arquivos_alterados_qtd`, `status_sessao`, `proximo_passo`).
 - Commit com emoji e mensagem semantica.
 
 ## 7. Evolucao futura (opcional)

@@ -83,7 +83,7 @@ const DASHBOARD_CARD_PRIORITY = {
     youtube: 4,
     strava: 5,
     twitch: 6,
-    producthunt: 7,
+    samsunghealth: 7,
     instagram: 8,
     threads: 9,
     linkedin: 10,
