@@ -3,6 +3,7 @@
 Endpoints implementados:
 - `GET /api/lastfm-recent.php`
 - `GET /api/github-activity.php`
+- `GET /api/strava-activity.php`
 
 ## Last.fm
 Variaveis de ambiente necessarias:
@@ -13,5 +14,27 @@ Variaveis de ambiente necessarias:
 Variaveis de ambiente:
 - `GITHUB_USERNAME` (opcional; default: `thierryrene`)
 - `GITHUB_TOKEN` (opcional; recomendado para reduzir risco de rate limit)
+
+Cache:
+- arquivo: `data/github-activity-cache.json`
+- TTL: 10 minutos
+- comportamento: em falha upstream, o endpoint prioriza cache stale quando existir.
+
+## Strava
+Variaveis de ambiente:
+- `STRAVA_CLIENT_ID`
+- `STRAVA_CLIENT_SECRET`
+- `STRAVA_REFRESH_TOKEN` (obrigatorio para renovacao de acesso)
+- `STRAVA_ACCESS_TOKEN` (opcional; fallback inicial)
+
+Cache tecnico:
+- arquivo: `data/strava-auth-cache.json`
+- conteudo: ultimo `access_token`/`refresh_token`/`expires_at` retornado pelo OAuth
+- objetivo: evitar refresh desnecessario a cada request e preservar integracao estavel
+
+Cache de payload:
+- arquivo: `data/strava-activity-cache.json`
+- TTL: 10 minutos
+- comportamento: em falha OAuth/upstream, o endpoint retorna cache stale quando disponivel
 
 Para desenvolvimento local, os endpoints tentam ler `../.env` automaticamente.

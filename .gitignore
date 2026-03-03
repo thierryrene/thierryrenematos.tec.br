@@ -14,6 +14,7 @@ coverage/
 # Ambiente
 .env
 .env.*
+data/*-cache.json
 
 # Logs
 *.log

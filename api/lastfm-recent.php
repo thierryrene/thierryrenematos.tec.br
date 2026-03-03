@@ -7,7 +7,7 @@ header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 
 function startsWith(string $haystack, string $needle): bool
 {
-    if ($needle == '') {
+    if ($needle === '') {
         return true;
     }
     return strpos($haystack, $needle) === 0;
@@ -15,7 +15,7 @@ function startsWith(string $haystack, string $needle): bool
 
 function endsWith(string $haystack, string $needle): bool
 {
-    if ($needle == '') {
+    if ($needle === '') {
         return true;
     }
     $needleLen = strlen($needle);
@@ -25,10 +25,6 @@ function endsWith(string $haystack, string $needle): bool
     return substr($haystack, -$needleLen) === $needle;
 }
 
-/**
- * Minimal .env loader for local development.
- * Does nothing if file does not exist.
- */
 function loadEnvFile(string $path): void
 {
     if (!is_file($path) || !is_readable($path)) {
@@ -83,6 +79,23 @@ function getEnvValue(string $key): ?string
         return null;
     }
     return trim($value);
+}
+
+function readIntQueryParam(string $name, int $default, int $min, int $max): int
+{
+    $raw = $_GET[$name] ?? null;
+    if ($raw === null || $raw === '') {
+        return $default;
+    }
+
+    $value = filter_var($raw, FILTER_VALIDATE_INT);
+    if ($value === false) {
+        return $default;
+    }
+
+    if ($value < $min) return $min;
+    if ($value > $max) return $max;
+    return $value;
 }
 
 function httpGetJson(string $url): array
@@ -182,27 +195,35 @@ loadEnvFile(__DIR__ . '/../.env');
 
 $apiKey = getEnvValue('LASTFM_API_KEY');
 $username = getEnvValue('LASTFM_USERNAME');
+$requestedLimit = readIntQueryParam('limit', 100, 1, 100);
 
 if ($apiKey === null || $username === null) {
-    respond(500, [
+    respond(200, [
         'ok' => false,
         'error' => 'missing_lastfm_env',
         'hint' => 'Configure LASTFM_API_KEY and LASTFM_USERNAME on server-side.',
+        'now_playing' => false,
+        'track' => null,
+        'recent' => [],
     ]);
 }
 
 $lastfmUrl = sprintf(
-    'https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=%s&api_key=%s&format=json&limit=100',
+    'https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=%s&api_key=%s&format=json&limit=%d',
     rawurlencode($username),
-    rawurlencode($apiKey)
+    rawurlencode($apiKey),
+    $requestedLimit
 );
 
 try {
     $data = httpGetJson($lastfmUrl);
 } catch (Throwable $exception) {
-    respond(502, [
+    respond(200, [
         'ok' => false,
         'error' => 'upstream_failure',
+        'now_playing' => false,
+        'track' => null,
+        'recent' => [],
     ]);
 }
 
@@ -256,5 +277,5 @@ respond(200, [
         'is_now_playing' => (bool) ($track['is_now_playing'] ?? false),
         'played_at_unix' => $track['played_at_unix'] ?? null,
         'played_at' => $track['played_at'] ?? null,
-    ], array_slice($normalizedTracks, 0, 100)),
+    ], array_slice($normalizedTracks, 0, $requestedLimit)),
 ]);

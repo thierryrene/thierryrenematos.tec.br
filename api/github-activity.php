@@ -5,6 +5,9 @@ declare(strict_types=1);
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 
+const GITHUB_CACHE_TTL_SECONDS = 600;
+const GITHUB_CACHE_FILE = __DIR__ . '/../data/github-activity-cache.json';
+
 function startsWith(string $haystack, string $needle): bool
 {
     if ($needle === '') return true;
@@ -53,6 +56,40 @@ function respond(int $status, array $payload): void
     http_response_code($status);
     echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
+}
+
+function readCacheFile(string $path): ?array
+{
+    if (!is_file($path) || !is_readable($path)) return null;
+    $raw = file_get_contents($path);
+    if ($raw === false || trim($raw) === '') return null;
+    $decoded = json_decode($raw, true);
+    if (!is_array($decoded)) return null;
+    if (!isset($decoded['payload']) || !is_array($decoded['payload'])) return null;
+    return $decoded;
+}
+
+function writeCacheFile(string $path, array $payload): void
+{
+    $cache = [
+        'updated_at' => gmdate('c'),
+        'payload' => $payload
+    ];
+    @file_put_contents(
+        $path,
+        json_encode($cache, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . PHP_EOL,
+        LOCK_EX
+    );
+}
+
+function isCacheFresh(?array $cache, int $ttlSeconds): bool
+{
+    if (!is_array($cache)) return false;
+    $updatedAt = (string) ($cache['updated_at'] ?? '');
+    if ($updatedAt === '') return false;
+    $updatedTimestamp = strtotime($updatedAt);
+    if ($updatedTimestamp === false) return false;
+    return (time() - $updatedTimestamp) < $ttlSeconds;
 }
 
 function getenvOr(string $key, string $fallback = ''): string
@@ -280,6 +317,18 @@ loadEnvFile(__DIR__ . '/../.env');
 
 $username = getenvOr('GITHUB_USERNAME', 'thierryrene');
 $token = getenvOr('GITHUB_TOKEN', '');
+$cache = readCacheFile(GITHUB_CACHE_FILE);
+if (isCacheFresh($cache, GITHUB_CACHE_TTL_SECONDS)) {
+    $cachedPayload = $cache['payload'];
+    if (is_array($cachedPayload)) {
+        $cachedPayload['cache'] = [
+            'hit' => true,
+            'stale' => false,
+            'updated_at' => (string) ($cache['updated_at'] ?? '')
+        ];
+        respond(200, $cachedPayload);
+    }
+}
 
 $githubUrl = sprintf(
     'https://api.github.com/users/%s/events/public?per_page=100',
@@ -289,16 +338,50 @@ $githubUrl = sprintf(
 try {
     $events = httpGetJson($githubUrl, $token !== '' ? $token : null);
 } catch (Throwable $exception) {
-    respond(502, [
+    if (is_array($cache) && is_array($cache['payload'] ?? null)) {
+        $cachedPayload = $cache['payload'];
+        $cachedPayload['cache'] = [
+            'hit' => true,
+            'stale' => true,
+            'updated_at' => (string) ($cache['updated_at'] ?? '')
+        ];
+        $cachedPayload['warning'] = 'upstream_failure_using_cached_data';
+        respond(200, $cachedPayload);
+    }
+    respond(200, [
         'ok' => false,
         'error' => 'upstream_failure',
         'username' => $username,
+        'activity' => [
+            'type' => 'Unavailable',
+            'title' => 'GitHub temporariamente indisponivel',
+            'repo' => '',
+            'url' => 'https://github.com/' . $username,
+            'created_at' => '',
+            'latest_push_commits' => 0,
+        ],
+        'week' => [
+            'timezone' => 'America/Sao_Paulo',
+            'starts_at' => '',
+            'ends_at' => '',
+            'commits' => [0, 0, 0, 0, 0, 0, 0],
+            'total_commits' => 0,
+        ],
+        'starred' => [
+            'name' => '',
+            'url' => '',
+        ],
+        'cache' => [
+            'hit' => false,
+            'stale' => false,
+            'updated_at' => ''
+        ]
     ]);
 }
 
 if (!is_array($events) || count($events) === 0) {
     $latestStarred = fetchLatestStarredRepo($username, $token !== '' ? $token : null);
-    respond(200, [
+    $payload = [
         'ok' => true,
         'username' => $username,
         'activity' => [
@@ -311,7 +394,14 @@ if (!is_array($events) || count($events) === 0) {
         ],
         'week' => computeWeeklyCommitHeat($events),
         'starred' => $latestStarred,
-    ]);
+        'cache' => [
+            'hit' => false,
+            'stale' => false,
+            'updated_at' => gmdate('c')
+        ]
+    ];
+    writeCacheFile(GITHUB_CACHE_FILE, $payload);
+    respond(200, $payload);
 }
 
 $firstEvent = null;
@@ -324,7 +414,7 @@ foreach ($events as $candidate) {
 
 if (!is_array($firstEvent)) {
     $latestStarred = fetchLatestStarredRepo($username, $token !== '' ? $token : null);
-    respond(200, [
+    $payload = [
         'ok' => true,
         'username' => $username,
         'activity' => [
@@ -337,15 +427,29 @@ if (!is_array($firstEvent)) {
         ],
         'week' => computeWeeklyCommitHeat($events),
         'starred' => $latestStarred,
-    ]);
+        'cache' => [
+            'hit' => false,
+            'stale' => false,
+            'updated_at' => gmdate('c')
+        ]
+    ];
+    writeCacheFile(GITHUB_CACHE_FILE, $payload);
+    respond(200, $payload);
 }
 
 $latestStarred = fetchLatestStarredRepo($username, $token !== '' ? $token : null);
 
-respond(200, [
+$payload = [
     'ok' => true,
     'username' => $username,
     'activity' => normalizeActivity($firstEvent),
     'week' => computeWeeklyCommitHeat($events),
     'starred' => $latestStarred,
-]);
+    'cache' => [
+        'hit' => false,
+        'stale' => false,
+        'updated_at' => gmdate('c')
+    ]
+];
+writeCacheFile(GITHUB_CACHE_FILE, $payload);
+respond(200, $payload);
