@@ -6,6 +6,12 @@ Este arquivo segue o padrao Keep a Changelog e versionamento semantico.
 
 ## [Unreleased]
 ### Changed
+- Modo SEO de producao ativado: metatags `robots`/`googlebot`/`bingbot` atualizadas para `index, follow` com previews amplos e sem bloqueio de snippet.
+- `robots.txt` simplificado para liberar rastreamento global (`User-agent: *` + `Allow: /`), removendo bloqueios anteriores.
+- Navegacao SPA com URL real integrada via History API: menu principal e navegacao de posts agora atualizam `pathname` (`/`, `/sobre`, `/fotografias`, `/blog`, `/blog/:slug`, `/contato`) sem recarregar pagina.
+- Suporte a `popstate` para back/forward do navegador, reidratando a secao/post correto com estado consistente.
+- Camada de SEO/analytics para navegacao interna: atualizacao de `document.title`, `link[rel="canonical"]` e disparo de pageview virtual (`gtag`/`dataLayer`) em mudancas de rota.
+- Links de navegacao do header atualizados para `href` canonicos de rota, mantendo interceptacao client-side para UX fluida.
 - Correcao de seguranca e desacoplamento no frontend: remocao de handlers inline (`onclick`/`onsubmit`/`onerror`) do HTML e migracao para `addEventListener` em `assets/js/main.js`.
 - Persistencia do override manual de tema via `localStorage` (`thierry.theme.v1`), com restauracao automatica na inicializacao.
 - Mitigacao de XSS em renderizacoes dinamicas (comentarios e conteudo de post) com montagem via DOM API/texto e escape de interpolacoes HTML.
@@ -44,6 +50,14 @@ Este arquivo segue o padrao Keep a Changelog e versionamento semantico.
 - Mecanismo de idioma `pt-BR`/`en-US` implementado com toggle na interface, persistencia local e dicionarios em `data/i18n/*.json`.
 - JavaScript desacoplado do `index.html` para `assets/js/main.js`, facilitando leitura e manutencao sem alterar comportamento funcional.
 - Botoes de idioma padronizados com o mesmo padrao visual dos controles do header (incluindo toggle de tema), com estado ativo acessivel via `aria-pressed`.
+- Card `Listening Log` integrado ao Last.fm com polling no endpoint server-side `/api/lastfm-recent.php`, estados `Now Playing/Recente/Offline` e fallback visual para indisponibilidade.
+- Endpoint server-side `api/lastfm-recent.php` adicionado para buscar `recenttracks` no Last.fm com leitura de `LASTFM_API_KEY` e `LASTFM_USERNAME` via ambiente (sem expor segredo no client).
+- Roteamento SPA ajustado para ambiente local em subpasta (`localhost/thierryrenematos.tec.br`): aplicacao de `base path` em links, History API, resolucao de rota e endpoint Last.fm, evitando conflitos de navegação nos testes locais.
+- Endpoint `api/lastfm-recent.php` compatibilizado com PHP 7.4 (remoção de dependência em `str_starts_with/str_ends_with`) e normalização de campos Last.fm para evitar retorno indevido (`album: \"Array\"`).
+- Conexão do card Last.fm atualizada para resolver endpoint com `base path` em ambiente local (`localhost/thierryrenematos.tec.br`), mantendo compatibilidade com produção.
+- Card `Listening Log` aprimorado com simbolo musical animado durante `Now Playing` e fundo dinâmico com capa do álbum (centralizado + fade black) quando `album_art` estiver disponível no payload.
+- Status do card Last.fm refinado para estado real: `Now Playing` quando ativo e, quando inativo, exibição temporal da última reprodução (`Ha X min` / `Ultima HH:MM`), usando `played_at_unix` do endpoint.
+- Bloco visual do card Last.fm ajustado para dark mode com overlay mais legível sobre capa de álbum, chip de status com contraste aprimorado e text-shadow contextual no conteúdo.
 
 ### Planned
 - Consolidacao do prototipo HTML com melhorias de acessibilidade e semantica.
@@ -51,6 +65,8 @@ Este arquivo segue o padrao Keep a Changelog e versionamento semantico.
 - Avaliacao futura de migracao para framework em iniciativa separada.
 
 ### Added
+- Documento `docs/dashboard-api-agentes.md` com um agente dedicado por task de integracao de API dos cards do dashboard.
+- Documento `docs/manual-tokens-apis-dashboard.md` com passo a passo para obtencao de tokens por servico e links de documentacao dev oficial.
 - `robots.txt` com bloqueio de crawlers de IA, indexadores e bots de preview social.
 - Metatags de anti-indexacao/anti-snippet no `index.html`.
 - Politica de uso e protecao em `docs/politica-de-conteudo.md`.

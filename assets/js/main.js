@@ -9,8 +9,28 @@ let lastFocusFallbackSelector = '';
 let localeRequestId = 0;
 const PAGE_TRANSITION_MS = 420;
 const LOADER_MIN_MS = 600;
+const LASTFM_REFRESH_MS = 60000;
 const loaderStartAt = Date.now();
 const CONTACT_TARGET_EMAIL = 'ola@seuemail.com';
+const SITE_TITLE_DEFAULT = 'Thierry Rene Matos - Dashboard Biografico, meu.ponto e Galeria';
+const SITE_TITLE_SUFFIX = 'Thierry Rene Matos';
+const ROUTE_PATHS = {
+    dashboard: '/',
+    sobre: '/sobre',
+    fotografias: '/fotografias',
+    blog: '/blog',
+    contato: '/contato'
+};
+const LOCAL_APP_BASE_PATH = '/thierryrenematos.tec.br';
+const APP_BASE_PATH = (() => {
+    if (window.location.hostname !== 'localhost') return '';
+    const normalized = window.location.pathname.split('?')[0].split('#')[0];
+    if (normalized === LOCAL_APP_BASE_PATH || normalized.startsWith(`${LOCAL_APP_BASE_PATH}/`)) {
+        return LOCAL_APP_BASE_PATH;
+    }
+    return '';
+})();
+const LASTFM_ENDPOINT = `${APP_BASE_PATH}/api/lastfm-recent.php`;
 const SUPPORTED_LOCALES = ['pt-BR', 'en-US'];
 const DEFAULT_LOCALE = 'pt-BR';
 const I18N_BASE_PATH = 'data/i18n';
@@ -428,7 +448,11 @@ async function setLocale(locale, options = {}) {
     renderPhotoFilters();
     renderPhotoGrid();
     renderBlogList();
-    if (activePostId) openPostById(activePostId);
+    if (activePostId) {
+        openPostById(activePostId, { skipRouteUpdate: true, track: false });
+    } else if (state.posts.length || state.photos.length || state.essays.length) {
+        applyRouteFromLocation({ replace: true, track: false });
+    }
 }
 
 function updateActiveNav(navId) {
@@ -436,6 +460,110 @@ function updateActiveNav(navId) {
     if (!navId) return;
     const navLink = document.getElementById('nav-' + navId);
     if (navLink) navLink.classList.add('active-nav');
+}
+
+function normalizePath(pathname = '/') {
+    const path = pathname.split('?')[0].split('#')[0];
+    if (!path || path === '/') return '/';
+    return path.endsWith('/') ? path.slice(0, -1) : path;
+}
+
+function withBasePath(path = '/') {
+    if (!APP_BASE_PATH) return path;
+    if (path === '/') return APP_BASE_PATH;
+    return `${APP_BASE_PATH}${path}`;
+}
+
+function stripBasePath(path = '/') {
+    if (!APP_BASE_PATH) return path;
+    if (path === APP_BASE_PATH) return '/';
+    if (path.startsWith(`${APP_BASE_PATH}/`)) {
+        const stripped = path.slice(APP_BASE_PATH.length);
+        return stripped || '/';
+    }
+    return path;
+}
+
+function getRoutePath(pageId, post) {
+    if (pageId === 'post' && post?.slug) return `/blog/${encodeURIComponent(post.slug)}`;
+    return ROUTE_PATHS[pageId] || '/';
+}
+
+function getPageTitle(pageId, post) {
+    if (pageId === 'post' && post?.title) return `${post.title} - meu.ponto | ${SITE_TITLE_SUFFIX}`;
+    if (pageId === 'sobre') return `Sobre | ${SITE_TITLE_SUFFIX}`;
+    if (pageId === 'fotografias') return `Fotografias | ${SITE_TITLE_SUFFIX}`;
+    if (pageId === 'blog') return `Blog meu.ponto | ${SITE_TITLE_SUFFIX}`;
+    if (pageId === 'contato') return `Contato | ${SITE_TITLE_SUFFIX}`;
+    return SITE_TITLE_DEFAULT;
+}
+
+function updateCanonical(path) {
+    const canonicalUrl = `${window.location.origin}${path}`;
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+        canonical = document.createElement('link');
+        canonical.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', canonicalUrl);
+}
+
+function trackVirtualPageview(path, title) {
+    const normalizedPath = normalizePath(path);
+    const payload = {
+        page_path: normalizedPath,
+        page_location: `${window.location.origin}${normalizedPath}`,
+        page_title: title
+    };
+
+    if (typeof window.gtag === 'function') {
+        window.gtag('event', 'page_view', payload);
+    }
+
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: 'virtual_pageview', ...payload });
+    document.dispatchEvent(new CustomEvent('virtual-pageview', { detail: payload }));
+}
+
+function updateBrowserState(pageId, options = {}) {
+    const { post = null, replace = false, track = true } = options;
+    const routePath = getRoutePath(pageId, post);
+    const path = withBasePath(routePath);
+    const title = getPageTitle(pageId, post);
+    const state = pageId === 'post'
+        ? { pageId, postId: post?.id || null, slug: post?.slug || null }
+        : { pageId };
+
+    const currentPath = normalizePath(stripBasePath(window.location.pathname));
+    const nextPath = normalizePath(routePath);
+    const stateChanged = JSON.stringify(window.history.state || {}) !== JSON.stringify(state);
+    const isSameRoute = currentPath === nextPath && !stateChanged;
+    const shouldReplace = replace || (!stateChanged && currentPath === nextPath);
+
+    if (shouldReplace) {
+        window.history.replaceState(state, '', path);
+    } else {
+        window.history.pushState(state, '', path);
+    }
+
+    document.title = title;
+    updateCanonical(path);
+    if (track && !isSameRoute) trackVirtualPageview(path, title);
+}
+
+function resolveRouteFromLocation() {
+    const path = normalizePath(stripBasePath(window.location.pathname));
+    const blogMatch = path.match(/^\/blog\/([^/]+)$/);
+    if (blogMatch) {
+        const slug = decodeURIComponent(blogMatch[1]);
+        const post = getPublishedPosts().find((item) => item.slug === slug);
+        if (post) return { pageId: 'post', postId: post.id };
+    }
+
+    const pageByPath = Object.entries(ROUTE_PATHS).find(([, routePath]) => normalizePath(routePath) === path);
+    if (pageByPath) return { pageId: pageByPath[0] };
+    return { pageId: 'dashboard' };
 }
 
 function transitionToPage(pageId, options = {}) {
@@ -476,8 +604,14 @@ function transitionToPage(pageId, options = {}) {
     window.scrollTo(0, 0);
 }
 
-function showPage(pageId) {
+function showPage(pageId, options = {}) {
     transitionToPage(pageId, { navId: pageId, updateNav: true });
+    if (!options.skipRouteUpdate) {
+        updateBrowserState(pageId, {
+            replace: Boolean(options.replaceRoute),
+            track: options.track !== false
+        });
+    }
 }
 
 function formatDate(dateValue) {
@@ -671,6 +805,167 @@ async function loadJson(path) {
     const response = await fetch(path, { cache: 'no-store' });
     if (!response.ok) throw new Error('falha ao carregar ' + path);
     return response.json();
+}
+
+function updateLastfmBars(recent = [], nowPlaying = false) {
+    const barsRoot = document.getElementById('lastfm-bars');
+    if (!barsRoot) return;
+
+    const seedSource = recent.map((item) => `${item.name || ''}${item.artist || ''}`).join('|') || 'lastfm';
+    const heights = [28, 44, 66, 52].map((base, index) => {
+        const charCode = seedSource.charCodeAt(index % seedSource.length) || 40;
+        return Math.min(92, Math.max(24, base + (charCode % 26) - 13));
+    });
+
+    barsRoot.innerHTML = heights.map((height) => `
+        <div class="w-2 ${nowPlaying ? 'bg-red-500' : 'bg-zinc-500'}" style="height:${height}%"></div>
+    `).join('');
+}
+
+function setLastfmAlbumBackground(albumArtUrl) {
+    const cardEl = document.getElementById('listening-log-card');
+    const bgEl = document.getElementById('lastfm-bg');
+    if (!cardEl || !bgEl) return;
+
+    if (!albumArtUrl) {
+        cardEl.classList.remove('has-album-art');
+        bgEl.style.backgroundImage = '';
+        return;
+    }
+
+    const sanitizedUrl = String(albumArtUrl).replace(/["\\\n\r]/g, '');
+    bgEl.style.backgroundImage = `url("${sanitizedUrl}")`;
+    cardEl.classList.add('has-album-art');
+}
+
+function getLastfmStatusModel(nowPlaying, playedAtUnix) {
+    if (nowPlaying) {
+        return {
+            statusLabel: 'Now Playing',
+            statusClass: 'text-red-500'
+        };
+    }
+
+    if (playedAtUnix > 0) {
+        const diffMs = Date.now() - (playedAtUnix * 1000);
+        const diffMinutes = Math.max(0, Math.floor(diffMs / 60000));
+
+        if (diffMinutes <= 1) {
+            return {
+                statusLabel: 'Tocou agora',
+                statusClass: 'text-amber-400'
+            };
+        }
+
+        if (diffMinutes < 60) {
+            return {
+                statusLabel: `Ha ${diffMinutes} min`,
+                statusClass: 'text-amber-400'
+            };
+        }
+
+        const playedDate = new Date(playedAtUnix * 1000);
+        const now = new Date();
+        const sameDay = playedDate.toDateString() === now.toDateString();
+        const timeLabel = playedDate.toLocaleTimeString(currentLocale, {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        if (sameDay) {
+            return {
+                statusLabel: `Ultima ${timeLabel}`,
+                statusClass: 'text-amber-400'
+            };
+        }
+
+        const dateLabel = playedDate.toLocaleDateString(currentLocale, {
+            day: '2-digit',
+            month: '2-digit'
+        });
+        return {
+            statusLabel: `${dateLabel} ${timeLabel}`,
+            statusClass: 'text-amber-400'
+        };
+    }
+
+    return {
+        statusLabel: 'Idle',
+        statusClass: 'text-amber-400'
+    };
+}
+
+function updateLastfmCardUi(model) {
+    const trackEl = document.getElementById('lastfm-track');
+    const statusEl = document.getElementById('lastfm-status');
+    const statusIconEl = document.getElementById('lastfm-status-icon');
+    if (!trackEl || !statusEl || !statusIconEl) return;
+
+    trackEl.textContent = model.trackLine;
+    statusEl.textContent = model.statusLabel;
+    statusEl.classList.remove('text-red-500', 'text-amber-400', 'text-zinc-500');
+    statusEl.classList.add(model.statusClass);
+    statusIconEl.classList.toggle('is-playing', Boolean(model.nowPlaying));
+    updateLastfmBars(model.recent, model.nowPlaying);
+    setLastfmAlbumBackground(model.albumArt || '');
+}
+
+async function fetchLastfmRecent() {
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 7000);
+
+    try {
+        const response = await fetch(LASTFM_ENDPOINT, {
+            cache: 'no-store',
+            signal: controller.signal
+        });
+
+        if (!response.ok) {
+            throw new Error(`lastfm endpoint error: ${response.status}`);
+        }
+
+        const payload = await response.json();
+        const track = payload?.track;
+        const recent = Array.isArray(payload?.recent) ? payload.recent : [];
+        const nowPlaying = Boolean(payload?.now_playing);
+        const trackName = track?.name || '';
+        const artistName = track?.artist || '';
+        const albumArt = track?.album_art || '';
+        const playedAtUnix = Number(track?.played_at_unix || 0);
+
+        if (!trackName && !artistName) {
+            updateLastfmCardUi({
+                trackLine: 'Sem escuta recente',
+                statusLabel: 'Idle',
+                statusClass: 'text-amber-400',
+                recent,
+                nowPlaying: false,
+                albumArt: ''
+            });
+            return;
+        }
+
+        const statusModel = getLastfmStatusModel(nowPlaying, playedAtUnix);
+        updateLastfmCardUi({
+            trackLine: artistName ? `${trackName} - ${artistName}` : trackName,
+            statusLabel: statusModel.statusLabel,
+            statusClass: statusModel.statusClass,
+            recent,
+            nowPlaying,
+            albumArt
+        });
+    } catch (error) {
+        console.warn('falha ao sincronizar lastfm:', error.message);
+        updateLastfmCardUi({
+            trackLine: 'Last.fm indisponivel',
+            statusLabel: 'Offline',
+            statusClass: 'text-zinc-500',
+            recent: [],
+            nowPlaying: false,
+            albumArt: ''
+        });
+    } finally {
+        window.clearTimeout(timeoutId);
+    }
 }
 
 async function bootstrapContent() {
@@ -1026,7 +1321,7 @@ function renderBlogList() {
     root.innerHTML = posts.map((post, index) => renderBlogCard(post, index)).join('');
 }
 
-function openPostById(postId) {
+function openPostById(postId, options = {}) {
     const post = state.posts.find((item) => item.id === postId);
     if (!post) return;
 
@@ -1089,14 +1384,21 @@ function openPostById(postId) {
     postRelated.innerHTML = '';
     relatedPosts.forEach((item) => {
         const link = document.createElement('a');
-        link.href = '#';
+        link.href = withBasePath(getRoutePath('post', item));
         link.dataset.relatedPostId = item.id;
         link.className = 'block text-sm font-bold hover:text-[var(--accent)]';
         link.textContent = item.title;
         postRelated.appendChild(link);
     });
 
-    transitionToPage('post', { updateNav: false });
+    transitionToPage('post', { navId: 'blog', updateNav: true });
+    if (!options.skipRouteUpdate) {
+        updateBrowserState('post', {
+            post,
+            replace: Boolean(options.replaceRoute),
+            track: options.track !== false
+        });
+    }
 }
 
 function getShareUrl(platform) {
@@ -1291,6 +1593,38 @@ function handleRelatedPostClick(event) {
     if (postId) openPostById(postId);
 }
 
+function applyRouteFromLocation(options = {}) {
+    const { replace = false, track = true } = options;
+    const route = resolveRouteFromLocation();
+    if (route.pageId === 'post' && route.postId) {
+        openPostById(route.postId, { skipRouteUpdate: true, replaceRoute: replace, track });
+        updateBrowserState('post', {
+            post: state.posts.find((item) => item.id === route.postId),
+            replace,
+            track
+        });
+        return;
+    }
+
+    activePostId = null;
+    showPage(route.pageId, { skipRouteUpdate: true, replaceRoute: replace, track });
+    updateBrowserState(route.pageId, { replace, track });
+}
+
+function handlePopState() {
+    applyRouteFromLocation({ replace: true, track: true });
+}
+
+function applyStaticRouteHrefs() {
+    const routeAnchors = document.querySelectorAll('a[data-page]');
+    routeAnchors.forEach((anchor) => {
+        const pageId = anchor.getAttribute('data-page');
+        if (!pageId) return;
+        const route = ROUTE_PATHS[pageId] || '/';
+        anchor.setAttribute('href', withBasePath(route));
+    });
+}
+
 function bindStaticUIEvents() {
     document.addEventListener('click', handleNavigationClick);
 
@@ -1327,6 +1661,7 @@ function bindStaticUIEvents() {
 }
 
 async function initApp() {
+    applyStaticRouteHrefs();
     bindStaticUIEvents();
 
     const storedLocale = localStorage.getItem(storageKeys.locale);
@@ -1336,10 +1671,13 @@ async function initApp() {
     applyStoredThemeOverride();
     updateTheme();
     await bootstrapContent();
+    await fetchLastfmRecent();
+    applyRouteFromLocation({ replace: true, track: true });
     handleMobileNavScroll();
     window.addEventListener('scroll', onWindowScroll, { passive: true });
     window.addEventListener('resize', handleMobileNavScroll);
     document.addEventListener('keydown', handleModalKeydown);
+    window.addEventListener('popstate', handlePopState);
     document.getElementById('comments-modal').addEventListener('click', handleModalBackdropClick);
     document.getElementById('message-modal').addEventListener('click', handleModalBackdropClick);
 
@@ -1351,6 +1689,7 @@ async function initApp() {
     }
 
     setInterval(updateTheme, 60000);
+    setInterval(fetchLastfmRecent, LASTFM_REFRESH_MS);
 }
 
 initApp();
