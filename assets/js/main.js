@@ -7,9 +7,16 @@ let activeModalId = null;
 let lastFocusedElement = null;
 let lastFocusFallbackSelector = '';
 let localeRequestId = 0;
+let lastfmSyncPulseTimeout = null;
 const PAGE_TRANSITION_MS = 420;
 const LOADER_MIN_MS = 600;
-const LASTFM_REFRESH_MS = 60000;
+const LASTFM_REFRESH_PLAYING_MS = 10000;
+const LASTFM_REFRESH_IDLE_MS = 30000;
+const LASTFM_REFRESH_HIDDEN_MS = 60000;
+const LASTFM_REFRESH_ERROR_MS = 45000;
+const GITHUB_REFRESH_VISIBLE_MS = 120000;
+const GITHUB_REFRESH_HIDDEN_MS = 300000;
+const DASHBOARD_REORDER_DEBOUNCE_MS = 180;
 const loaderStartAt = Date.now();
 const CONTACT_TARGET_EMAIL = 'ola@seuemail.com';
 const SITE_TITLE_DEFAULT = 'Thierry Rene Matos - Dashboard Biografico, meu.ponto e Galeria';
@@ -31,11 +38,41 @@ const APP_BASE_PATH = (() => {
     return '';
 })();
 const LASTFM_ENDPOINT = `${APP_BASE_PATH}/api/lastfm-recent.php`;
+const GITHUB_ENDPOINT = `${APP_BASE_PATH}/api/github-activity.php`;
 const SUPPORTED_LOCALES = ['pt-BR', 'en-US'];
 const DEFAULT_LOCALE = 'pt-BR';
 const I18N_BASE_PATH = 'data/i18n';
 let currentLocale = DEFAULT_LOCALE;
 let localeMessages = {};
+let lastfmSyncTimer = null;
+let lastfmSyncInFlight = false;
+let lastfmTrackSnapshotKey = '';
+let lastfmTrackSnapshotHydrated = false;
+let musicAlertHideTimeout = null;
+let musicAlertRemoveTimeout = null;
+let musicAlertGlassSeq = 0;
+let dashboardReorderTimer = null;
+let githubSyncTimer = null;
+let githubSyncInFlight = false;
+
+const DASHBOARD_CARD_PRIORITY = {
+    lastfm: 1,
+    spotify: 2,
+    github: 3,
+    youtube: 4,
+    strava: 5,
+    twitch: 6,
+    producthunt: 7,
+    instagram: 8,
+    threads: 9,
+    linkedin: 10,
+    x: 11,
+    steam: 12,
+    dribbble: 13,
+    behance: 14,
+    letterboxd: 15,
+    goodreads: 16
+};
 
 const storageKeys = {
     likes: 'thierry.likes.v1',
@@ -254,7 +291,10 @@ const state = {
     },
     likes: {},
     comments: {},
-    messages: {}
+    messages: {},
+    lastfmRecent: [],
+    dashboardCards: new Map(),
+    dashboardOrderSignature: ''
 };
 
 function normalizeLocale(raw) {
@@ -285,6 +325,105 @@ function escapeHtml(value) {
 
 function escapeAttr(value) {
     return escapeHtml(value).replaceAll('`', '&#96;');
+}
+
+function formatUpdateClock(ts) {
+    if (!Number.isFinite(ts) || ts <= 0) return '--:--';
+    return new Date(ts).toLocaleTimeString(currentLocale, {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function updateDashboardCardStatusLabel(cardId, status = 'idle', timestamp = Date.now()) {
+    const card = state.dashboardCards.get(cardId);
+    if (!card || !card.statusEl) return;
+
+    const clock = formatUpdateClock(timestamp);
+    if (status === 'ok') {
+        card.statusEl.textContent = `upd ${clock}`;
+        return;
+    }
+    if (status === 'error') {
+        card.statusEl.textContent = `erro ${clock}`;
+        return;
+    }
+    card.statusEl.textContent = 'upd --:--';
+}
+
+function renderDashboardCardsOrder() {
+    const grid = document.querySelector('#page-dashboard .dashboard-grid');
+    const hero = grid?.querySelector('.dashboard-hero');
+    if (!grid || !hero) return;
+
+    const sortedCards = [...state.dashboardCards.values()]
+        .sort((a, b) => {
+            if (a.lastUpdatedAt !== b.lastUpdatedAt) return b.lastUpdatedAt - a.lastUpdatedAt;
+            if (a.priority !== b.priority) return a.priority - b.priority;
+            return a.initialIndex - b.initialIndex;
+        });
+
+    const signature = sortedCards.map((item) => item.id).join('|');
+    if (signature === state.dashboardOrderSignature) return;
+    state.dashboardOrderSignature = signature;
+
+    grid.appendChild(hero);
+    sortedCards.forEach((item) => grid.appendChild(item.el));
+}
+
+function scheduleDashboardCardsReorder() {
+    if (dashboardReorderTimer) {
+        window.clearTimeout(dashboardReorderTimer);
+    }
+    dashboardReorderTimer = window.setTimeout(() => {
+        dashboardReorderTimer = null;
+        renderDashboardCardsOrder();
+    }, DASHBOARD_REORDER_DEBOUNCE_MS);
+}
+
+function markDashboardCardUpdated(cardId, status = 'ok') {
+    const card = state.dashboardCards.get(cardId);
+    if (!card) return;
+    card.lastUpdatedAt = Date.now();
+    updateDashboardCardStatusLabel(cardId, status, card.lastUpdatedAt);
+    scheduleDashboardCardsReorder();
+}
+
+function setupDashboardCardsLiveOrder() {
+    const cards = document.querySelectorAll('#page-dashboard .dashboard-grid > .grid-item:not(.dashboard-hero)');
+    state.dashboardCards.clear();
+
+    cards.forEach((cardEl, index) => {
+        const cardId = cardEl.getAttribute('data-dashboard-card-id') || `card-${index + 1}`;
+        const statusEl = document.createElement('span');
+        statusEl.className = 'card-update-status';
+        statusEl.textContent = 'upd --:--';
+        cardEl.appendChild(statusEl);
+
+        state.dashboardCards.set(cardId, {
+            id: cardId,
+            el: cardEl,
+            statusEl,
+            initialIndex: index,
+            priority: DASHBOARD_CARD_PRIORITY[cardId] || 999,
+            lastUpdatedAt: 0
+        });
+    });
+
+    renderDashboardCardsOrder();
+}
+
+function getRelativeMinutesLabelFromIso(isoDate) {
+    if (!isoDate) return '';
+    const timestamp = Date.parse(isoDate);
+    if (!Number.isFinite(timestamp)) return '';
+    const diffMinutes = Math.max(0, Math.floor((Date.now() - timestamp) / 60000));
+    if (diffMinutes < 1) return 'agora';
+    if (diffMinutes < 60) return `${diffMinutes} min`;
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) return `${diffHours}h`;
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays}d`;
 }
 
 async function loadLocaleMessages(locale) {
@@ -416,6 +555,9 @@ function applyLocaleToStaticContent() {
     setText('#message-modal-help', 'modals.message.help', 'Interacao local para prototipo de UX.');
     setPlaceholder('#message-input', 'modals.message.placeholder', 'Escreva sua mensagem privada');
     setText('#message-submit', 'modals.message.submit', 'Enviar');
+    setText('#lastfm-day-modal-title', 'modals.lastfm_day.title', 'Musicas tocadas hoje');
+    setText('#lastfm-day-modal-help', 'modals.lastfm_day.help', 'Faixas agrupadas por repeticao no dia atual.');
+    setText('#lastfm-day-modal-close', 'common.close', 'fechar');
 
     const themeToggle = document.getElementById('theme-toggle');
     if (themeToggle) {
@@ -736,7 +878,7 @@ function closeModal(modalId, options = { restoreFocus: true }) {
 
     modal.classList.add('modal-hidden');
 
-    const stillOpen = document.querySelector('#comments-modal:not(.modal-hidden), #message-modal:not(.modal-hidden)');
+    const stillOpen = document.querySelector('.app-modal:not(.modal-hidden)');
     if (!stillOpen) {
         document.body.classList.remove('modal-open');
         activeModalId = null;
@@ -774,8 +916,7 @@ function handleModalKeydown(event) {
 
     if (event.key === 'Escape') {
         event.preventDefault();
-        if (activeModalId === 'comments-modal') closeCommentsModal();
-        if (activeModalId === 'message-modal') closeMessageModal();
+        closeModal(activeModalId);
         return;
     }
 
@@ -797,8 +938,10 @@ function handleModalKeydown(event) {
 }
 
 function handleModalBackdropClick(event) {
-    if (event.target.id === 'comments-modal') closeCommentsModal();
-    if (event.target.id === 'message-modal') closeMessageModal();
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    if (!target.classList.contains('app-modal')) return;
+    if (!target.classList.contains('modal-hidden')) closeModal(target.id);
 }
 
 async function loadJson(path) {
@@ -817,8 +960,9 @@ function updateLastfmBars(recent = [], nowPlaying = false) {
         return Math.min(92, Math.max(24, base + (charCode % 26) - 13));
     });
 
-    barsRoot.innerHTML = heights.map((height) => `
-        <div class="w-2 ${nowPlaying ? 'bg-red-500' : 'bg-zinc-500'}" style="height:${height}%"></div>
+    barsRoot.classList.toggle('is-playing', Boolean(nowPlaying));
+    barsRoot.innerHTML = heights.map((height, index) => `
+        <div class="lastfm-bar" style="--bar-height:${height}%; --bar-delay:${index * 85}ms"></div>
     `).join('');
 }
 
@@ -897,16 +1041,374 @@ function getLastfmStatusModel(nowPlaying, playedAtUnix) {
 function updateLastfmCardUi(model) {
     const trackEl = document.getElementById('lastfm-track');
     const statusEl = document.getElementById('lastfm-status');
-    const statusIconEl = document.getElementById('lastfm-status-icon');
-    if (!trackEl || !statusEl || !statusIconEl) return;
+    const cardEl = document.getElementById('listening-log-card');
+    if (!trackEl || !statusEl || !cardEl) return;
 
     trackEl.textContent = model.trackLine;
+    if (trackEl instanceof HTMLAnchorElement) {
+        const trackUrl = String(model.trackUrl || '').trim();
+        if (trackUrl) {
+            trackEl.href = trackUrl;
+        } else {
+            trackEl.href = 'https://www.last.fm';
+        }
+    }
     statusEl.textContent = model.statusLabel;
     statusEl.classList.remove('text-red-500', 'text-amber-400', 'text-zinc-500');
     statusEl.classList.add(model.statusClass);
-    statusIconEl.classList.toggle('is-playing', Boolean(model.nowPlaying));
+    const cardState = model.nowPlaying
+        ? 'playing'
+        : model.statusLabel === 'Offline'
+            ? 'offline'
+            : model.statusLabel === 'Idle'
+                ? 'idle'
+                : 'recent';
+    cardEl.setAttribute('data-lastfm-state', cardState);
+
+    cardEl.classList.remove('lastfm-sync-pulse');
+    void cardEl.offsetWidth;
+    cardEl.classList.add('lastfm-sync-pulse');
+    if (lastfmSyncPulseTimeout) window.clearTimeout(lastfmSyncPulseTimeout);
+    lastfmSyncPulseTimeout = window.setTimeout(() => {
+        cardEl.classList.remove('lastfm-sync-pulse');
+    }, 460);
+
     updateLastfmBars(model.recent, model.nowPlaying);
     setLastfmAlbumBackground(model.albumArt || '');
+}
+
+function isSameLocalDay(timestampMs) {
+    const targetDate = new Date(timestampMs);
+    const now = new Date();
+    return targetDate.getFullYear() === now.getFullYear()
+        && targetDate.getMonth() === now.getMonth()
+        && targetDate.getDate() === now.getDate();
+}
+
+function getGroupedLastfmTracksForToday() {
+    const groupedMap = new Map();
+
+    state.lastfmRecent.forEach((track) => {
+        const trackName = String(track?.name || '').trim();
+        const artistName = String(track?.artist || '').trim();
+        if (!trackName && !artistName) return;
+
+        const isNowPlaying = Boolean(track?.is_now_playing);
+        const playedAtUnix = Number(track?.played_at_unix || 0);
+        const isToday = isNowPlaying || (playedAtUnix > 0 && isSameLocalDay(playedAtUnix * 1000));
+        if (!isToday) return;
+
+        const key = `${trackName.toLowerCase()}::${artistName.toLowerCase()}`;
+        const albumName = String(track?.album || '').trim();
+        const trackUrl = String(track?.url || '').trim();
+        const current = groupedMap.get(key) || {
+            name: trackName || t('modals.lastfm_day.untitled', 'Faixa sem titulo'),
+            artist: artistName || t('modals.lastfm_day.unknown_artist', 'Artista desconhecido'),
+            count: 0,
+            isNowPlaying: false,
+            albums: new Map(),
+            urls: new Map()
+        };
+
+        current.count += 1;
+        if (isNowPlaying) current.isNowPlaying = true;
+        if (albumName) {
+            current.albums.set(albumName, (current.albums.get(albumName) || 0) + 1);
+        }
+        if (trackUrl) {
+            current.urls.set(trackUrl, (current.urls.get(trackUrl) || 0) + 1);
+        }
+        groupedMap.set(key, current);
+    });
+
+    return [...groupedMap.values()].map((item) => {
+        const albumEntries = [...item.albums.entries()].sort((a, b) => b[1] - a[1]);
+        const urlEntries = [...item.urls.entries()].sort((a, b) => b[1] - a[1]);
+        const topAlbum = albumEntries[0]?.[0] || '';
+        const topUrl = urlEntries[0]?.[0] || 'https://www.last.fm';
+        const uniqueAlbums = albumEntries.length;
+        let albumLabel = topAlbum || t('modals.lastfm_day.unknown_album', 'Album nao informado');
+        if (uniqueAlbums > 1 && topAlbum) {
+            albumLabel = `${topAlbum} +${uniqueAlbums - 1}`;
+        }
+
+        return {
+            name: item.name,
+            artist: item.artist,
+            count: item.count,
+            isNowPlaying: item.isNowPlaying,
+            albumLabel,
+            refUrl: topUrl
+        };
+    }).sort((a, b) => {
+        if (b.count !== a.count) return b.count - a.count;
+        if (a.isNowPlaying !== b.isNowPlaying) return a.isNowPlaying ? -1 : 1;
+        return a.name.localeCompare(b.name, currentLocale);
+    });
+}
+
+function renderLastfmDayModal() {
+    const root = document.getElementById('lastfm-day-modal-list');
+    if (!root) return;
+
+    const groupedTracks = getGroupedLastfmTracksForToday();
+    root.innerHTML = '';
+
+    if (!groupedTracks.length) {
+        const empty = document.createElement('p');
+        empty.className = 'text-sm opacity-70';
+        empty.textContent = t('modals.lastfm_day.empty', 'Sem musicas registradas hoje ate agora.');
+        root.appendChild(empty);
+        return;
+    }
+
+    const list = document.createElement('div');
+    list.className = 'lastfm-day-list';
+
+    groupedTracks.forEach((track) => {
+        const item = document.createElement('article');
+        item.className = 'lastfm-day-item';
+
+        const info = document.createElement('a');
+        info.className = 'lastfm-day-link';
+        info.href = track.refUrl;
+        info.target = '_blank';
+        info.rel = 'noopener noreferrer';
+        info.setAttribute('aria-label', `Abrir referencia no Last.fm: ${track.name} - ${track.artist}`);
+        const name = document.createElement('div');
+        name.className = 'lastfm-day-track';
+        name.textContent = track.name;
+
+        const artist = document.createElement('div');
+        artist.className = 'lastfm-day-artist';
+        artist.textContent = track.artist;
+
+        const album = document.createElement('div');
+        album.className = 'lastfm-day-album';
+        album.textContent = track.albumLabel;
+
+        info.appendChild(name);
+        info.appendChild(artist);
+        info.appendChild(album);
+
+        const count = document.createElement('div');
+        count.className = 'lastfm-day-count';
+        count.textContent = `${track.count}x`;
+        count.setAttribute('aria-label', t('modals.lastfm_day.count_aria', `${track.count} reproducoes`).replace('{count}', String(track.count)));
+
+        item.appendChild(info);
+        item.appendChild(count);
+        list.appendChild(item);
+    });
+
+    root.appendChild(list);
+}
+
+function openLastfmDayModal() {
+    renderLastfmDayModal();
+    openModal('lastfm-day-modal');
+}
+
+function closeLastfmDayModal() {
+    closeModal('lastfm-day-modal');
+}
+
+function handleLastfmCardKeydown(event) {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    openLastfmDayModal();
+}
+
+function getLastfmTrackSnapshotKey(trackName, artistName) {
+    const normalizedTrack = String(trackName || '').trim().toLowerCase();
+    const normalizedArtist = String(artistName || '').trim().toLowerCase();
+    if (!normalizedTrack && !normalizedArtist) return '';
+    return `${normalizedTrack}::${normalizedArtist}`;
+}
+
+function removeMusicAlertToast(toastEl) {
+    if (!toastEl) return;
+    toastEl.classList.add('is-leaving');
+
+    if (musicAlertRemoveTimeout) window.clearTimeout(musicAlertRemoveTimeout);
+    musicAlertRemoveTimeout = window.setTimeout(() => {
+        if (toastEl.parentNode) toastEl.parentNode.removeChild(toastEl);
+    }, 240);
+}
+
+function getLiquidAlertPalette(seedSource = '') {
+    const seed = String(seedSource || 'lastfm').toLowerCase();
+    let hash = 0;
+    for (let i = 0; i < seed.length; i += 1) {
+        hash = ((hash << 5) - hash + seed.charCodeAt(i)) | 0;
+    }
+    const baseHue = Math.abs(hash % 360);
+    const accent = `hsl(${baseHue} 86% 66%)`;
+    const accentSoft = `hsl(${(baseHue + 32) % 360} 88% 72%)`;
+    return { accent, accentSoft };
+}
+
+function createMusicAlertGlassSvg() {
+    const ns = 'http://www.w3.org/2000/svg';
+    const seq = ++musicAlertGlassSeq;
+    const gradientA = `musicGlassA${seq}`;
+    const gradientB = `musicGlassB${seq}`;
+    const blurA = `musicGlassBlur${seq}`;
+
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'music-alert-glass-svg');
+    svg.setAttribute('viewBox', '0 0 360 96');
+    svg.setAttribute('preserveAspectRatio', 'none');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.innerHTML = `
+        <defs>
+            <linearGradient id="${gradientA}" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.62"/>
+                <stop offset="52%" stop-color="#ffffff" stop-opacity="0.12"/>
+                <stop offset="100%" stop-color="#ffffff" stop-opacity="0.04"/>
+            </linearGradient>
+            <radialGradient id="${gradientB}" cx="24%" cy="8%" r="62%">
+                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.48"/>
+                <stop offset="58%" stop-color="#ffffff" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="${blurA}" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="6"/>
+            </filter>
+        </defs>
+        <rect class="music-alert-glass-frame" x="1" y="1" width="358" height="94" fill="url(#${gradientA})" stroke="rgba(255,255,255,0.28)" stroke-width="1"/>
+        <ellipse class="music-alert-glass-caustic" cx="82" cy="14" rx="120" ry="24" fill="url(#${gradientB})" filter="url(#${blurA})"/>
+        <path class="music-alert-glass-specular" d="M6 10 H170" fill="none" stroke="rgba(255,255,255,0.52)" stroke-width="1.2"/>
+    `;
+    return svg;
+}
+
+function createMusicAlertGlyph(type = 'play') {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('stroke-width', '1.8');
+    svg.setAttribute('stroke-linecap', 'round');
+    svg.setAttribute('stroke-linejoin', 'round');
+    svg.setAttribute('aria-hidden', 'true');
+
+    if (type === 'note') {
+        svg.innerHTML = '<path d="M10 17V7l8-2v10"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="15.5" cy="15.5" r="2.5"/>';
+        return svg;
+    }
+
+    svg.innerHTML = '<path d="M8 6l10 6-10 6z" fill="currentColor" stroke="none"/>';
+    return svg;
+}
+
+function showMusicAlert(trackName, artistName, albumName, albumArt, trackUrl = '', nowPlaying = true) {
+    const alertStack = document.getElementById('music-alert-stack');
+    if (!alertStack) return;
+
+    const toast = document.createElement('article');
+    toast.className = 'music-alert-toast';
+    toast.dataset.state = nowPlaying ? 'playing' : 'paused';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-label', `Agora tocando: ${trackName} por ${artistName || 'artista desconhecido'}${albumName ? ` no album ${albumName}` : ''}`);
+    const palette = getLiquidAlertPalette(`${trackName}${artistName}${albumName}`);
+    toast.style.setProperty('--music-liquid-accent', palette.accent);
+    toast.style.setProperty('--music-liquid-accent-soft', palette.accentSoft);
+    toast.appendChild(createMusicAlertGlassSvg());
+
+    if (albumArt) {
+        const coverImage = document.createElement('img');
+        coverImage.className = 'music-alert-cover';
+        coverImage.src = String(albumArt).replace(/["\\\n\r]/g, '');
+        coverImage.alt = '';
+        coverImage.decoding = 'async';
+        coverImage.referrerPolicy = 'no-referrer';
+        coverImage.addEventListener('error', () => {
+            if (!coverImage.parentNode) return;
+            const fallbackCover = document.createElement('div');
+            fallbackCover.className = 'music-alert-fallback-cover';
+            coverImage.parentNode.replaceChild(fallbackCover, coverImage);
+        });
+        toast.appendChild(coverImage);
+    } else {
+        const fallbackCover = document.createElement('div');
+        fallbackCover.className = 'music-alert-fallback-cover';
+        fallbackCover.setAttribute('aria-hidden', 'true');
+        fallbackCover.appendChild(createMusicAlertGlyph('note'));
+        toast.appendChild(fallbackCover);
+    }
+
+    const content = document.createElement('a');
+    content.className = 'music-alert-content';
+    content.href = String(trackUrl || 'https://www.last.fm');
+    content.target = '_blank';
+    content.rel = 'noopener noreferrer';
+    const label = document.createElement('div');
+    label.className = 'music-alert-label';
+    label.textContent = nowPlaying ? t('alerts.current_song', 'Current Song') : t('alerts.paused', 'Paused');
+
+    const title = document.createElement('div');
+    title.className = 'music-alert-title';
+    title.textContent = trackName || 'Faixa sem titulo';
+
+    const artist = document.createElement('div');
+    artist.className = 'music-alert-artist';
+    artist.textContent = artistName || 'Artista desconhecido';
+
+    const album = document.createElement('div');
+    album.className = 'music-alert-album';
+    album.textContent = albumName || t('modals.lastfm_day.unknown_album', 'Album nao informado');
+
+    const source = document.createElement('div');
+    source.className = 'music-alert-source';
+    source.textContent = 'Last.fm';
+
+    content.appendChild(label);
+    content.appendChild(title);
+    content.appendChild(artist);
+    content.appendChild(album);
+    content.appendChild(source);
+    toast.appendChild(content);
+
+    const action = document.createElement('div');
+    action.className = 'music-alert-action';
+    action.setAttribute('aria-hidden', 'true');
+    action.appendChild(createMusicAlertGlyph('play'));
+    toast.appendChild(action);
+
+    const liquidBar = document.createElement('div');
+    liquidBar.className = 'music-alert-liquid-bar';
+    liquidBar.setAttribute('aria-hidden', 'true');
+    toast.appendChild(liquidBar);
+
+    const existingToast = alertStack.querySelector('.music-alert-toast');
+    if (existingToast) existingToast.remove();
+    alertStack.appendChild(toast);
+
+    window.requestAnimationFrame(() => {
+        toast.classList.add('is-visible');
+    });
+
+    if (musicAlertHideTimeout) window.clearTimeout(musicAlertHideTimeout);
+    musicAlertHideTimeout = window.setTimeout(() => {
+        removeMusicAlertToast(toast);
+    }, 3000);
+}
+
+function notifyIfTrackChanged(trackName, artistName, albumName, albumArt, trackUrl = '', nowPlaying = true) {
+    const nextTrackKey = getLastfmTrackSnapshotKey(trackName, artistName);
+    if (!nextTrackKey) return;
+
+    if (!lastfmTrackSnapshotHydrated) {
+        lastfmTrackSnapshotKey = nextTrackKey;
+        lastfmTrackSnapshotHydrated = true;
+        return;
+    }
+
+    if (nextTrackKey === lastfmTrackSnapshotKey) return;
+
+    lastfmTrackSnapshotKey = nextTrackKey;
+    showMusicAlert(trackName, artistName, albumName, albumArt, trackUrl, nowPlaying);
 }
 
 async function fetchLastfmRecent() {
@@ -926,10 +1428,14 @@ async function fetchLastfmRecent() {
         const payload = await response.json();
         const track = payload?.track;
         const recent = Array.isArray(payload?.recent) ? payload.recent : [];
+        state.lastfmRecent = recent;
+        if (activeModalId === 'lastfm-day-modal') renderLastfmDayModal();
         const nowPlaying = Boolean(payload?.now_playing);
         const trackName = track?.name || '';
         const artistName = track?.artist || '';
+        const albumName = track?.album || '';
         const albumArt = track?.album_art || '';
+        const trackUrl = track?.url || '';
         const playedAtUnix = Number(track?.played_at_unix || 0);
 
         if (!trackName && !artistName) {
@@ -939,9 +1445,11 @@ async function fetchLastfmRecent() {
                 statusClass: 'text-amber-400',
                 recent,
                 nowPlaying: false,
-                albumArt: ''
+                albumArt: '',
+                trackUrl: ''
             });
-            return;
+            markDashboardCardUpdated('lastfm', 'ok');
+            return { ok: true, nowPlaying: false };
         }
 
         const statusModel = getLastfmStatusModel(nowPlaying, playedAtUnix);
@@ -951,8 +1459,12 @@ async function fetchLastfmRecent() {
             statusClass: statusModel.statusClass,
             recent,
             nowPlaying,
-            albumArt
+            albumArt,
+            trackUrl
         });
+        notifyIfTrackChanged(trackName, artistName, albumName, albumArt, trackUrl, nowPlaying);
+        markDashboardCardUpdated('lastfm', 'ok');
+        return { ok: true, nowPlaying };
     } catch (error) {
         console.warn('falha ao sincronizar lastfm:', error.message);
         updateLastfmCardUi({
@@ -961,11 +1473,179 @@ async function fetchLastfmRecent() {
             statusClass: 'text-zinc-500',
             recent: [],
             nowPlaying: false,
-            albumArt: ''
+            albumArt: '',
+            trackUrl: ''
         });
+        markDashboardCardUpdated('lastfm', 'error');
+        return { ok: false, nowPlaying: false };
     } finally {
         window.clearTimeout(timeoutId);
     }
+}
+
+function updateGithubCardUi(model) {
+    const titleEl = document.getElementById('github-activity-title');
+    const metaEl = document.getElementById('github-activity-meta');
+    const starredEl = document.getElementById('github-starred-repo');
+    const commitCountEl = document.getElementById('github-commit-count');
+    const weekGridEl = document.getElementById('github-week-grid');
+    if (!titleEl || !metaEl || !starredEl || !commitCountEl || !weekGridEl) return;
+
+    titleEl.textContent = model.title;
+    titleEl.href = model.url || 'https://github.com/';
+    metaEl.textContent = model.meta;
+    const starredName = String(model.starredRepoName || '').trim();
+    const starredUrl = String(model.starredRepoUrl || '').trim();
+    const starredTextEl = starredEl.querySelector('span:last-child');
+    if (starredTextEl) {
+        starredTextEl.textContent = starredName ? starredName : 'Sem favoritos recentes';
+    } else {
+        starredEl.textContent = starredName ? `★ ${starredName}` : '★ Sem favoritos recentes';
+    }
+    starredEl.href = starredUrl || 'https://github.com/stars/thierryrene';
+
+    const weekCommits = Array.isArray(model.weekCommits) ? model.weekCommits : [0, 0, 0, 0, 0, 0, 0];
+    const totalWeekCommits = Number(model.totalWeekCommits || 0);
+    const commitLabel = totalWeekCommits === 1 ? 'commit na semana' : 'commits na semana';
+    commitCountEl.textContent = `${totalWeekCommits} ${commitLabel}`;
+
+    const max = Math.max(...weekCommits, 0);
+    const levelFor = (count) => {
+        if (!count || count <= 0) return 0;
+        if (max <= 2) return Math.min(4, count);
+        const ratio = count / max;
+        if (ratio < 0.34) return 1;
+        if (ratio < 0.56) return 2;
+        if (ratio < 0.8) return 3;
+        return 4;
+    };
+
+    weekGridEl.innerHTML = weekCommits.map((count, index) => {
+        const level = levelFor(Number(count || 0));
+        const safeCount = Number(count || 0);
+        return `<span class="github-week-cell lvl-${level}" title="Dia ${index + 1}: ${safeCount} commit(s)"></span>`;
+    }).join('');
+}
+
+async function fetchGithubActivity() {
+    try {
+        const response = await fetch(GITHUB_ENDPOINT, { cache: 'no-store' });
+        if (!response.ok) {
+            throw new Error(`github endpoint error: ${response.status}`);
+        }
+
+        const payload = await response.json();
+        const activity = payload?.activity || {};
+        const username = payload?.username || 'github';
+        const title = String(activity.title || '').trim();
+        const repo = String(activity.repo || '').trim();
+        const type = String(activity.type || 'atividade').trim();
+        const createdAt = String(activity.created_at || '').trim();
+        const relative = getRelativeMinutesLabelFromIso(createdAt);
+        const safeTitle = title || `Ultima atividade de ${username}`;
+        const weekCommits = Array.isArray(payload?.week?.commits) ? payload.week.commits : [0, 0, 0, 0, 0, 0, 0];
+        const totalWeekCommits = Number(payload?.week?.total_commits || 0);
+        const starredRepo = payload?.starred || {};
+
+        updateGithubCardUi({
+            title: safeTitle,
+            url: activity.url || `https://github.com/${username}`,
+            meta: [type, repo, relative].filter(Boolean).join(' • '),
+            weekCommits,
+            totalWeekCommits,
+            starredRepoName: starredRepo.name || '',
+            starredRepoUrl: starredRepo.url || ''
+        });
+        markDashboardCardUpdated('github', 'ok');
+        return { ok: true };
+    } catch (error) {
+        console.warn('falha ao sincronizar github:', error.message);
+        updateGithubCardUi({
+            title: 'GitHub indisponivel',
+            url: 'https://github.com/',
+            meta: 'erro de sync',
+            weekCommits: [0, 0, 0, 0, 0, 0, 0],
+            totalWeekCommits: 0,
+            starredRepoName: '',
+            starredRepoUrl: ''
+        });
+        markDashboardCardUpdated('github', 'error');
+        return { ok: false };
+    }
+}
+
+function clearGithubSyncTimer() {
+    if (!githubSyncTimer) return;
+    window.clearTimeout(githubSyncTimer);
+    githubSyncTimer = null;
+}
+
+function getNextGithubSyncDelay() {
+    if (document.visibilityState === 'hidden') {
+        return GITHUB_REFRESH_HIDDEN_MS;
+    }
+    return GITHUB_REFRESH_VISIBLE_MS;
+}
+
+async function runGithubSyncCycle() {
+    if (githubSyncInFlight) return;
+    githubSyncInFlight = true;
+    await fetchGithubActivity();
+    githubSyncInFlight = false;
+
+    clearGithubSyncTimer();
+    githubSyncTimer = window.setTimeout(runGithubSyncCycle, getNextGithubSyncDelay());
+}
+
+function startGithubRealtimeSync() {
+    clearGithubSyncTimer();
+    runGithubSyncCycle();
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState !== 'visible') return;
+        clearGithubSyncTimer();
+        runGithubSyncCycle();
+    });
+}
+
+function clearLastfmSyncTimer() {
+    if (!lastfmSyncTimer) return;
+    window.clearTimeout(lastfmSyncTimer);
+    lastfmSyncTimer = null;
+}
+
+function getNextLastfmSyncDelay(syncResult) {
+    if (document.visibilityState === 'hidden') {
+        return LASTFM_REFRESH_HIDDEN_MS;
+    }
+
+    if (!syncResult || !syncResult.ok) {
+        return LASTFM_REFRESH_ERROR_MS;
+    }
+
+    return syncResult.nowPlaying ? LASTFM_REFRESH_PLAYING_MS : LASTFM_REFRESH_IDLE_MS;
+}
+
+async function runLastfmSyncCycle() {
+    if (lastfmSyncInFlight) return;
+    lastfmSyncInFlight = true;
+    const syncResult = await fetchLastfmRecent();
+    lastfmSyncInFlight = false;
+
+    const nextDelay = getNextLastfmSyncDelay(syncResult);
+    clearLastfmSyncTimer();
+    lastfmSyncTimer = window.setTimeout(runLastfmSyncCycle, nextDelay);
+}
+
+function startLastfmRealtimeSync() {
+    clearLastfmSyncTimer();
+    runLastfmSyncCycle();
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState !== 'visible') return;
+        clearLastfmSyncTimer();
+        runLastfmSyncCycle();
+    });
 }
 
 async function bootstrapContent() {
@@ -1642,6 +2322,9 @@ function bindStaticUIEvents() {
     const blogList = document.getElementById('blog-list');
     const postRelated = document.getElementById('post-related');
     const postPage = document.getElementById('page-post');
+    const lastfmCard = document.getElementById('listening-log-card');
+    const lastfmTrackLink = document.getElementById('lastfm-track');
+    const lastfmDayClose = document.getElementById('lastfm-day-modal-close');
 
     langPt?.addEventListener('click', handleLocaleClick);
     langEn?.addEventListener('click', handleLocaleClick);
@@ -1658,10 +2341,15 @@ function bindStaticUIEvents() {
     blogList?.addEventListener('keydown', handleBlogListKeydown);
     postRelated?.addEventListener('click', handleRelatedPostClick);
     postPage?.addEventListener('click', handleShareClick);
+    lastfmCard?.addEventListener('click', openLastfmDayModal);
+    lastfmCard?.addEventListener('keydown', handleLastfmCardKeydown);
+    lastfmTrackLink?.addEventListener('click', (event) => event.stopPropagation());
+    lastfmDayClose?.addEventListener('click', closeLastfmDayModal);
 }
 
 async function initApp() {
     applyStaticRouteHrefs();
+    setupDashboardCardsLiveOrder();
     bindStaticUIEvents();
 
     const storedLocale = localStorage.getItem(storageKeys.locale);
@@ -1671,15 +2359,17 @@ async function initApp() {
     applyStoredThemeOverride();
     updateTheme();
     await bootstrapContent();
-    await fetchLastfmRecent();
+    startLastfmRealtimeSync();
+    startGithubRealtimeSync();
     applyRouteFromLocation({ replace: true, track: true });
     handleMobileNavScroll();
     window.addEventListener('scroll', onWindowScroll, { passive: true });
     window.addEventListener('resize', handleMobileNavScroll);
     document.addEventListener('keydown', handleModalKeydown);
     window.addEventListener('popstate', handlePopState);
-    document.getElementById('comments-modal').addEventListener('click', handleModalBackdropClick);
-    document.getElementById('message-modal').addEventListener('click', handleModalBackdropClick);
+    document.getElementById('comments-modal')?.addEventListener('click', handleModalBackdropClick);
+    document.getElementById('message-modal')?.addEventListener('click', handleModalBackdropClick);
+    document.getElementById('lastfm-day-modal')?.addEventListener('click', handleModalBackdropClick);
 
     if (document.readyState === 'complete') {
         hideSiteLoader();
@@ -1689,7 +2379,10 @@ async function initApp() {
     }
 
     setInterval(updateTheme, 60000);
-    setInterval(fetchLastfmRecent, LASTFM_REFRESH_MS);
+
+    window.dashboardCardTouch = (cardId, status = 'ok') => {
+        markDashboardCardUpdated(String(cardId || ''), status === 'error' ? 'error' : 'ok');
+    };
 }
 
 initApp();

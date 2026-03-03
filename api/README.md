@@ -1,29 +1,17 @@
-# API local - Last.fm
+# API local - Dashboard integrations
 
-Endpoint implementado:
+Endpoints implementados:
 - `GET /api/lastfm-recent.php`
+- `GET /api/github-activity.php`
 
-Variaveis de ambiente necessarias no servidor:
+## Last.fm
+Variaveis de ambiente necessarias:
 - `LASTFM_API_KEY`
 - `LASTFM_USERNAME`
 
-Para desenvolvimento local, o endpoint tenta ler `../.env` automaticamente.
+## GitHub
+Variaveis de ambiente:
+- `GITHUB_USERNAME` (opcional; default: `thierryrene`)
+- `GITHUB_TOKEN` (opcional; recomendado para reduzir risco de rate limit)
 
-Exemplo de payload retornado:
-
-```json
-{
-  "ok": true,
-  "now_playing": true,
-  "track": {
-    "name": "Track Name",
-    "artist": "Artist Name",
-    "album": "Album Name",
-    "url": "https://www.last.fm/music/...",
-    "played_at": null
-  },
-  "recent": [
-    { "name": "Track Name", "artist": "Artist Name", "is_now_playing": true }
-  ]
-}
-```
+Para desenvolvimento local, os endpoints tentam ler `../.env` automaticamente.

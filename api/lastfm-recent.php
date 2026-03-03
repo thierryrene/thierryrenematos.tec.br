@@ -192,7 +192,7 @@ if ($apiKey === null || $username === null) {
 }
 
 $lastfmUrl = sprintf(
-    'https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=%s&api_key=%s&format=json&limit=4',
+    'https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=%s&api_key=%s&format=json&limit=100',
     rawurlencode($username),
     rawurlencode($apiKey)
 );
@@ -250,6 +250,11 @@ respond(200, [
     'recent' => array_map(static fn ($track) => [
         'name' => $track['name'] ?? '',
         'artist' => $track['artist'] ?? '',
+        'album' => $track['album'] ?? '',
+        'album_art' => $track['album_art'] ?? '',
+        'url' => $track['url'] ?? '',
         'is_now_playing' => (bool) ($track['is_now_playing'] ?? false),
-    ], array_slice($normalizedTracks, 0, 4)),
+        'played_at_unix' => $track['played_at_unix'] ?? null,
+        'played_at' => $track['played_at'] ?? null,
+    ], array_slice($normalizedTracks, 0, 100)),
 ]);

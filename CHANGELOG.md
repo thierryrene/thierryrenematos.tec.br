@@ -58,6 +58,23 @@ Este arquivo segue o padrao Keep a Changelog e versionamento semantico.
 - Card `Listening Log` aprimorado com simbolo musical animado durante `Now Playing` e fundo dinâmico com capa do álbum (centralizado + fade black) quando `album_art` estiver disponível no payload.
 - Status do card Last.fm refinado para estado real: `Now Playing` quando ativo e, quando inativo, exibição temporal da última reprodução (`Ha X min` / `Ultima HH:MM`), usando `played_at_unix` do endpoint.
 - Bloco visual do card Last.fm ajustado para dark mode com overlay mais legível sobre capa de álbum, chip de status com contraste aprimorado e text-shadow contextual no conteúdo.
+- Dashboard com ordenação ao vivo de cards por atualização: cards de integração agora registram `lastUpdatedAt`, exibem microstatus (`upd HH:MM` / `erro HH:MM`) e são reordenados dinamicamente por recência de sync.
+- Card GitHub integrado com sync em tempo real via endpoint server-side (`/api/github-activity.php`), exibindo atividade pública recente (`Push/PR/Issue/Create`), metadata temporal e participação automática na ordenação ao vivo do dashboard.
+- Card GitHub evoluído com contagem de commits da semana atual e mini-grid semanal em verde (7 dias), alimentado por série `week.commits` do endpoint.
+- Card GitHub atualizado para exibir também o último repositório favoritado (com estrela), via novo bloco `starred` no endpoint.
+- Card `Listening Log` recebeu pass de UX visual: blocos internos com estrutura brutalista (track/visualizer/status), animações sutis de sincronizacao e equalizer em `Now Playing`, com fallback em `prefers-reduced-motion`.
+- Simplificacao visual no card `Listening Log`: boxes internos removidos para manter apenas o conteudo (faixa, barras e status), preservando animacoes e estados.
+- Card `Listening Log` simplificado no status: removidos borda/chip e icone musical, mantendo apenas o texto de estado (`Now Playing`, `Offline`, etc.).
+- Sincronizacao do card `Listening Log` alterada para modo quase em tempo real com polling adaptativo: 10s em `Now Playing`, 30s em idle, 60s com aba em segundo plano e retry de 45s em erro, evitando requests concorrentes.
+- Alerta em tempo real de troca de musica adicionado: toast glass no canto do rodape com faixa/artista/capa, exibido apenas quando a musica muda e auto-dismiss em 3 segundos.
+- Estetica do toast de troca de musica evoluida para `liquid glass`: refração mais evidente, highlights internos, brilho especular animado e profundidade de vidro com suporte a `prefers-reduced-motion`.
+- Card `Listening Log` agora abre modal com historico das musicas tocadas no dia, agrupando duplicadas por faixa+artista e exibindo contagem por item.
+- Endpoint `api/lastfm-recent.php` ampliado para retornar historico recente detalhado (ate 100 itens com `played_at_unix`, `played_at`, `album` e `album_art`) para suportar agrupamento diario no frontend.
+- Toast de notificacao musical refinado para visual glass mais proximo da referencia: bloco translúcido sem arredondamentos, fundo de vidro transparente e composicao com indicador lateral de reproducao.
+- Modal de musicas do dia atualizado para exibir album por faixa agrupada (com fallback e consolidacao quando houver mais de um album para a mesma musica).
+- Links de referencia do Last.fm adicionados nos blocos textuais de musica/artista/album: card principal, itens do modal diario e conteudo textual do toast de notificacao.
+- Toast de musica recebeu camada vetorial SVG para liquid glass (caustic/reflexo/borda optica) e icones em SVG, aproximando o visual do padrao Apple sem arredondamentos.
+- Fundo do toast de musica simplificado: gradientes removidos e base alterada para preto translúcido, preservando blur e camadas de vidro.
 
 ### Planned
 - Consolidacao do prototipo HTML com melhorias de acessibilidade e semantica.

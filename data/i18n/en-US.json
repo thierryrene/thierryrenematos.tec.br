@@ -152,6 +152,15 @@
       "help": "Local interaction for UX prototyping. In production this should use an authenticated backend.",
       "placeholder": "Write your private message",
       "submit": "Send"
+    },
+    "lastfm_day": {
+      "title": "Today's played tracks",
+      "help": "Tracks grouped by repeat count for the current day.",
+      "empty": "No tracks registered today yet.",
+      "untitled": "Untitled track",
+      "unknown_artist": "Unknown artist",
+      "count_aria": "{count} plays",
+      "unknown_album": "Album not informed"
     }
   },
   "actions": {

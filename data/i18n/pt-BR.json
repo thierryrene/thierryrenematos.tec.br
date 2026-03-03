@@ -152,6 +152,15 @@
       "help": "Interacao local para prototipo de UX. Em CMS real, isso deve usar backend autenticado.",
       "placeholder": "Escreva sua mensagem privada",
       "submit": "Enviar"
+    },
+    "lastfm_day": {
+      "title": "Musicas tocadas hoje",
+      "help": "Faixas agrupadas por repeticao no dia atual.",
+      "empty": "Sem musicas registradas hoje ate agora.",
+      "untitled": "Faixa sem titulo",
+      "unknown_artist": "Artista desconhecido",
+      "count_aria": "{count} reproducoes",
+      "unknown_album": "Album nao informado"
     }
   },
   "actions": {
