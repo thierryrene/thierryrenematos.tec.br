@@ -1,0 +1,10 @@
+{
+  "updated_at": "",
+  "source": "samsung_health_export",
+  "latest_activity": null,
+  "week": {
+    "count": 0,
+    "distance_km": 0,
+    "moving_time_sec": 0
+  }
+}
