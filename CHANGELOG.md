@@ -85,6 +85,9 @@ Este arquivo segue o padrao Keep a Changelog e versionamento semantico.
 - Notificacao de musica alinhada ao layout de `notification_example.html`: estrutura minimal com capa 60x60, tipografia em 3 linhas (musica/artista/album) e icone musical discreto na lateral.
 - Notificacao de musica refinada para dark mode com contraste ampliado: base mais escura/translúcida, reflexo superior calibrado e hierarquia de texto ajustada para leitura em baixa luminosidade.
 - Correcao visual no light mode da notificacao de musica: fundo de vidro mais claro, tipografia em tons escuros e contraste ajustado (mantendo dark mode inalterado).
+- Card `Samsung Health` integrado com endpoint server-side (`/api/samsung-health.php`): leitura de arquivo local `data/samsung-health.json` (export manual), destaque de km da ultima atividade e da semana, estado de erro sem quebrar ordenacao dinamica do dashboard.
+- Endpoint `api/samsung-health.php` adicionado com contrato estavel (`ok: false` sem quebrar JSON), cache em arquivo `data/samsung-health-cache.json` (TTL 10min) e fallback para cache stale quando disponivel.
+- `data/samsung-health.json` criado como arquivo-base para input manual de dados exportados do Samsung Health.
 
 ### Planned
 - Consolidacao do prototipo HTML com melhorias de acessibilidade e semantica.

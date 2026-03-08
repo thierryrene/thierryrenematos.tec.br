@@ -1,90 +1,29 @@
 # Lembrete - Ultimas Alteracoes
 
-Data de referencia: 2026-02-17
+Data de referencia: 2026-03-07
 
-## Atualizacao para proxima sessao (2026-03-03)
+## Samsung Health integrado (2026-03-07)
 
-### Objetivo imediato
-- Substituicao de slot concluida: `ProductHunt` -> `Samsung Health` na dashboard.
-- Proximo passo: integrar dados reais do Samsung Health.
+### O que foi feito
+1. `data/samsung-health.json` criado como arquivo-base para input manual de dados exportados do Samsung Health.
+2. `api/samsung-health.php` implementado com contrato estavel (`ok: false`), cache em `data/samsung-health-cache.json` (TTL 10min) e fallback stale quando disponivel.
+3. Card `Samsung Health` no `index.html` evoluido de placeholder para card funcional com destaque de km, tipo de atividade e meta da semana.
+4. `assets/js/main.js` atualizado com constantes, estado e ciclo de sync (polling 5min/10min), integrado ao `initApp` e a ordenacao dinamica do dashboard.
+5. `api/README.md` documentado com a nova secao Samsung Health.
+6. `CHANGELOG.md` atualizado.
 
-### TODO - Samsung Health (continuidade)
-1. Definir fonte de dados para MVP
-- Opcao A: export manual do Samsung Health (CSV/JSON) e normalizacao local.
-- Opcao B: Health Connect (Android) com pipeline de export para arquivo local.
+### Proximo passo - Samsung Health
+- Alimentar `data/samsung-health.json` com um export real do Samsung Health ou Health Connect.
+  - Campos esperados: `updated_at` (ISO 8601), `source`, `latest_activity.type`, `latest_activity.distance_km`, `latest_activity.moving_time_sec`, `latest_activity.start_date`, `week.count`, `week.distance_km`, `week.moving_time_sec`.
 
-2. Definir contrato de payload do card
-- `latest_activity`: tipo, distancia_km, moving_time_sec, start_date, source.
-- `week`: count, distance_km, moving_time_sec.
-- `cache`: hit/stale/updated_at.
+## Atualizacao para proxima sessao (2026-03-03 → conteudo/blog/fotos)
 
-3. Implementar endpoint server-side
-- Criar `api/samsung-health.php`.
-- Ler arquivo normalizado em `data/samsung-health.json`.
-- Retornar fallback estavel (`ok: false` com contrato completo).
-
-4. Adicionar cache tecnico de payload
-- Arquivo: `data/samsung-health-cache.json`.
-- TTL inicial sugerido: 10 min.
-- Em falha de leitura/processamento, responder cache stale quando disponivel.
-
-5. Integrar frontend do card
-- Adicionar `SAMSUNG_HEALTH_ENDPOINT` em `assets/js/main.js`.
-- Sincronizacao com polling mais lento (5-10 min).
-- Atualizar card com:
-  - destaque de km (ultima atividade + semana)
-  - meta temporal da ultima atividade
-  - estado de erro sem quebrar ordenacao.
-
-6. Validacao final
-- Testar endpoint no container PHP.
-- Validar `node --check assets/js/main.js` e `php -l api/samsung-health.php`.
-- Atualizar `api/README.md` e `CHANGELOG.md`.
-
-## O que foi feito por ultimo
-
-1. Padronizacao de largura entre paginas internas
-- Todas as secoes principais agora usam a classe `page-shell`.
-- Token criado: `--page-max-width` em `:root`.
-- Arquivo alterado: `index.html`.
-
-2. Design system minimo iniciado
-- Tokens de espacamento/componentes em `:root`.
-- Classes base de UI criadas e aplicadas (`.ui-btn`, `.ui-card`, `.ui-label`).
-- Documento criado: `docs/design-system.md`.
-
-3. Requisitos nao-funcionais definidos e aplicados
-- Checklist criado: `docs/non-functional-checklist.md`.
-- Ajustes no HTML para SEO e a11y (meta description, skip link, aria em modais/nav, foco visivel).
-- Melhorias de performance em midia da galeria (`loading="lazy"` para imagens).
-
-4. Base pronta para CMS futuro (sem framework)
-- Conteudo separado em `data/*.json`:
-  - `data/posts.json`
-  - `data/photos.json`
-  - `data/essays.json`
-  - `data/media-map.json`
-- Documento criado: `docs/content-model.md`.
-
-5. Galeria de fotografias
-- Secao ajustada para blocos de midia (imagem/video) com legenda.
-- Interacoes locais tipo social funcionando:
-  - like (emoji)
-  - comentarios (modal)
-  - mensagem privada (modal)
-- Persistencia local via `localStorage`.
-
-6. Blog
-- Conteudos ficticios restaurados para manter composicao do layout.
-
-## Ultimo push realizado
-- Branch: `master`
-- Remoto: `origin`
-- Commit mais recente enviado: `535b8e2`
-- Mensagem: `🎨 style: padronizar largura das secoes internas no desktop`
-
-## Contexto para retomada (Blog + Fotografias)
-Objetivo: amadurecer as duas frentes sem trocar stack agora (manter HTML + Tailwind CDN + JS puro).
+### Objetivo imediato (conteudo)
+- Criar arquivos de categorias/tags (`post-categories`, `photo-tags`).
+- Implementar `content-rules.js`.
+- Modularizar render em `assets/js/render/*`.
+- Aplicar filtros expandidos em fotografias (incluindo tipo).
+- Adicionar docs editoriais (`editorial-blog` e `editorial-fotografias`).
 
 ### A. Estrutura de dados por dominio
 - Blog:
@@ -144,9 +83,7 @@ Conteudo esperado:
 - checklist de publicacao
 - frequencia de atualizacao
 
-## Ordem sugerida para proxima sessao
-1. Criar arquivos de categorias/tags (`post-categories`, `photo-tags`).
-2. Implementar `content-rules.js`.
-3. Modularizar render em `assets/js/render/*`.
-4. Aplicar filtros expandidos em fotografias (incluindo tipo).
-5. Adicionar docs editoriais (`editorial-blog` e `editorial-fotografias`).
+## Ultimo push realizado
+- Branch: `copilot/analyze-project-data`
+- Remoto: `origin`
+- Arquivos alterados: `data/samsung-health.json`, `api/samsung-health.php`, `index.html`, `assets/js/main.js`, `api/README.md`, `CHANGELOG.md`

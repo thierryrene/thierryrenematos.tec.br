@@ -1182,7 +1182,18 @@
                 <div data-dashboard-card-id="twitch" class="grid-item grid-slot-empty p-6 bg-[var(--empty-slot)]"><span class="label">Twitch</span></div>
                 <div data-dashboard-card-id="behance" class="grid-item grid-slot-empty p-6 bg-[var(--empty-slot)]"><span class="label">Behance</span></div>
                 <div data-dashboard-card-id="goodreads" class="grid-item grid-slot-empty p-6 bg-[var(--empty-slot)]"><span class="label">Goodreads</span></div>
-                <div data-dashboard-card-id="samsunghealth" class="grid-item grid-slot-empty p-6 bg-[var(--empty-slot)]"><span class="label">Samsung Health</span></div>
+                <div id="samsung-health-card" data-dashboard-card-id="samsunghealth" class="grid-item p-6 justify-between">
+                    <span class="label">Samsung Health</span>
+                    <div class="mt-auto">
+                        <div id="samsung-activity-type" class="text-[10px] uppercase tracking-[0.12em] opacity-65">aguardando sync</div>
+                        <div id="samsung-activity-meta" class="text-[10px] opacity-60 mt-1">sem dados</div>
+                        <div id="samsung-km-total" class="text-3xl font-bold text-blue-400 italic mt-3">0.0 km</div>
+                        <div class="mt-1 flex items-center gap-3 text-[10px] tracking-[0.08em]">
+                            <span id="samsung-km-latest" class="text-blue-400/80">ult 0.0 km</span>
+                            <span id="samsung-km-week" class="text-blue-400 font-bold">sem 0.0 km</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 

@@ -27,6 +27,8 @@ const GITHUB_REFRESH_VISIBLE_MS = 120000;
 const GITHUB_REFRESH_HIDDEN_MS = 300000;
 const STRAVA_REFRESH_VISIBLE_MS = 180000;
 const STRAVA_REFRESH_HIDDEN_MS = 480000;
+const SAMSUNG_HEALTH_REFRESH_VISIBLE_MS = 300000;
+const SAMSUNG_HEALTH_REFRESH_HIDDEN_MS = 600000;
 const DASHBOARD_REORDER_DEBOUNCE_MS = 180;
 const loaderStartAt = Date.now();
 const CONTACT_TARGET_EMAIL = 'ola@seuemail.com';
@@ -51,6 +53,7 @@ const APP_BASE_PATH = (() => {
 const LASTFM_ENDPOINT = `${APP_BASE_PATH}/api/lastfm-recent.php`;
 const GITHUB_ENDPOINT = `${APP_BASE_PATH}/api/github-activity.php`;
 const STRAVA_ENDPOINT = `${APP_BASE_PATH}/api/strava-activity.php`;
+const SAMSUNG_HEALTH_ENDPOINT = `${APP_BASE_PATH}/api/samsung-health.php`;
 const SUPPORTED_LOCALES = ['pt-BR', 'en-US'];
 const DEFAULT_LOCALE = 'pt-BR';
 const I18N_BASE_PATH = 'data/i18n';
@@ -75,6 +78,8 @@ let githubSyncTimer = null;
 let githubSyncInFlight = false;
 let stravaSyncTimer = null;
 let stravaSyncInFlight = false;
+let samsungHealthSyncTimer = null;
+let samsungHealthSyncInFlight = false;
 
 const DASHBOARD_CARD_PRIORITY = {
     lastfm: 1,
@@ -1740,6 +1745,112 @@ function startStravaRealtimeSync() {
     });
 }
 
+function updateSamsungHealthCardUi(model) {
+    const typeEl = document.getElementById('samsung-activity-type');
+    const metaEl = document.getElementById('samsung-activity-meta');
+    const totalKmEl = document.getElementById('samsung-km-total');
+    const latestKmEl = document.getElementById('samsung-km-latest');
+    const weekKmEl = document.getElementById('samsung-km-week');
+    if (!typeEl || !metaEl || !totalKmEl || !latestKmEl || !weekKmEl) return;
+
+    typeEl.textContent = model.activityType;
+    metaEl.textContent = model.weekSummary;
+    const latestKm = Number(model.latestKm || 0);
+    const weekKm = Number(model.weekKm || 0);
+    const highlightKm = weekKm > 0 ? weekKm : latestKm;
+    totalKmEl.textContent = `${highlightKm.toFixed(1)} km`;
+    latestKmEl.textContent = `ult ${latestKm.toFixed(1)} km`;
+    weekKmEl.textContent = `sem ${weekKm.toFixed(1)} km`;
+}
+
+async function fetchSamsungHealthActivity() {
+    try {
+        const response = await fetch(SAMSUNG_HEALTH_ENDPOINT, { cache: 'no-store' });
+        if (!response.ok) {
+            throw new Error(`samsung-health endpoint error: ${response.status}`);
+        }
+
+        const payload = await response.json();
+        if (payload?.ok === false) {
+            throw new Error(String(payload?.error || 'samsung_health_payload_error'));
+        }
+
+        const latest = payload?.latest_activity || null;
+        const week = payload?.week || {};
+        const latestType = String(latest?.type || '').trim();
+        const startedAt = String(latest?.start_date || '').trim();
+        const startedAgo = getRelativeMinutesLabelFromIso(startedAt);
+        const latestDistanceKm = Number(latest?.distance_km || 0);
+        const latestMovingTimeSec = Number(latest?.moving_time_sec || 0);
+        const weekDistanceKm = Number(week?.distance_km || 0);
+        const weekCount = Number(week?.count || 0);
+        const weekMovingTimeSec = Number(week?.moving_time_sec || 0);
+
+        const activityType = [latestType, startedAgo].filter(Boolean).join(' • ') || 'sem dados';
+        const weekSummary = weekCount > 0
+            ? `${weekCount} ativ. • ${weekDistanceKm.toFixed(1)} km • ${formatStravaDuration(weekMovingTimeSec)}`
+            : (latestDistanceKm > 0
+                ? `ultima • ${latestDistanceKm.toFixed(1)} km • ${formatStravaDuration(latestMovingTimeSec)}`
+                : 'sem atividades');
+
+        updateSamsungHealthCardUi({
+            activityType,
+            weekSummary,
+            latestKm: latestDistanceKm,
+            weekKm: weekDistanceKm,
+        });
+
+        const updatedAtMs = Date.parse(startedAt);
+        markDashboardCardUpdated('samsunghealth', 'ok', Number.isFinite(updatedAtMs) ? updatedAtMs : Date.now());
+        return { ok: true };
+    } catch (error) {
+        console.warn('falha ao sincronizar samsung health:', error.message);
+        updateSamsungHealthCardUi({
+            activityType: 'indisponivel',
+            weekSummary: 'erro de sync',
+            latestKm: 0,
+            weekKm: 0,
+        });
+        markDashboardCardUpdated('samsunghealth', 'error');
+        return { ok: false };
+    }
+}
+
+function clearSamsungHealthSyncTimer() {
+    if (!samsungHealthSyncTimer) return;
+    window.clearTimeout(samsungHealthSyncTimer);
+    samsungHealthSyncTimer = null;
+}
+
+function getNextSamsungHealthSyncDelay() {
+    if (document.visibilityState === 'hidden') {
+        return SAMSUNG_HEALTH_REFRESH_HIDDEN_MS;
+    }
+    return SAMSUNG_HEALTH_REFRESH_VISIBLE_MS;
+}
+
+async function runSamsungHealthSyncCycle() {
+    if (samsungHealthSyncInFlight) return;
+    samsungHealthSyncInFlight = true;
+    await fetchSamsungHealthActivity();
+    samsungHealthSyncInFlight = false;
+
+    clearSamsungHealthSyncTimer();
+    samsungHealthSyncTimer = window.setTimeout(runSamsungHealthSyncCycle, getNextSamsungHealthSyncDelay());
+}
+
+function startSamsungHealthRealtimeSync() {
+    clearSamsungHealthSyncTimer();
+    runSamsungHealthSyncCycle();
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState !== 'visible') return;
+        clearSamsungHealthSyncTimer();
+        runSamsungHealthSyncCycle();
+    });
+}
+
+
 function clearLastfmSyncTimer() {
     if (!lastfmSyncTimer) return;
     window.clearTimeout(lastfmSyncTimer);
@@ -2605,6 +2716,7 @@ async function initApp() {
     startLastfmRealtimeSync();
     startGithubRealtimeSync();
     startStravaRealtimeSync();
+    startSamsungHealthRealtimeSync();
     applyRouteFromLocation({ replace: true, track: true });
     handleMobileNavScroll();
     window.addEventListener('scroll', onWindowScroll, { passive: true });

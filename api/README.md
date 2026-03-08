@@ -4,6 +4,7 @@ Endpoints implementados:
 - `GET /api/lastfm-recent.php`
 - `GET /api/github-activity.php`
 - `GET /api/strava-activity.php`
+- `GET /api/samsung-health.php`
 
 ## Last.fm
 Variaveis de ambiente necessarias:
@@ -36,5 +37,18 @@ Cache de payload:
 - arquivo: `data/strava-activity-cache.json`
 - TTL: 10 minutos
 - comportamento: em falha OAuth/upstream, o endpoint retorna cache stale quando disponivel
+
+## Samsung Health
+Sem variaveis de ambiente. Dados lidos de arquivo local.
+
+Fonte de dados:
+- arquivo: `data/samsung-health.json`
+- atualizacao: manual (via export do Samsung Health / Health Connect)
+- campos esperados: `updated_at`, `source`, `latest_activity` (type/distance_km/moving_time_sec/start_date), `week` (count/distance_km/moving_time_sec)
+
+Cache de payload:
+- arquivo: `data/samsung-health-cache.json`
+- TTL: 10 minutos
+- comportamento: em falha de leitura/dados desatualizados, o endpoint retorna cache stale quando disponivel
 
 Para desenvolvimento local, os endpoints tentam ler `../.env` automaticamente.
