@@ -29,6 +29,9 @@ const STRAVA_REFRESH_VISIBLE_MS = 180000;
 const STRAVA_REFRESH_HIDDEN_MS = 480000;
 const SAMSUNG_HEALTH_REFRESH_VISIBLE_MS = 300000;
 const SAMSUNG_HEALTH_REFRESH_HIDDEN_MS = 600000;
+const SPOTIFY_REFRESH_PLAYING_MS = 15000;
+const SPOTIFY_REFRESH_IDLE_MS = 60000;
+const SPOTIFY_REFRESH_HIDDEN_MS = 120000;
 const DASHBOARD_REORDER_DEBOUNCE_MS = 180;
 const loaderStartAt = Date.now();
 const CONTACT_TARGET_EMAIL = 'ola@seuemail.com';
@@ -43,7 +46,6 @@ const ROUTE_PATHS = {
 };
 const LOCAL_APP_BASE_PATH = '/thierryrenematos.tec.br';
 const APP_BASE_PATH = (() => {
-    if (window.location.hostname !== 'localhost') return '';
     const normalized = window.location.pathname.split('?')[0].split('#')[0];
     if (normalized === LOCAL_APP_BASE_PATH || normalized.startsWith(`${LOCAL_APP_BASE_PATH}/`)) {
         return LOCAL_APP_BASE_PATH;
@@ -54,6 +56,7 @@ const LASTFM_ENDPOINT = `${APP_BASE_PATH}/api/lastfm-recent.php`;
 const GITHUB_ENDPOINT = `${APP_BASE_PATH}/api/github-activity.php`;
 const STRAVA_ENDPOINT = `${APP_BASE_PATH}/api/strava-activity.php`;
 const SAMSUNG_HEALTH_ENDPOINT = `${APP_BASE_PATH}/api/samsung-health.php`;
+const SPOTIFY_ENDPOINT = `${APP_BASE_PATH}/api/spotify-now-playing.php`;
 const SUPPORTED_LOCALES = ['pt-BR', 'en-US'];
 const DEFAULT_LOCALE = 'pt-BR';
 const I18N_BASE_PATH = 'data/i18n';
@@ -80,6 +83,9 @@ let stravaSyncTimer = null;
 let stravaSyncInFlight = false;
 let samsungHealthSyncTimer = null;
 let samsungHealthSyncInFlight = false;
+let spotifySyncTimer = null;
+let spotifySyncInFlight = false;
+let spotifyNowPlaying = false;
 
 const DASHBOARD_CARD_PRIORITY = {
     lastfm: 1,
@@ -1850,6 +1856,84 @@ function startSamsungHealthRealtimeSync() {
     });
 }
 
+function updateSpotifyCardUi(model) {
+    const trackEl  = document.getElementById('spotify-track');
+    const artistEl = document.getElementById('spotify-artist');
+    const statusEl = document.getElementById('spotify-status');
+    const dotEl    = document.getElementById('spotify-live-dot');
+    if (!trackEl || !artistEl || !statusEl || !dotEl) return;
+
+    trackEl.textContent = model.trackName || '–';
+    trackEl.href        = model.trackUrl  || 'https://open.spotify.com';
+    artistEl.textContent = model.artist   || '';
+
+    if (model.nowPlaying) {
+        statusEl.textContent = 'Live';
+        dotEl.className      = 'w-2 h-2 bg-green-500 rounded-full animate-ping';
+    } else {
+        statusEl.textContent = model.trackName ? 'last played' : '–';
+        dotEl.className      = 'w-2 h-2 bg-zinc-500 rounded-full';
+    }
+}
+
+async function fetchSpotifyNowPlaying() {
+    try {
+        const response = await fetch(SPOTIFY_ENDPOINT, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`spotify endpoint error: ${response.status}`);
+
+        const payload = await response.json();
+        if (payload?.ok === false) throw new Error(String(payload?.error || 'spotify_payload_error'));
+
+        const track      = payload?.track || {};
+        const nowPlaying = Boolean(payload?.now_playing);
+        const trackName  = String(track?.name   || '').trim();
+        const artist     = String(track?.artist || '').trim();
+        const trackUrl   = String(track?.url    || '').trim();
+
+        spotifyNowPlaying = nowPlaying;
+        updateSpotifyCardUi({ trackName, artist, trackUrl, nowPlaying });
+        markDashboardCardUpdated('spotify', 'ok', Date.now());
+        return { ok: true };
+    } catch (error) {
+        console.warn('falha ao sincronizar spotify:', error.message);
+        updateSpotifyCardUi({ trackName: 'Spotify indisponivel', artist: '', trackUrl: 'https://open.spotify.com', nowPlaying: false });
+        markDashboardCardUpdated('spotify', 'error');
+        return { ok: false };
+    }
+}
+
+function clearSpotifySyncTimer() {
+    if (!spotifySyncTimer) return;
+    window.clearTimeout(spotifySyncTimer);
+    spotifySyncTimer = null;
+}
+
+function getNextSpotifySyncDelay() {
+    if (document.visibilityState === 'hidden') return SPOTIFY_REFRESH_HIDDEN_MS;
+    return spotifyNowPlaying ? SPOTIFY_REFRESH_PLAYING_MS : SPOTIFY_REFRESH_IDLE_MS;
+}
+
+async function runSpotifySyncCycle() {
+    if (spotifySyncInFlight) return;
+    spotifySyncInFlight = true;
+    await fetchSpotifyNowPlaying();
+    spotifySyncInFlight = false;
+
+    clearSpotifySyncTimer();
+    spotifySyncTimer = window.setTimeout(runSpotifySyncCycle, getNextSpotifySyncDelay());
+}
+
+function startSpotifyRealtimeSync() {
+    clearSpotifySyncTimer();
+    runSpotifySyncCycle();
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState !== 'visible') return;
+        clearSpotifySyncTimer();
+        runSpotifySyncCycle();
+    });
+}
+
 
 function clearLastfmSyncTimer() {
     if (!lastfmSyncTimer) return;
@@ -2717,6 +2801,7 @@ async function initApp() {
     startGithubRealtimeSync();
     startStravaRealtimeSync();
     startSamsungHealthRealtimeSync();
+    startSpotifyRealtimeSync();
     applyRouteFromLocation({ replace: true, track: true });
     handleMobileNavScroll();
     window.addEventListener('scroll', onWindowScroll, { passive: true });

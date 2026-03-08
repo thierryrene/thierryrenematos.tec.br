@@ -5,6 +5,11 @@ Todas as mudancas relevantes deste projeto serao registradas aqui.
 Este arquivo segue o padrao Keep a Changelog e versionamento semantico.
 
 ## [Unreleased]
+### Added
+- Integracao Spotify: endpoint `api/spotify-now-playing.php` com OAuth 2.0 refresh token, cache duplo (20s playing / 60s idle), fallback para `recently-played` quando nada toca e stale cache em falhas upstream.
+- Card Spotify no dashboard atualizado com IDs reativos (`spotify-track`, `spotify-artist`, `spotify-status`, `spotify-live-dot`) e logica JS de polling adaptativo (15s playing / 60s idle / 120s hidden).
+- Variaveis `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN` adicionadas ao `.env.example`.
+
 ### Changed
 - Modo SEO de producao ativado: metatags `robots`/`googlebot`/`bingbot` atualizadas para `index, follow` com previews amplos e sem bloqueio de snippet.
 - `robots.txt` simplificado para liberar rastreamento global (`User-agent: *` + `Allow: /`), removendo bloqueios anteriores.
@@ -55,6 +60,7 @@ Este arquivo segue o padrao Keep a Changelog e versionamento semantico.
 - Roteamento SPA ajustado para ambiente local em subpasta (`localhost/thierryrenematos.tec.br`): aplicacao de `base path` em links, History API, resolucao de rota e endpoint Last.fm, evitando conflitos de navegação nos testes locais.
 - Endpoint `api/lastfm-recent.php` compatibilizado com PHP 7.4 (remoção de dependência em `str_starts_with/str_ends_with`) e normalização de campos Last.fm para evitar retorno indevido (`album: \"Array\"`).
 - Conexão do card Last.fm atualizada para resolver endpoint com `base path` em ambiente local (`localhost/thierryrenematos.tec.br`), mantendo compatibilidade com produção.
+- Correção no cálculo de `APP_BASE_PATH` para endpoints de sync, garantindo funcionamento em deploys que usam subpastas (não apenas `localhost`), evitando erros 404 no dashboard.
 - Card `Listening Log` aprimorado com simbolo musical animado durante `Now Playing` e fundo dinâmico com capa do álbum (centralizado + fade black) quando `album_art` estiver disponível no payload.
 - Status do card Last.fm refinado para estado real: `Now Playing` quando ativo e, quando inativo, exibição temporal da última reprodução (`Ha X min` / `Ultima HH:MM`), usando `played_at_unix` do endpoint.
 - Bloco visual do card Last.fm ajustado para dark mode com overlay mais legível sobre capa de álbum, chip de status com contraste aprimorado e text-shadow contextual no conteúdo.
