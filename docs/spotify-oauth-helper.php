@@ -1,15 +1,13 @@
 <?php
 /**
  * Spotify OAuth Helper
- * Uso: php docs/spotify-oauth-helper.php
+ * Acesse via Docker webserver: http://localhost/thierryrenematos.tec.br/docs/spotify-oauth-helper.php
  *
- * Requer PHP CLI e que a porta 8888 esteja livre.
- * Execute na raiz do projeto para que o .env seja lido automaticamente.
+ * Antes de usar, adicione esta URL como Redirect URI no Spotify Developer Dashboard:
+ * http://localhost/thierryrenematos.tec.br/docs/spotify-oauth-helper.php
  */
 
 declare(strict_types=1);
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function loadEnv(string $path): void
 {
@@ -17,9 +15,10 @@ function loadEnv(string $path): void
     foreach (file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
         $line = trim($line);
         if ($line === '' || strpos($line, '#') === 0) continue;
-        [$k, $v] = array_pad(explode('=', $line, 2), 2, '');
-        $k = trim($k);
-        $v = trim($v);
+        $parts = explode('=', $line, 2);
+        if (count($parts) !== 2) continue;
+        $k = trim($parts[0]);
+        $v = trim($parts[1]);
         if ($k === '') continue;
         if (preg_match('/^["\'](.*)[\'"]\s*$/', $v, $m)) $v = $m[1];
         if (getenv($k) === false) putenv("$k=$v");
@@ -32,141 +31,98 @@ function env(string $key, string $default = ''): string
     return ($v === false || trim($v) === '') ? $default : trim($v);
 }
 
-// ─── Bootstrap ───────────────────────────────────────────────────────────────
-
 loadEnv(__DIR__ . '/../.env');
 
 $clientId     = env('SPOTIFY_CLIENT_ID');
 $clientSecret = env('SPOTIFY_CLIENT_SECRET');
-$redirectUri  = 'http://localhost:8888/callback';
+$redirectUri  = 'http://localhost/thierryrenematos.tec.br/docs/spotify-oauth-helper.php';
 $scope        = 'user-read-currently-playing user-read-recently-played';
 
-if ($clientId === '' || $clientSecret === '') {
-    fwrite(STDERR, "ERRO: SPOTIFY_CLIENT_ID e SPOTIFY_CLIENT_SECRET nao encontrados no .env\n");
-    exit(1);
-}
+header('Content-Type: text/html; charset=utf-8');
 
-// ─── Se chamado como servidor interno (callback) ──────────────────────────────
+// ─── Etapa 2: callback com code ───────────────────────────────────────────────
+if (isset($_GET['code']) && $_GET['code'] !== '') {
+    $code = $_GET['code'];
 
-if (PHP_SAPI === 'cli-server') {
-    $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+    $postBody = http_build_query([
+        'grant_type'   => 'authorization_code',
+        'code'         => $code,
+        'redirect_uri' => $redirectUri,
+    ]);
+    $authHeader = 'Authorization: Basic ' . base64_encode("$clientId:$clientSecret");
 
-    if ($uri === '/callback') {
-        $error = $_GET['error'] ?? '';
-        $code  = $_GET['code']  ?? '';
+    $ch = curl_init('https://accounts.spotify.com/api/token');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => $postBody,
+        CURLOPT_HTTPHEADER     => [
+            $authHeader,
+            'Content-Type: application/x-www-form-urlencoded',
+            'Accept: application/json',
+        ],
+        CURLOPT_TIMEOUT => 15,
+    ]);
+    $body = (string) curl_exec($ch);
+    curl_close($ch);
 
-        if ($error !== '') {
-            http_response_code(400);
-            echo "<pre>Erro do Spotify: $error</pre>";
-            exit;
-        }
+    $data = json_decode($body, true);
 
-        if ($code === '') {
-            http_response_code(400);
-            echo "<pre>Parametro 'code' ausente.</pre>";
-            exit;
-        }
-
-        // Troca code por tokens
-        $postBody = http_build_query([
-            'grant_type'   => 'authorization_code',
-            'code'         => $code,
-            'redirect_uri' => $redirectUri,
-        ]);
-        $authHeader = 'Authorization: Basic ' . base64_encode("$clientId:$clientSecret");
-
-        if (function_exists('curl_init')) {
-            $ch = curl_init('https://accounts.spotify.com/api/token');
-            curl_setopt_array($ch, [
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_POST           => true,
-                CURLOPT_POSTFIELDS     => $postBody,
-                CURLOPT_HTTPHEADER => [
-                    $authHeader,
-                    'Content-Type: application/x-www-form-urlencoded',
-                    'Accept: application/json',
-                ],
-                CURLOPT_TIMEOUT => 15,
-            ]);
-            $body = curl_exec($ch);
-            curl_close($ch);
-        } else {
-            $ctx  = stream_context_create(['http' => [
-                'method'  => 'POST',
-                'header'  => "$authHeader\r\nContent-Type: application/x-www-form-urlencoded\r\nAccept: application/json\r\n",
-                'content' => $postBody,
-                'timeout' => 15,
-            ]]);
-            $body = @file_get_contents('https://accounts.spotify.com/api/token', false, $ctx);
-        }
-
-        $data = json_decode((string) $body, true);
-
-        if (!is_array($data) || empty($data['refresh_token'])) {
-            http_response_code(500);
-            echo '<pre>Falha ao obter refresh_token. Resposta Spotify:' . "\n";
-            echo htmlspecialchars(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-            echo '</pre>';
-            exit;
-        }
-
-        $refreshToken = $data['refresh_token'];
-        $accessToken  = $data['access_token'] ?? '';
-        $expiresIn    = $data['expires_in']   ?? 3600;
-
-        // Escreve cache de auth
-        $cacheFile = __DIR__ . '/../data/spotify-auth-cache.json';
-        file_put_contents($cacheFile, json_encode([
-            'access_token'  => $accessToken,
-            'refresh_token' => $refreshToken,
-            'expires_at'    => time() + (int) $expiresIn,
-        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL, LOCK_EX);
-
-        header('Content-Type: text/html; charset=utf-8');
-        echo '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>Spotify OAuth</title></head><body style="font-family:monospace;padding:2rem">';
-        echo '<h2 style="color:green">&#10003; Autenticacao concluida!</h2>';
-        echo '<p><strong>SPOTIFY_REFRESH_TOKEN</strong> (adicione ao .env):</p>';
-        echo '<pre style="background:#f4f4f4;padding:1rem;border-radius:4px;word-break:break-all">' . htmlspecialchars($refreshToken) . '</pre>';
-        echo '<p>O cache de auth tambem foi salvo em <code>data/spotify-auth-cache.json</code>.</p>';
-        echo '<p>Voce ja pode fechar esta aba e parar o servidor (<kbd>Ctrl+C</kbd>).</p>';
-        echo '</body></html>';
+    if (!is_array($data) || empty($data['refresh_token'])) {
+        echo '<pre style="color:red">Falha ao obter refresh_token. Resposta Spotify:' . "\n";
+        echo htmlspecialchars(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        echo '</pre>';
         exit;
     }
 
-    // Root – redireciona para auth
-    $authUrl = 'https://accounts.spotify.com/authorize?' . http_build_query([
-        'client_id'     => $clientId,
-        'response_type' => 'code',
-        'redirect_uri'  => $redirectUri,
-        'scope'         => $scope,
-    ]);
-    header('Location: ' . $authUrl);
+    $refreshToken = $data['refresh_token'];
+    $accessToken  = $data['access_token'] ?? '';
+    $expiresIn    = (int) ($data['expires_in'] ?? 3600);
+
+    // Salva cache de auth para o endpoint usar imediatamente
+    $cacheFile = __DIR__ . '/../data/spotify-auth-cache.json';
+    file_put_contents($cacheFile, json_encode([
+        'access_token'  => $accessToken,
+        'refresh_token' => $refreshToken,
+        'expires_at'    => time() + $expiresIn,
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL, LOCK_EX);
+
+    echo '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8">
+<title>Spotify OAuth</title>
+<style>body{font-family:monospace;padding:2rem;max-width:700px}pre{background:#f4f4f4;padding:1rem;border-radius:4px;word-break:break-all;white-space:pre-wrap}</style>
+</head><body>';
+    echo '<h2 style="color:green">&#10003; Autenticação concluída!</h2>';
+    echo '<p>Adicione ao <code>.env</code>:</p>';
+    echo '<pre>SPOTIFY_REFRESH_TOKEN=' . htmlspecialchars($refreshToken) . '</pre>';
+    echo '<p>O cache de auth foi salvo em <code>data/spotify-auth-cache.json</code>.<br>';
+    echo 'O card Spotify já está operacional — atualize a página do dashboard para confirmar.</p>';
+    echo '</body></html>';
     exit;
 }
 
-// ─── Modo CLI: instrucoes + inicia servidor ───────────────────────────────────
-
-echo "\n";
-echo "╔══════════════════════════════════════════════════════╗\n";
-echo "║         Spotify OAuth Helper — thierry.dashboard     ║\n";
-echo "╚══════════════════════════════════════════════════════╝\n\n";
-
-// Verifica se curl esta disponivel
-if (!function_exists('curl_init')) {
-    fwrite(STDERR, "AVISO: extensao curl nao encontrada no PHP CLI — usando file_get_contents como fallback.\n\n");
+// ─── Etapa 1: erro de auth ────────────────────────────────────────────────────
+if (isset($_GET['error'])) {
+    echo '<pre style="color:red">Erro retornado pelo Spotify: ' . htmlspecialchars($_GET['error']) . '</pre>';
+    exit;
 }
 
-echo "Client ID    : $clientId\n";
-echo "Redirect URI : $redirectUri\n";
-echo "Scope        : $scope\n\n";
+// ─── Etapa 0: tela inicial ────────────────────────────────────────────────────
+$authUrl = 'https://accounts.spotify.com/authorize?' . http_build_query([
+    'client_id'     => $clientId,
+    'response_type' => 'code',
+    'redirect_uri'  => $redirectUri,
+    'scope'         => $scope,
+]);
 
-echo "1. Iniciando servidor local em http://localhost:8888 ...\n";
-echo "2. Abra no navegador: http://localhost:8888\n";
-echo "   (o servidor vai redirecionar automaticamente para o Spotify)\n";
-echo "3. Autorize o acesso e aguarde o refresh_token aparecer na pagina.\n";
-echo "4. Copie o SPOTIFY_REFRESH_TOKEN exibido e adicione ao .env\n\n";
-echo "Pressione Ctrl+C para encerrar apos concluir.\n\n";
-
-$scriptPath = __FILE__;
-$cmd = "php -S localhost:8888 \"$scriptPath\"";
-passthru($cmd);
+echo '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8">
+<title>Spotify OAuth Helper</title>
+<style>body{font-family:monospace;padding:2rem;max-width:700px}code{background:#f4f4f4;padding:2px 6px;border-radius:3px}
+a.btn{display:inline-block;margin-top:1.5rem;padding:.75rem 1.5rem;background:#1db954;color:#fff;text-decoration:none;border-radius:4px;font-weight:bold}
+</style></head><body>';
+echo '<h2>Spotify OAuth Helper</h2>';
+echo '<p><strong>Client ID:</strong> <code>' . htmlspecialchars($clientId) . '</code></p>';
+echo '<p><strong>Redirect URI:</strong> <code>' . htmlspecialchars($redirectUri) . '</code></p>';
+echo '<p><strong>Scope:</strong> <code>' . htmlspecialchars($scope) . '</code></p>';
+echo '<p>Certifique-se de que a Redirect URI acima está cadastrada no <a href="https://developer.spotify.com/dashboard" target="_blank">Spotify Developer Dashboard</a>.</p>';
+echo '<a class="btn" href="' . htmlspecialchars($authUrl) . '">Autorizar no Spotify</a>';
+echo '</body></html>';

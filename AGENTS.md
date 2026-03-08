@@ -40,3 +40,12 @@ Se a tarefa solicitada conflitar com a especificacao, o agente deve:
 1. apontar o conflito de forma objetiva;
 2. sugerir alternativa aderente;
 3. so implementar excecao com aprovacao explicita.
+
+## Ambiente de desenvolvimento local
+- O projeto roda em um stack **LAMP via Docker** (container `lamp-php81`, PHP 8.1 + Apache).
+- Document root: `/home/thierry/docker/www` mapeado para `/var/www/html` no container.
+- Webserver disponivel em `http://localhost` (porta 80).
+- URL base do projeto: `http://localhost/thierryrenematos.tec.br/`
+- Para testar endpoints PHP, sempre usar o webserver Docker: `http://localhost/thierryrenematos.tec.br/api/<endpoint>.php`
+- **Nao usar `php -S` (servidor built-in do PHP CLI)**: nao tem curl, nao espelha o ambiente real e nao e necessario.
+- Secrets ficam em `/home/thierry/docker/www/thierryrenematos.tec.br/.env` (gitignored).
