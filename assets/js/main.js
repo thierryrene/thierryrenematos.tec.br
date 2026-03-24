@@ -89,8 +89,8 @@ let spotifyNowPlaying = false;
 
 const DASHBOARD_CARD_PRIORITY = {
     lastfm: 1,
-    spotify: 2,
-    github: 3,
+    github: 2,
+    spotify: 3,
     youtube: 4,
     strava: 5,
     twitch: 6,
@@ -390,7 +390,6 @@ function renderDashboardCardsOrder() {
 
     const sortedCards = [...state.dashboardCards.values()]
         .sort((a, b) => {
-            if (a.lastUpdatedAt !== b.lastUpdatedAt) return b.lastUpdatedAt - a.lastUpdatedAt;
             if (a.priority !== b.priority) return a.priority - b.priority;
             return a.initialIndex - b.initialIndex;
         });
@@ -1190,10 +1189,7 @@ function renderLastfmDayModal() {
     root.innerHTML = '';
 
     if (!groupedTracks.length) {
-        const empty = document.createElement('p');
-        empty.className = 'text-sm opacity-70';
-        empty.textContent = t('modals.lastfm_day.empty', 'Sem musicas registradas hoje ate agora.');
-        root.appendChild(empty);
+        root.innerHTML = `<p class="text-sm opacity-50 italic serif-title">Nenhuma escuta capturada hoje.</p>`;
         return;
     }
 
@@ -1201,35 +1197,29 @@ function renderLastfmDayModal() {
     list.className = 'lastfm-day-list';
 
     groupedTracks.forEach((track) => {
-        const item = document.createElement('article');
+        const item = document.createElement('div');
         item.className = 'lastfm-day-item';
 
         const info = document.createElement('a');
-        info.className = 'lastfm-day-link';
+        info.className = 'flex flex-col no-underline';
         info.href = track.refUrl;
         info.target = '_blank';
         info.rel = 'noopener noreferrer';
-        info.setAttribute('aria-label', `Abrir referencia no Last.fm: ${track.name} - ${track.artist}`);
-        const name = document.createElement('div');
+
+        const name = document.createElement('span');
         name.className = 'lastfm-day-track';
         name.textContent = track.name;
 
-        const artist = document.createElement('div');
+        const artist = document.createElement('span');
         artist.className = 'lastfm-day-artist';
         artist.textContent = track.artist;
 
-        const album = document.createElement('div');
-        album.className = 'lastfm-day-album';
-        album.textContent = track.albumLabel;
-
         info.appendChild(name);
         info.appendChild(artist);
-        info.appendChild(album);
 
-        const count = document.createElement('div');
+        const count = document.createElement('span');
         count.className = 'lastfm-day-count';
-        count.textContent = `${track.count}x`;
-        count.setAttribute('aria-label', t('modals.lastfm_day.count_aria', `${track.count} reproducoes`).replace('{count}', String(track.count)));
+        count.textContent = track.count;
 
         item.appendChild(info);
         item.appendChild(count);
@@ -1303,29 +1293,13 @@ function showMusicAlert(trackName, artistName, albumName, albumArt, trackUrl = '
     const toast = document.createElement('article');
     toast.className = 'music-alert-toast';
     toast.dataset.state = nowPlaying ? 'playing' : 'paused';
-    toast.setAttribute('role', 'status');
-    toast.setAttribute('aria-label', `Agora tocando: ${trackName} por ${artistName || 'artista desconhecido'}${albumName ? ` no album ${albumName}` : ''}`);
-
+    
     if (albumArt) {
         const coverImage = document.createElement('img');
         coverImage.className = 'music-alert-cover';
         coverImage.src = String(albumArt).replace(/["\\\n\r]/g, '');
         coverImage.alt = '';
-        coverImage.decoding = 'async';
-        coverImage.referrerPolicy = 'no-referrer';
-        coverImage.addEventListener('error', () => {
-            if (!coverImage.parentNode) return;
-            const fallbackCover = document.createElement('div');
-            fallbackCover.className = 'music-alert-fallback-cover';
-            coverImage.parentNode.replaceChild(fallbackCover, coverImage);
-        });
         toast.appendChild(coverImage);
-    } else {
-        const fallbackCover = document.createElement('div');
-        fallbackCover.className = 'music-alert-fallback-cover';
-        fallbackCover.setAttribute('aria-hidden', 'true');
-        fallbackCover.appendChild(createMusicAlertGlyph('note'));
-        toast.appendChild(fallbackCover);
     }
 
     const content = document.createElement('a');
@@ -1333,38 +1307,23 @@ function showMusicAlert(trackName, artistName, albumName, albumArt, trackUrl = '
     content.href = String(trackUrl || 'https://www.last.fm');
     content.target = '_blank';
     content.rel = 'noopener noreferrer';
-    const label = document.createElement('div');
-    label.className = 'music-alert-label';
-    label.textContent = nowPlaying ? t('alerts.current_song', 'Current Song') : t('alerts.paused', 'Paused');
+
+    const techMeta = document.createElement('div');
+    techMeta.className = 'music-alert-meta-tech';
+    techMeta.textContent = nowPlaying ? 'SIGNAL_RECEIVED // SYNC_SUCCESS' : 'SIGNAL_PAUSED // STANDBY';
 
     const title = document.createElement('div');
     title.className = 'music-alert-title';
-    title.textContent = trackName || 'Faixa sem titulo';
+    title.textContent = trackName || 'Untitled Track';
 
     const artist = document.createElement('div');
     artist.className = 'music-alert-artist';
-    artist.textContent = artistName || 'Artista desconhecido';
+    artist.textContent = artistName || 'Unknown Artist';
 
-    const album = document.createElement('div');
-    album.className = 'music-alert-album';
-    album.textContent = albumName || t('modals.lastfm_day.unknown_album', 'Album nao informado');
-
-    const source = document.createElement('div');
-    source.className = 'music-alert-source';
-    source.textContent = 'Last.fm';
-
-    content.appendChild(label);
+    content.appendChild(techMeta);
     content.appendChild(title);
     content.appendChild(artist);
-    content.appendChild(album);
-    content.appendChild(source);
     toast.appendChild(content);
-
-    const action = document.createElement('div');
-    action.className = 'music-alert-action';
-    action.setAttribute('aria-hidden', 'true');
-    action.appendChild(createMusicAlertGlyph('note'));
-    toast.appendChild(action);
 
     const existingToast = alertStack.querySelector('.music-alert-toast');
     if (existingToast) existingToast.remove();
@@ -1377,7 +1336,7 @@ function showMusicAlert(trackName, artistName, albumName, albumArt, trackUrl = '
     if (musicAlertHideTimeout) window.clearTimeout(musicAlertHideTimeout);
     musicAlertHideTimeout = window.setTimeout(() => {
         removeMusicAlertToast(toast);
-    }, 3000);
+    }, 5000); // Aumentado para 5s para leitura dos metadados técnicos
 }
 
 function notifyIfTrackChanged(trackName, artistName, albumName, albumArt, trackUrl = '', nowPlaying = true) {
@@ -1504,34 +1463,22 @@ async function fetchLastfmRecent(options = {}) {
 function updateGithubCardUi(model) {
     const titleEl = document.getElementById('github-activity-title');
     const metaEl = document.getElementById('github-activity-meta');
-    const starredEl = document.getElementById('github-starred-repo');
     const commitCountEl = document.getElementById('github-commit-count');
     const weekGridEl = document.getElementById('github-week-grid');
-    if (!titleEl || !metaEl || !starredEl || !commitCountEl || !weekGridEl) return;
+    if (!titleEl || !metaEl || !commitCountEl || !weekGridEl) return;
 
     titleEl.textContent = model.title;
     titleEl.href = model.url || 'https://github.com/';
     metaEl.textContent = model.meta;
-    const starredName = String(model.starredRepoName || '').trim();
-    const starredUrl = String(model.starredRepoUrl || '').trim();
-    const starredTextEl = starredEl.querySelector('span:last-child');
-    if (starredTextEl) {
-        starredTextEl.textContent = starredName ? starredName : 'Sem favoritos recentes';
-    } else {
-        starredEl.textContent = starredName ? `★ ${starredName}` : '★ Sem favoritos recentes';
-    }
-    starredEl.href = starredUrl || 'https://github.com/stars/thierryrene';
+
+    const totalWeekCommits = Number(model.totalWeekCommits || 0);
+    commitCountEl.textContent = `${totalWeekCommits}_COMMITS_WEEK`;
 
     const weekCommits = Array.isArray(model.weekCommits) ? model.weekCommits : [0, 0, 0, 0, 0, 0, 0];
-    const totalWeekCommits = Number(model.totalWeekCommits || 0);
-    const commitLabel = totalWeekCommits === 1 ? 'commit na semana' : 'commits na semana';
-    commitCountEl.textContent = `${totalWeekCommits} ${commitLabel}`;
-
     const max = Math.max(...weekCommits, 0);
     const levelFor = (count) => {
         if (!count || count <= 0) return 0;
-        if (max <= 2) return Math.min(4, count);
-        const ratio = count / max;
+        const ratio = max > 0 ? count / max : 0;
         if (ratio < 0.34) return 1;
         if (ratio < 0.56) return 2;
         if (ratio < 0.8) return 3;
@@ -1540,8 +1487,9 @@ function updateGithubCardUi(model) {
 
     weekGridEl.innerHTML = weekCommits.map((count, index) => {
         const level = levelFor(Number(count || 0));
-        const safeCount = Number(count || 0);
-        return `<span class="github-week-cell lvl-${level}" title="Dia ${index + 1}: ${safeCount} commit(s)"></span>`;
+        const opacity = 0.2 + (level * 0.2);
+        const bgClass = level > 0 ? 'bg-[var(--accent)]' : 'bg-zinc-800';
+        return `<span class="github-week-cell h-2 ${bgClass} border border-white/5" style="opacity: ${opacity}" title="Day ${index + 1}: ${count} commits"></span>`;
     }).join('');
 }
 
@@ -1632,21 +1580,20 @@ function startGithubRealtimeSync() {
 function updateStravaCardUi(model) {
     const titleEl = document.getElementById('strava-activity-title');
     const metaEl = document.getElementById('strava-activity-meta');
-    const summaryEl = document.getElementById('strava-activity-summary');
     const totalKmEl = document.getElementById('strava-km-total');
     const latestKmEl = document.getElementById('strava-km-latest');
     const weekKmEl = document.getElementById('strava-km-week');
-    if (!titleEl || !metaEl || !summaryEl || !totalKmEl || !latestKmEl || !weekKmEl) return;
+    if (!titleEl || !metaEl || !totalKmEl || !latestKmEl || !weekKmEl) return;
 
     titleEl.textContent = model.title;
     titleEl.href = model.url || 'https://www.strava.com';
     metaEl.textContent = model.meta;
-    summaryEl.textContent = model.summary;
+    
     const latestKm = Number(model.latestKm || 0);
     const weekKm = Number(model.weekKm || 0);
-    totalKmEl.textContent = `${(latestKm + weekKm).toFixed(1)} km`;
-    latestKmEl.textContent = `ult ${latestKm.toFixed(1)} km`;
-    weekKmEl.textContent = `sem ${weekKm.toFixed(1)} km`;
+    totalKmEl.textContent = (latestKm + weekKm).toFixed(1);
+    latestKmEl.textContent = `${latestKm.toFixed(1)} KM`;
+    weekKmEl.textContent = `${weekKm.toFixed(1)} KM`;
 }
 
 function formatStravaDuration(totalSeconds) {
@@ -1861,18 +1808,21 @@ function updateSpotifyCardUi(model) {
     const artistEl = document.getElementById('spotify-artist');
     const statusEl = document.getElementById('spotify-status');
     const dotEl    = document.getElementById('spotify-live-dot');
+    const progressEl = document.getElementById('spotify-progress');
     if (!trackEl || !artistEl || !statusEl || !dotEl) return;
 
-    trackEl.textContent = model.trackName || '–';
+    trackEl.textContent = model.trackName || 'Not playing';
     trackEl.href        = model.trackUrl  || 'https://open.spotify.com';
-    artistEl.textContent = model.artist   || '';
+    artistEl.textContent = model.artist   || 'Waiting for signal';
 
     if (model.nowPlaying) {
-        statusEl.textContent = 'Live';
-        dotEl.className      = 'w-2 h-2 bg-green-500 rounded-full animate-ping';
+        statusEl.textContent = 'Live_Signal';
+        dotEl.className      = 'w-1.5 h-1.5 bg-[var(--accent)] shadow-[0_0_8px_var(--accent)]';
+        if (progressEl) progressEl.style.width = '65%';
     } else {
-        statusEl.textContent = model.trackName ? 'last played' : '–';
-        dotEl.className      = 'w-2 h-2 bg-zinc-500 rounded-full';
+        statusEl.textContent = 'Offline';
+        dotEl.className      = 'w-1.5 h-1.5 bg-zinc-800';
+        if (progressEl) progressEl.style.width = '0%';
     }
 }
 
@@ -2398,7 +2348,7 @@ function renderBlogCard(post, index) {
                 aria-label="${escapeAttr(t('blog.open_post', 'Abrir post'))}: ${escapeAttr(post.title)}">
                 <div class="max-w-md">
                     <span class="label">${escapeHtml(formatDate(post.created_at))} - ${escapeHtml(post.category)}</span>
-                    <h3 class="text-3xl font-bold mb-4 group-hover:text-[var(--accent)] transition-colors">${escapeHtml(post.title)}</h3>
+                    <h3 class="text-2xl md:text-3xl font-medium serif-title italic mb-4 group-hover:text-[var(--accent)] transition-colors">${escapeHtml(post.title)}</h3>
                     <p class="text-sm opacity-60">${escapeHtml(post.excerpt)}</p>
                 </div>
                 <div class="w-32 h-32 bg-[var(--accent)] opacity-20 hidden md:block"></div>
@@ -2415,7 +2365,7 @@ function renderBlogCard(post, index) {
             aria-label="${escapeAttr(t('blog.open_post', 'Abrir post'))}: ${escapeAttr(post.title)}">
             <div>
                 <span class="label">${escapeHtml(formatDate(post.created_at))} - ${escapeHtml(post.category)}</span>
-                <h3 class="text-lg font-bold group-hover:text-[var(--accent)] transition-colors">${escapeHtml(post.title)}</h3>
+                <h3 class="text-xl md:text-2xl font-medium serif-title italic group-hover:text-[var(--accent)] transition-colors">${escapeHtml(post.title)}</h3>
             </div>
             <div class="text-[10px] font-bold uppercase mt-4">${escapeHtml(t('blog.read_article', 'Ler Artigo ->'))}</div>
         </article>

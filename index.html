@@ -12,16 +12,16 @@
     <meta name="rights" content="Copyright (c) 2009 ate hoje thierry. Todos os direitos reservados.">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap');
 
         :root {
             --bg-color: #09090b;
-            --grid-border: #27272a;
+            --grid-border: #1f1f22;
             --text-main: #f4f4f5;
-            --text-label: #a1a1aa;
-            --item-hover: #18181b;
-            --accent: #f97316;
-            --empty-slot: rgba(24, 24, 27, 0.5);
+            --text-label: #71717a;
+            --item-hover: #141417;
+            --accent: #ff5c00;
+            --empty-slot: rgba(20, 20, 23, 0.4);
             --space-1: 0.25rem;
             --space-2: 0.5rem;
             --space-3: 0.75rem;
@@ -36,40 +36,49 @@
             --radius-none: 0;
             --card-padding: var(--space-6);
             --card-padding-lg: var(--space-8);
-            --btn-height: 2.5rem;
-            --btn-padding-x: var(--space-4);
-            --btn-font-size: 0.75rem;
-            --btn-letter-spacing: 0.15em;
-            --page-max-width: 90rem;
+            --btn-height: 2.75rem;
+            --btn-padding-x: var(--space-5);
+            --btn-font-size: 0.7rem;
+            --btn-letter-spacing: 0.2em;
+            --page-max-width: 100rem;
             --dashboard-slot-mobile-height: clamp(10rem, 45vw, 12rem);
             --dashboard-hero-mobile-height: clamp(15rem, 70vw, 20rem);
-            --lastfm-overlay-top: rgba(0, 0, 0, 0.55);
-            --lastfm-overlay-bottom: rgba(0, 0, 0, 0.82);
-            --lastfm-status-chip-bg: rgba(9, 9, 11, 0.28);
-            --lastfm-status-chip-border: rgba(161, 161, 170, 0.35);
+            --lastfm-overlay-top: rgba(0, 0, 0, 0.4);
+            --lastfm-overlay-bottom: rgba(9, 9, 11, 0.9);
+            --lastfm-status-chip-bg: rgba(9, 9, 11, 0.4);
+            --lastfm-status-chip-border: rgba(113, 113, 122, 0.2);
         }
 
         body.theme-day {
-            --bg-color: #fafafa;
-            --grid-border: #d4d4d8;
+            --bg-color: #fcfcfc;
+            --grid-border: #e4e4e7;
             --text-main: #09090b;
-            --text-label: #52525b;
-            --accent: #c2410c;
+            --text-label: #71717a;
+            --accent: #ff5c00;
             --item-hover: #f4f4f5;
-            --empty-slot: rgba(228, 228, 231, 0.5);
-            --lastfm-overlay-top: rgba(255, 255, 255, 0.28);
-            --lastfm-overlay-bottom: rgba(250, 250, 250, 0.72);
-            --lastfm-status-chip-bg: rgba(250, 250, 250, 0.55);
-            --lastfm-status-chip-border: rgba(113, 113, 122, 0.35);
+            --empty-slot: rgba(244, 244, 245, 0.6);
+            --lastfm-overlay-top: rgba(255, 255, 255, 0.1);
+            --lastfm-overlay-bottom: rgba(252, 252, 252, 0.85);
+            --lastfm-status-chip-bg: rgba(252, 252, 252, 0.6);
+            --lastfm-status-chip-border: rgba(161, 161, 170, 0.2);
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            transition: background-color 0.5s ease, color 0.5s ease;
+            transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1), color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             margin: 0;
             padding: 0;
+            -webkit-font-smoothing: antialiased;
+            background-image: radial-gradient(circle at 2px 2px, var(--grid-border) 1px, transparent 0);
+            background-size: 48px 48px;
+        }
+
+        h1, h2, h3, .serif-title {
+            font-family: 'Instrument Serif', serif;
+            font-style: italic;
+            font-weight: 400;
         }
 
         body.is-loading > *:not(#site-loader) {
@@ -134,6 +143,7 @@
             height: var(--btn-height);
             padding: 0 var(--btn-padding-x);
             font-size: var(--btn-font-size);
+            font-weight: 600;
             letter-spacing: var(--btn-letter-spacing);
             text-transform: uppercase;
             border: var(--border-width) solid var(--grid-border);
@@ -582,114 +592,66 @@
             position: relative;
             width: 100%;
             display: grid;
-            grid-template-columns: 3.75rem minmax(0, 1fr) 1.25rem;
+            grid-template-columns: 3.5rem minmax(0, 1fr) auto;
             align-items: center;
-            gap: 0.875rem;
-            padding: 0.875rem;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 22px;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(25px) saturate(180%);
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
-            box-shadow:
-                0 15px 35px rgba(0, 0, 0, 0.5),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+            gap: 1rem;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(9, 9, 11, 0.75);
+            backdrop-filter: blur(40px) saturate(150%);
+            -webkit-backdrop-filter: blur(40px) saturate(150%);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             opacity: 0;
-            transform: translateY(8px);
-            transition: opacity 0.22s ease, transform 0.22s ease;
+            transform: translateY(12px) scale(0.98);
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
             user-select: none;
+            overflow: hidden;
         }
 
-        .music-alert-toast.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .music-alert-toast.is-leaving {
-            opacity: 0;
-            transform: translateY(6px);
-        }
-
-        .music-alert-toast::after {
+        .music-alert-toast::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            height: 50%;
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
-            border-radius: 22px 22px 0 0;
-            pointer-events: none;
+            width: 2px;
+            height: 100%;
+            background: var(--accent);
+            opacity: 0.8;
+        }
+
+        .music-alert-toast.is-visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .music-alert-toast.is-leaving {
+            opacity: 0;
+            transform: translateX(20px);
         }
 
         .music-alert-cover {
-            position: relative;
-            z-index: 1;
-            width: 3.75rem;
-            height: 3.75rem;
+            width: 3.5rem;
+            height: 3.5rem;
             object-fit: cover;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            flex-shrink: 0;
-        }
-
-        .music-alert-fallback-cover {
-            position: relative;
-            z-index: 1;
-            width: 3.75rem;
-            height: 3.75rem;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #fb7185, #22d3ee);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-            color: rgba(255, 255, 255, 0.92);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.9rem;
-        }
-
-        .music-alert-fallback-cover svg,
-        .music-alert-action svg {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        .music-alert-content {
-            position: relative;
-            z-index: 1;
-            overflow: hidden;
-        }
-
-        a.music-alert-content {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        a.music-alert-content:hover .music-alert-title,
-        a.music-alert-content:focus-visible .music-alert-title {
-            text-decoration: underline;
-            text-underline-offset: 0.14em;
-        }
-
-        .music-alert-label {
-            display: none;
+            filter: contrast(1.1);
         }
 
         .music-alert-title {
             color: #fff;
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
+            letter-spacing: -0.01em;
             line-height: 1.2;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .music-alert-artist {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+            font-family: 'Inter', sans-serif;
             font-weight: 400;
             line-height: 1.2;
             white-space: nowrap;
@@ -697,88 +659,43 @@
             text-overflow: ellipsis;
         }
 
-        .music-alert-album {
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 0.75rem;
-            font-style: italic;
-            margin-top: 1px;
-            line-height: 1.2;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .music-alert-source {
-            display: none;
-        }
-
-        .music-alert-action {
-            position: relative;
-            z-index: 1;
-            width: 1.25rem;
-            height: 1.25rem;
-            color: rgba(255, 255, 255, 0.2);
+        .music-alert-meta-tech {
+            font-family: 'Inter', monospace;
+            font-size: 7px;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            color: var(--accent);
+            margin-bottom: 4px;
+            opacity: 0.8;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 0;
+            gap: 4px;
+        }
+
+        .music-alert-meta-tech::before {
+            content: '';
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            display: inline-block;
+            animation: pulse-signal 1.5s infinite;
+        }
+
+        @keyframes pulse-signal {
+            0% { opacity: 0.4; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0.4; transform: scale(0.8); }
         }
 
         body.theme-day .music-alert-toast {
-            border-color: rgba(113, 113, 122, 0.22);
-            background: rgba(255, 255, 255, 0.62);
-            box-shadow:
-                0 12px 26px rgba(9, 9, 11, 0.16),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.52);
+            background: rgba(255, 255, 255, 0.85);
+            border-color: rgba(0, 0, 0, 0.05);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
         }
 
-        body.theme-day .music-alert-toast::after {
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.28) 0%, transparent 100%);
-        }
+        body.theme-day .music-alert-title { color: #000; }
+        body.theme-day .music-alert-artist { color: rgba(0, 0, 0, 0.5); }
 
-        body.theme-day .music-alert-title {
-            color: #09090b;
-        }
-
-        body.theme-day .music-alert-artist {
-            color: rgba(39, 39, 42, 0.68);
-        }
-
-        body.theme-day .music-alert-album {
-            color: rgba(39, 39, 42, 0.52);
-        }
-
-        body.theme-day .music-alert-action {
-            color: rgba(39, 39, 42, 0.28);
-        }
-
-        body:not(.theme-day) .music-alert-toast {
-            border-color: rgba(255, 255, 255, 0.22);
-            background: rgba(4, 7, 12, 0.72);
-            box-shadow:
-                0 18px 38px rgba(0, 0, 0, 0.6),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-        }
-
-        body:not(.theme-day) .music-alert-toast::after {
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.09) 0%, transparent 100%);
-        }
-
-        body:not(.theme-day) .music-alert-title {
-            color: rgba(255, 255, 255, 0.96);
-        }
-
-        body:not(.theme-day) .music-alert-artist {
-            color: rgba(255, 255, 255, 0.74);
-        }
-
-        body:not(.theme-day) .music-alert-album {
-            color: rgba(255, 255, 255, 0.56);
-        }
-
-        body:not(.theme-day) .music-alert-action {
-            color: rgba(255, 255, 255, 0.3);
-        }
 
         .mobile-nav-hint {
             display: none;
@@ -940,68 +857,106 @@
             display: none;
         }
 
+        .app-modal {
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-4);
+        }
+
+        .app-modal:not(.modal-hidden) {
+            display: flex;
+        }
+
+        .modal-content {
+            border: 1px solid var(--grid-border);
+            background: var(--bg-color);
+            width: 100%;
+            max-width: 800px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            border-radius: var(--radius-none);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+            position: relative;
+        }
+
+        .modal-header {
+            padding: var(--space-8);
+            border-bottom: 1px solid var(--grid-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-shrink: 0;
+        }
+
+        .modal-body {
+            overflow-y: auto;
+            flex-grow: 1;
+            padding: var(--space-8);
+            scrollbar-width: thin;
+            scrollbar-color: var(--grid-border) transparent;
+        }
+
+        .modal-body::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: var(--grid-border);
+        }
+
         .lastfm-day-list {
             display: flex;
             flex-direction: column;
-            border: 1px solid var(--grid-border);
+            border-top: 1px solid var(--grid-border);
+            border-left: 1px solid var(--grid-border);
         }
 
         .lastfm-day-item {
             display: grid;
             grid-template-columns: 1fr auto;
-            gap: var(--space-4);
             align-items: center;
-            padding: var(--space-4);
+            padding: var(--space-6) var(--space-8);
+            border-right: 1px solid var(--grid-border);
             border-bottom: 1px solid var(--grid-border);
+            transition: background-color 0.3s ease;
         }
 
-        .lastfm-day-item:last-child {
-            border-bottom: 0;
+        .lastfm-day-item:hover {
+            background-color: var(--item-hover);
         }
 
         .lastfm-day-track {
-            font-size: 0.84rem;
-            font-weight: 700;
-            line-height: 1.3;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
         }
 
         .lastfm-day-artist {
-            font-size: 0.72rem;
-            opacity: 0.74;
-            line-height: 1.2;
-            margin-top: 0.16rem;
-        }
-
-        .lastfm-day-album {
-            font-size: 0.68rem;
-            opacity: 0.6;
-            line-height: 1.2;
-            margin-top: 0.12rem;
-        }
-
-        a.lastfm-day-link {
-            display: block;
-            color: inherit;
-            text-decoration: none;
-        }
-
-        a.lastfm-day-link:hover .lastfm-day-track,
-        a.lastfm-day-link:focus-visible .lastfm-day-track {
-            text-decoration: underline;
-            text-underline-offset: 0.14em;
+            font-size: 0.75rem;
+            color: var(--text-label);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.7;
         }
 
         .lastfm-day-count {
-            border: 1px solid var(--grid-border);
-            min-width: 2.25rem;
-            text-align: center;
-            padding: 0.16rem 0.5rem;
-            font-size: 0.66rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            font-weight: 700;
-            color: var(--text-label);
+            font-family: 'Instrument Serif', serif;
+            font-style: italic;
+            font-size: 2.25rem;
+            color: var(--accent);
+            line-height: 1;
+            padding-left: var(--space-8);
         }
+
 
         #site-loader {
             position: fixed;
@@ -1035,7 +990,6 @@
         .loader-dot {
             width: 0.55rem;
             height: 0.55rem;
-            border-radius: 9999px;
             background: var(--accent);
             animation: loader-pulse 1s ease-in-out infinite;
         }
@@ -1087,99 +1041,130 @@
     <main id="main-content" class="relative flex-grow p-4 md:p-12">
         <section id="page-dashboard" class="page-content page-shell active" aria-labelledby="hero-title">
             <div class="brutalist-container grid grid-cols-1 md:grid-cols-5 dashboard-grid">
-                <div class="grid-item dashboard-hero md:col-span-2 md:row-span-2 p-6 md:p-8 justify-between">
+                <div class="grid-item dashboard-hero md:col-span-2 md:row-span-2 p-8 md:p-12 justify-between bg-gradient-to-br from-[var(--bg-color)] to-[var(--item-hover)]">
                     <div>
-                        <span id="hero-label" class="label">Informacoes</span>
-                        <h1 id="hero-title" class="text-2xl md:text-3xl lg:text-4xl font-semibold leading-tight tracking-tight">
+                        <span id="hero-label" class="ui-label">Plataforma Biográfica</span>
+                        <h1 id="hero-title" class="text-4xl md:text-5xl lg:text-7xl font-normal serif-title italic leading-[0.85] tracking-tight mb-8">
                             Designer, developer e<br>
-                            observador da vida.<br>
-                            Construo meu.ponto.
+                            observador da vida.
                         </h1>
+                        <p class="text-lg opacity-60 max-w-md leading-relaxed">
+                            Construindo ecossistemas digitais onde técnica e narrativa se encontram.
+                        </p>
                     </div>
                     <div class="mt-auto flex items-center gap-3">
-                        <div id="time-dot" class="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
+                        <div id="time-dot" class="w-2.5 h-2.5 bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
                         <span id="time-status" class="text-[10px] font-mono uppercase tracking-[0.2em] opacity-50">Syncing...</span>
                     </div>
                 </div>
                 <div data-dashboard-card-id="threads" class="grid-item p-6 justify-between"><span class="label">Threads</span><div class="font-medium">@username</div></div>
-                <div data-dashboard-card-id="instagram" class="grid-item p-6 justify-between"><span class="label">Instagram</span><div class="w-full h-full bg-zinc-500/10 border border-zinc-500/20 rounded-sm"></div></div>
-                <div id="strava-card" data-dashboard-card-id="strava" class="grid-item p-6 justify-between">
-                    <span class="label">Strava</span>
+                <div data-dashboard-card-id="instagram" class="grid-item p-6 justify-between"><span class="label">Instagram</span><div class="w-full h-full bg-zinc-500/10 border border-zinc-500/20"></div></div>
+                <div id="strava-card" data-dashboard-card-id="strava" class="grid-item p-6 justify-between group overflow-hidden">
+                    <div class="flex justify-between items-start">
+                        <span class="ui-label">Activity Log</span>
+                        <span class="text-[8px] font-mono opacity-30 tracking-[0.2em] group-hover:opacity-100 transition-opacity">SRC: STRAVA_V3</span>
+                    </div>
                     <div class="mt-auto">
-                        <a id="strava-activity-title" class="text-xs font-bold leading-tight hover:text-[var(--accent)]" href="https://www.strava.com" target="_blank" rel="noopener noreferrer">Sincronizando atividade...</a>
-                        <div id="strava-activity-meta" class="text-[10px] uppercase tracking-[0.12em] opacity-65 mt-2">aguardando update</div>
-                        <div id="strava-activity-summary" class="text-[10px] tracking-[0.08em] opacity-80 mt-2">sem dados</div>
-                        <div id="strava-km-total" class="text-3xl font-bold text-orange-500 italic mt-3">0.0 km</div>
-                        <div class="mt-1 flex items-center gap-3 text-[10px] tracking-[0.08em]">
-                            <span id="strava-km-latest" class="text-orange-500/80">ult 0.0 km</span>
-                            <span id="strava-km-week" class="text-orange-500 font-bold">sem 0.0 km</span>
+                        <a id="strava-activity-title" class="text-xs font-bold leading-tight hover:text-[var(--accent)] transition-colors block mb-1" href="https://www.strava.com" target="_blank" rel="noopener noreferrer">Sincronizando...</a>
+                        <div id="strava-activity-meta" class="text-[9px] font-mono uppercase tracking-[0.1em] opacity-40">Aguardando Handshake</div>
+                        
+                        <div class="flex items-end gap-2 mt-4">
+                            <div id="strava-km-total" class="text-4xl font-mono font-medium leading-none tracking-tighter text-[var(--accent)]">0.0</div>
+                            <span class="text-[10px] font-mono opacity-40 mb-1">KM_TOT</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-[var(--grid-border)] opacity-60">
+                            <div>
+                                <span class="block text-[8px] font-mono tracking-widest opacity-50 mb-1">LAST_RUN</span>
+                                <span id="strava-km-latest" class="text-[10px] font-mono font-bold">0.0 KM</span>
+                            </div>
+                            <div>
+                                <span class="block text-[8px] font-mono tracking-widest opacity-50 mb-1">WEEK_ACC</span>
+                                <span id="strava-km-week" class="text-[10px] font-mono font-bold">0.0 KM</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div data-dashboard-card-id="youtube" class="grid-item p-6 justify-between"><span class="label">YouTube</span><div class="text-xs font-bold leading-none mt-auto">Ultimo Video</div></div>
-                <div id="listening-log-card" data-dashboard-card-id="lastfm" class="grid-item p-6 justify-between cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-color)]" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="lastfm-day-modal" aria-label="Abrir historico de musicas tocadas hoje">
+
+                <div id="listening-log-card" data-dashboard-card-id="lastfm" class="grid-item p-6 justify-between group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="lastfm-day-modal" aria-label="Abrir histórico de músicas tocadas hoje">
                     <div id="lastfm-bg" class="lastfm-card-bg" aria-hidden="true"></div>
                     <div class="lastfm-card-fade" aria-hidden="true"></div>
-                    <div class="lastfm-card-content h-full flex flex-col justify-between">
-                        <div class="lastfm-meta-row">
-                            <span class="label mb-0">Last.fm</span>
-                            <span class="lastfm-service-tag">Listening log</span>
+                    <div class="lastfm-card-content h-full flex flex-col justify-between relative z-10">
+                        <div class="flex justify-between items-start">
+                            <span class="ui-label">Listening Log</span>
+                            <span class="text-[8px] font-mono opacity-30 tracking-[0.2em] group-hover:opacity-100 transition-opacity">DATA_SRC: LASTFM_V2</span>
                         </div>
-                        <div class="lastfm-body">
-                            <a id="lastfm-track" class="lastfm-track-line" href="https://www.last.fm" target="_blank" rel="noopener noreferrer" aria-live="polite">Conectando Last.fm...</a>
-                            <div class="lastfm-bars" id="lastfm-bars" aria-hidden="true">
-                                <div class="lastfm-bar" style="--bar-height:30%"></div>
-                                <div class="lastfm-bar" style="--bar-height:55%"></div>
-                                <div class="lastfm-bar" style="--bar-height:75%"></div>
-                                <div class="lastfm-bar" style="--bar-height:45%"></div>
+                        
+                        <div class="lastfm-body mt-auto">
+                            <a id="lastfm-track" class="text-sm font-bold leading-tight hover:text-[var(--accent)] transition-colors block truncate mb-1" href="https://www.last.fm" target="_blank" rel="noopener noreferrer">Connecting...</a>
+                            
+                            <div class="lastfm-bars flex items-end gap-[2px] h-6 mb-3" id="lastfm-bars" aria-hidden="true">
+                                <div class="lastfm-bar w-[3px] bg-zinc-700" style="--bar-height:30%"></div>
+                                <div class="lastfm-bar w-[3px] bg-zinc-700" style="--bar-height:55%"></div>
+                                <div class="lastfm-bar w-[3px] bg-zinc-700" style="--bar-height:75%"></div>
+                                <div class="lastfm-bar w-[3px] bg-zinc-700" style="--bar-height:45%"></div>
                             </div>
-                            <div class="lastfm-status-wrap">
-                                <span id="lastfm-status" class="text-[9px] font-bold uppercase block">Syncing</span>
+
+                            <div class="flex items-center gap-2">
+                                <div class="w-1 h-1 bg-[var(--accent)] animate-pulse"></div>
+                                <span id="lastfm-status" class="text-[8px] font-mono font-bold uppercase tracking-widest opacity-50">Syncing_Data</span>
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="spotify-card" data-dashboard-card-id="spotify" class="grid-item p-6 justify-between">
-                    <span class="label">Spotify</span>
-                    <div class="mt-auto">
-                        <a id="spotify-track" class="text-xs font-bold leading-tight hover:text-[var(--accent)]" href="https://open.spotify.com" target="_blank" rel="noopener noreferrer">Conectando...</a>
-                        <div id="spotify-artist" class="text-[10px] uppercase tracking-[0.12em] opacity-65 mt-2">aguardando sync</div>
-                        <div class="mt-3 flex items-center gap-2">
-                            <div id="spotify-live-dot" class="w-2 h-2 bg-zinc-500 rounded-full"></div>
-                            <span id="spotify-status" class="text-[9px] font-bold uppercase">–</span>
                         </div>
                     </div>
                 </div>
-                <div id="github-card" data-dashboard-card-id="github" class="grid-item p-6 justify-between">
-                    <span class="label">GitHub</span>
+
+                <div data-dashboard-card-id="youtube" class="grid-item p-6 justify-between group">
+                    <div class="flex justify-between items-start">
+                        <span class="ui-label">Video Stream</span>
+                        <span class="text-[8px] font-mono opacity-30 tracking-[0.2em] group-hover:opacity-100 transition-opacity">CH: YOUTUBE_RAW</span>
+                    </div>
                     <div class="mt-auto">
-                        <a id="github-activity-title" class="text-xs font-bold leading-tight hover:text-[var(--accent)]" href="https://github.com/thierryrene" target="_blank" rel="noopener noreferrer">Sincronizando atividade...</a>
-                        <div id="github-activity-meta" class="text-[10px] uppercase tracking-[0.12em] opacity-65 mt-2">aguardando update</div>
-                        <a id="github-starred-repo" class="text-[10px] tracking-[0.08em] opacity-80 mt-2 inline-flex items-center gap-1 hover:text-[var(--accent)]" href="https://github.com/stars/thierryrene" target="_blank" rel="noopener noreferrer">
-                            <span aria-hidden="true">⭐</span>
-                            <span>Sem favoritos recentes</span>
-                        </a>
-                        <div class="github-week-wrap mt-3" aria-hidden="true">
-                            <div class="github-week-header">
-                                <span id="github-commit-count" class="github-commit-count">0 commits na semana</span>
+                        <span class="text-[9px] font-mono opacity-40 block mb-1">LATEST_UPLOAD</span>
+                        <div class="text-xs font-bold leading-tight group-hover:text-[var(--accent)] transition-colors">Aguardando novo vídeo...</div>
+                    </div>
+                </div>
+
+                <div id="spotify-card" data-dashboard-card-id="spotify" class="grid-item p-6 justify-between group">
+                    <div class="flex justify-between items-start">
+                        <span class="ui-label">Live Stream</span>
+                        <span class="text-[8px] font-mono opacity-30 tracking-[0.2em] group-hover:opacity-100 transition-opacity">PROT: SPOTIFY_CONNECT</span>
+                    </div>
+                    <div class="mt-auto">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div id="spotify-live-dot" class="w-1.5 h-1.5 bg-zinc-700"></div>
+                            <span id="spotify-status" class="text-[8px] font-mono font-bold uppercase tracking-widest opacity-40">Offline</span>
+                        </div>
+                        <a id="spotify-track" class="text-sm font-bold leading-tight hover:text-[var(--accent)] transition-colors block truncate" href="https://open.spotify.com" target="_blank" rel="noopener noreferrer">Not playing</a>
+                        <div id="spotify-artist" class="text-[10px] font-mono uppercase tracking-[0.05em] opacity-50 mt-1 truncate">Waiting for signal</div>
+                        
+                        <div class="mt-4 h-[2px] w-full bg-[var(--grid-border)] overflow-hidden">
+                            <div id="spotify-progress" class="h-full bg-[var(--accent)] w-0 transition-all duration-1000"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="github-card" data-dashboard-card-id="github" class="grid-item p-6 justify-between group">
+                    <div class="flex justify-between items-start">
+                        <span class="ui-label">Code Base</span>
+                        <span class="text-[8px] font-mono opacity-30 tracking-[0.2em] group-hover:opacity-100 transition-opacity">VCS: GITHUB_PUSH</span>
+                    </div>
+                    <div class="mt-auto">
+                        <a id="github-activity-title" class="text-xs font-bold leading-tight hover:text-[var(--accent)] transition-colors block mb-1" href="https://github.com/thierryrene" target="_blank" rel="noopener noreferrer">Fetching commits...</a>
+                        <div id="github-activity-meta" class="text-[9px] font-mono opacity-40 mb-3">LAST_PUSH: SYNCING</div>
+                        
+                        <div class="github-week-wrap p-3 bg-[var(--item-hover)] border border-[var(--grid-border)]" aria-hidden="true">
+                            <div class="github-week-grid grid grid-cols-7 gap-1">
+                                <span class="github-week-cell h-2 bg-zinc-800 border border-white/5"></span>
+                                <span class="github-week-cell h-2 bg-zinc-800 border border-white/5"></span>
+                                <span class="github-week-cell h-2 bg-zinc-800 border border-white/5"></span>
+                                <span class="github-week-cell h-2 bg-zinc-800 border border-white/5"></span>
+                                <span class="github-week-cell h-2 bg-zinc-800 border border-white/5"></span>
+                                <span class="github-week-cell h-2 bg-zinc-800 border border-white/5"></span>
+                                <span class="github-week-cell h-2 bg-zinc-800 border border-white/5"></span>
                             </div>
-                            <div id="github-week-grid" class="github-week-grid">
-                                <span class="github-week-cell lvl-0"></span>
-                                <span class="github-week-cell lvl-0"></span>
-                                <span class="github-week-cell lvl-0"></span>
-                                <span class="github-week-cell lvl-0"></span>
-                                <span class="github-week-cell lvl-0"></span>
-                                <span class="github-week-cell lvl-0"></span>
-                                <span class="github-week-cell lvl-0"></span>
-                            </div>
-                            <div class="github-week-labels" aria-hidden="true">
-                                <span class="github-week-label">S</span>
-                                <span class="github-week-label">T</span>
-                                <span class="github-week-label">Q</span>
-                                <span class="github-week-label">Q</span>
-                                <span class="github-week-label">S</span>
-                                <span class="github-week-label">S</span>
-                                <span class="github-week-label">D</span>
+                            <div class="flex justify-between items-center mt-2">
+                                <span id="github-commit-count" class="text-[8px] font-mono uppercase opacity-50">0_COMMITS_WEEK</span>
+                                <span class="text-[8px] font-mono opacity-30">M_T_W_T_F_S_S</span>
                             </div>
                         </div>
                     </div>
@@ -1208,32 +1193,32 @@
         </section>
 
         <section id="page-sobre" class="page-content page-shell" aria-labelledby="about-title">
-            <div class="brutalist-container grid grid-cols-1 md:grid-cols-3">
-                <div class="grid-item md:col-span-3 p-6 md:p-12 lg:p-16 aspect-auto md:aspect-auto">
-                    <span id="about-label" class="label">Sobre</span>
-                    <h2 id="about-title" class="text-4xl md:text-6xl font-bold leading-none tracking-tighter mb-8">uma vida em construcao constante.</h2>
-                    <p id="about-intro" class="text-lg md:text-xl opacity-80 max-w-3xl leading-relaxed">
-                        Este website e meu arquivo vivo: um lugar para organizar o que eu construo, estudo, fotografo e escrevo.
-                        Prefiro tratar carreira e vida como uma unica narrativa: tecnica, autoral e humana ao mesmo tempo.
+            <div class="brutalist-container grid grid-cols-1 md:grid-cols-3 dashboard-grid">
+                <div class="grid-item md:col-span-3 p-8 md:p-16 lg:p-24 aspect-auto md:aspect-auto bg-gradient-to-b from-[var(--bg-color)] to-[var(--item-hover)]">
+                    <span id="about-label" class="ui-label">Trajetória</span>
+                    <h2 id="about-title" class="text-5xl md:text-7xl lg:text-8xl font-normal serif-title italic leading-[0.85] tracking-tighter mb-12 max-w-4xl">Uma vida em construção constante.</h2>
+                    <p id="about-intro" class="text-xl md:text-2xl opacity-60 max-w-3xl leading-relaxed font-light">
+                        Este website é meu arquivo vivo: um lugar para organizar o que eu construo, estudo, fotografo e escrevo.
+                        Trato carreira e vida como uma única narrativa.
                     </p>
                 </div>
 
-                <div class="grid-item p-6 md:p-8 justify-between">
-                    <span id="about-focus-label" class="label">Foco Atual</span>
-                    <h3 id="about-focus-title" class="text-2xl font-bold leading-tight">Transformar sinais do cotidiano em produto digital com identidade.</h3>
-                    <p id="about-focus-body" class="text-sm opacity-70 mt-4">Interface, conteudo e sistema visual trabalhando juntos, sem excesso.</p>
+                <div class="grid-item p-8 md:p-10 justify-between">
+                    <span id="about-focus-label" class="ui-label">Foco Atual</span>
+                    <h3 id="about-focus-title" class="text-3xl font-medium leading-tight">Sinais do cotidiano em produto digital com identidade.</h3>
+                    <p id="about-focus-body" class="text-sm opacity-50 mt-6 leading-relaxed">Interface, conteúdo e sistema visual trabalhando juntos, sem excessos.</p>
                 </div>
 
-                <div class="grid-item p-6 md:p-8 justify-between">
-                    <span id="about-base-label" class="label">Base</span>
-                    <h3 id="about-base-title" class="text-2xl font-bold leading-tight">Design de interface, front-end e estrategia editorial.</h3>
-                    <p id="about-base-body" class="text-sm opacity-70 mt-4">Do conceito ao codigo, com foco em clareza, ritmo e performance.</p>
+                <div class="grid-item p-8 md:p-10 justify-between">
+                    <span id="about-base-label" class="ui-label">Base Técnica</span>
+                    <h3 id="about-base-title" class="text-3xl font-medium leading-tight">Design de interface, front-end e estratégia editorial.</h3>
+                    <p id="about-base-body" class="text-sm opacity-50 mt-6 leading-relaxed">Do conceito ao código, com foco em clareza, ritmo e performance de renderização.</p>
                 </div>
 
-                <div class="grid-item p-6 md:p-8 justify-between">
-                    <span id="about-direction-label" class="label">Direcao</span>
-                    <h3 id="about-direction-title" class="text-2xl font-bold leading-tight">Construir um ecossistema pessoal, nao apenas um portfolio.</h3>
-                    <p id="about-direction-body" class="text-sm opacity-70 mt-4">meu.ponto como laboratorio continuo de pensamento, produto e presenca digital.</p>
+                <div class="grid-item p-8 md:p-10 justify-between">
+                    <span id="about-direction-label" class="ui-label">Direção</span>
+                    <h3 id="about-direction-title" class="text-3xl font-medium leading-tight">Construir um ecossistema pessoal, não apenas um portfólio.</h3>
+                    <p id="about-direction-body" class="text-sm opacity-50 mt-6 leading-relaxed">meu.ponto como laboratório contínuo de pensamento, produto e presença digital.</p>
                 </div>
 
                 <div class="grid-item md:col-span-2 p-6 md:p-10 aspect-auto md:aspect-auto">
@@ -1266,21 +1251,21 @@
         </section>
 
         <section id="page-fotografias" class="page-content page-shell" aria-labelledby="photos-title">
-            <div class="brutalist-container grid grid-cols-1 md:grid-cols-4">
-                <div class="grid-item md:col-span-4 p-6 md:p-12 lg:p-16 aspect-auto md:aspect-auto">
-                    <span class="label">Fotografias</span>
-                    <h2 id="photos-title" class="text-4xl md:text-6xl font-bold tracking-tighter leading-none mb-8">acervo pessoal</h2>
-                    <p class="text-lg md:text-xl opacity-80 max-w-4xl leading-relaxed">
-                        Esta secao centraliza minhas fotografias pessoais no meu proprio website.
-                        A proposta e publicar ensaios, registros de rotina e viagens sem depender de redes sociais como plataforma principal.
+            <div class="brutalist-container grid grid-cols-1 md:grid-cols-4 dashboard-grid">
+                <div class="grid-item md:col-span-4 p-8 md:p-16 lg:p-20 aspect-auto bg-gradient-to-br from-[var(--bg-color)] to-[var(--item-hover)]">
+                    <span class="ui-label">Galeria Autoral</span>
+                    <h2 id="photos-title" class="text-5xl md:text-7xl lg:text-9xl font-normal serif-title italic tracking-tighter leading-[0.85] mb-12">Acervo pessoal.</h2>
+                    <p class="text-xl md:text-2xl opacity-60 max-w-4xl leading-relaxed font-light">
+                        Publico ensaios, registros de rotina e viagens sem depender de plataformas externas.
+                        O website como arquivo definitivo da imagem.
                     </p>
                 </div>
 
-                <div class="grid-item md:col-span-4 p-6 md:p-10 aspect-auto md:aspect-auto">
-                    <span class="label">Filtros</span>
-                    <div class="flex flex-col gap-6">
-                        <div class="flex flex-wrap gap-3 items-center" id="photo-essay-filters"></div>
-                        <div class="flex flex-wrap gap-3 items-center" id="photo-year-filters"></div>
+                <div class="grid-item md:col-span-4 p-8 md:p-10 aspect-auto">
+                    <span class="ui-label">Filtros de exploração</span>
+                    <div class="flex flex-col gap-8 mt-4">
+                        <div class="flex flex-wrap gap-4 items-center" id="photo-essay-filters"></div>
+                        <div class="flex flex-wrap gap-4 items-center" id="photo-year-filters"></div>
                     </div>
                 </div>
 
@@ -1289,44 +1274,44 @@
         </section>
 
         <section id="page-blog" class="page-content page-shell" aria-labelledby="blog-hero-title">
-            <div class="brutalist-container grid grid-cols-1 md:grid-cols-3">
-                <div class="grid-item p-6 md:p-12 md:col-span-3 aspect-auto md:aspect-auto">
-                    <span id="blog-hero-label" class="label">meu.ponto - meu ponto de vista</span>
-                    <h2 id="blog-hero-title" class="text-4xl md:text-6xl font-bold italic tracking-tighter">Writing & Thoughts</h2>
+            <div class="brutalist-container grid grid-cols-1 md:grid-cols-3 dashboard-grid">
+                <div class="grid-item p-8 md:p-16 md:col-span-3 aspect-auto bg-gradient-to-b from-[var(--bg-color)] to-[var(--item-hover)]">
+                    <span id="blog-hero-label" class="ui-label">meu.ponto - ensaios e notas</span>
+                    <h2 id="blog-hero-title" class="text-5xl md:text-7xl lg:text-9xl font-normal serif-title italic tracking-tighter leading-[0.85]">Writing &<br>Thoughts</h2>
                 </div>
                 <div id="blog-list" class="contents"></div>
             </div>
         </section>
 
         <section id="page-post" class="page-content page-shell" aria-labelledby="post-title">
-            <div class="brutalist-container">
-                <div class="grid-item p-6 md:p-12 lg:p-20 aspect-auto md:aspect-auto">
-                    <button id="post-back-button" type="button" data-page="blog" class="label hover:text-[var(--accent)] transition-colors mb-12 flex items-center gap-2">
-                        <- Voltar para o blogue
+            <div class="brutalist-container dashboard-grid">
+                <div class="grid-item p-8 md:p-16 lg:p-24 aspect-auto">
+                    <button id="post-back-button" type="button" data-page="blog" class="ui-label hover:text-[var(--accent)] transition-colors mb-16 flex items-center gap-3">
+                        ← Voltar para o blog
                     </button>
-                    <span id="post-meta" class="label text-[var(--accent)]">Data - Categoria</span>
-                    <h2 id="post-title" class="text-4xl md:text-6xl font-bold leading-none tracking-tighter mt-4">Titulo do Artigo</h2>
+                    <span id="post-meta" class="ui-label text-[var(--accent)] font-bold">Data — Categoria</span>
+                    <h2 id="post-title" class="text-5xl md:text-7xl lg:text-8xl font-medium serif-title italic leading-[0.85] tracking-tighter mt-8">Título do Artigo</h2>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-4">
-                    <div class="grid-item md:col-span-3 p-6 md:p-12 lg:p-20 aspect-auto md:aspect-auto post-body">
-                        <div id="post-cover" class="w-full h-64 bg-zinc-500/10 border border-zinc-500/20 mb-12 flex items-center justify-center italic opacity-30">
-                            capa de artigo
+                <div class="grid grid-cols-1 md:grid-cols-4 dashboard-grid border-t border-[var(--grid-border)]">
+                    <div class="grid-item md:col-span-3 p-8 md:p-16 lg:p-24 aspect-auto post-body">
+                        <div id="post-cover" class="w-full h-80 bg-zinc-500/5 border border-[var(--grid-border)] mb-16 flex items-center justify-center italic opacity-30 serif-title text-2xl">
+                            Capa do ensaio
                         </div>
-                        <div id="post-body-content"></div>
+                        <div id="post-body-content" class="max-w-3xl"></div>
                     </div>
 
-                    <div class="grid-item p-6 md:p-12 aspect-auto md:aspect-auto">
-                        <span id="post-share-label" class="label mb-6">Partilhar</span>
-                        <div class="flex flex-col gap-4">
-                            <button type="button" data-share-platform="x" class="text-left text-xs font-bold hover:text-[var(--accent)]">X / Twitter</button>
-                            <button type="button" data-share-platform="linkedin" class="text-left text-xs font-bold hover:text-[var(--accent)]">LinkedIn</button>
-                            <button type="button" data-share-platform="threads" class="text-left text-xs font-bold hover:text-[var(--accent)]">Threads</button>
+                    <div class="grid-item p-8 md:p-12 aspect-auto border-l border-[var(--grid-border)]">
+                        <span id="post-share-label" class="ui-label mb-8">Partilhar</span>
+                        <div class="flex flex-col gap-6">
+                            <button type="button" data-share-platform="x" class="text-left text-xs font-bold tracking-widest uppercase hover:text-[var(--accent)]">X / Twitter</button>
+                            <button type="button" data-share-platform="linkedin" class="text-left text-xs font-bold tracking-widest uppercase hover:text-[var(--accent)]">LinkedIn</button>
+                            <button type="button" data-share-platform="threads" class="text-left text-xs font-bold tracking-widest uppercase hover:text-[var(--accent)]">Threads</button>
                         </div>
 
-                        <div class="mt-10 md:mt-20">
-                            <span id="post-related-label" class="label mb-6">Relacionados</span>
-                            <div class="space-y-8" id="post-related"></div>
+                        <div class="mt-20 md:mt-32">
+                            <span id="post-related-label" class="ui-label mb-8">Relacionados</span>
+                            <div class="space-y-12" id="post-related"></div>
                         </div>
                     </div>
                 </div>
@@ -1334,29 +1319,31 @@
         </section>
 
         <section id="page-contato" class="page-content page-shell" aria-labelledby="contact-section-title">
-            <div class="brutalist-container grid grid-cols-1 md:grid-cols-3">
-                <div class="grid-item md:col-span-3 p-6 md:p-10 aspect-auto md:aspect-auto">
-                    <span id="contact-section-label" class="label">Contato</span>
-                    <h2 id="contact-section-title" class="text-3xl md:text-5xl font-bold leading-none tracking-tighter mb-6">Vamos criar algo real.</h2>
-                    <p id="contact-section-intro" class="text-sm md:text-base opacity-75 max-w-3xl">Preencha o formulario para conversarmos sobre produto, design, front-end ou colaboracoes editoriais. Resposta esperada em ate 2 dias uteis.</p>
+            <div class="brutalist-container grid grid-cols-1 md:grid-cols-3 dashboard-grid">
+                <div class="grid-item md:col-span-3 p-8 md:p-16 lg:p-20 aspect-auto bg-gradient-to-tr from-[var(--bg-color)] to-[var(--item-hover)]">
+                    <span id="contact-section-label" class="ui-label">Contato</span>
+                    <h2 id="contact-section-title" class="text-5xl md:text-7xl lg:text-9xl font-normal serif-title italic leading-[0.85] tracking-tighter mb-8">Vamos criar<br>algo real.</h2>
+                    <p id="contact-section-intro" class="text-xl opacity-50 max-w-3xl font-light">Resposta esperada em até 2 dias úteis para projetos de produto, design ou colaborações editoriais.</p>
                 </div>
 
-                <div class="grid-item md:col-span-2 p-6 md:p-10 aspect-auto md:aspect-auto">
-                    <form id="contact-form" class="space-y-5" novalidate>
+                <div class="grid-item md:col-span-2 p-8 md:p-12 aspect-auto">
+                    <form id="contact-form" class="space-y-8" novalidate>
                         <input type="text" name="company_website" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
 
-                        <div>
-                            <label id="contact-name-label" for="contact-name" class="label">Nome</label>
-                            <input id="contact-name" name="name" type="text" class="ui-input" placeholder="Seu nome completo" minlength="2" required>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <label id="contact-name-label" for="contact-name" class="ui-label">Nome</label>
+                                <input id="contact-name" name="name" type="text" class="ui-input" placeholder="Seu nome completo" minlength="2" required>
+                            </div>
+
+                            <div>
+                                <label id="contact-email-label" for="contact-email" class="ui-label">E-mail</label>
+                                <input id="contact-email" name="email" type="email" class="ui-input" placeholder="voce@email.com" required>
+                            </div>
                         </div>
 
                         <div>
-                            <label id="contact-email-label" for="contact-email" class="label">E-mail</label>
-                            <input id="contact-email" name="email" type="email" class="ui-input" placeholder="voce@email.com" required>
-                        </div>
-
-                        <div>
-                            <label id="contact-subject-label" for="contact-subject" class="label">Assunto</label>
+                            <label id="contact-subject-label" for="contact-subject" class="ui-label">Assunto</label>
                             <select id="contact-subject" name="subject" class="ui-select" required>
                                 <option id="contact-subject-option-empty" value="">Selecione um tema</option>
                                 <option id="contact-subject-option-website" value="Projeto de website">Projeto de website</option>
@@ -1367,36 +1354,37 @@
                         </div>
 
                         <div>
-                            <label id="contact-message-label" for="contact-message" class="label">Mensagem</label>
+                            <label id="contact-message-label" for="contact-message" class="ui-label">Mensagem</label>
                             <textarea id="contact-message" name="message" class="ui-textarea" placeholder="Conte um pouco sobre contexto, objetivo e prazo." minlength="20" maxlength="1200" required></textarea>
                         </div>
 
-                        <label id="contact-consent-label" class="flex items-start gap-3 text-xs opacity-75 leading-relaxed">
-                            <input id="contact-consent" name="consent" type="checkbox" class="mt-0.5" required>
-                            <span id="contact-consent-text">Concordo em ser contactado por e-mail com base nas informacoes enviadas neste formulario.</span>
-                        </label>
-
-                        <div class="flex flex-wrap items-center gap-4 pt-1">
-                            <button id="contact-submit-btn" type="submit" class="ui-btn">Enviar mensagem</button>
-                            <p id="contact-status" class="form-status" data-state="idle" aria-live="polite">Pronto para enviar.</p>
+                        <div class="flex flex-wrap items-center justify-between gap-6 pt-4">
+                            <label id="contact-consent-label" class="flex items-start gap-4 text-[10px] uppercase tracking-wider opacity-50 max-w-sm leading-relaxed cursor-pointer">
+                                <input id="contact-consent" name="consent" type="checkbox" class="mt-0.5" required>
+                                <span id="contact-consent-text">Concordo em ser contactado por e-mail com base nas informações enviadas.</span>
+                            </label>
+                            <div class="flex items-center gap-6">
+                                <p id="contact-status" class="form-status text-[10px] uppercase tracking-widest opacity-60" data-state="idle" aria-live="polite">Ready to send</p>
+                                <button id="contact-submit-btn" type="submit" class="ui-btn">Enviar mensagem</button>
+                            </div>
                         </div>
                     </form>
                 </div>
 
-                <div class="grid-item p-6 md:p-10 aspect-auto md:aspect-auto">
-                    <span id="contact-direct-label" class="label">Canais diretos</span>
-                    <div class="space-y-4">
-                        <div class="contact-meta">
-                            <div id="contact-direct-email-label" class="text-[10px] uppercase tracking-[0.2em] opacity-60 mb-2">E-mail</div>
-                            <a class="hover:text-[var(--accent)] break-all" href="mailto:ola@seuemail.com">ola@seuemail.com</a>
+                <div class="grid-item p-8 md:p-12 aspect-auto border-l border-[var(--grid-border)]">
+                    <span id="contact-direct-label" class="ui-label mb-12">Canais diretos</span>
+                    <div class="space-y-8">
+                        <div class="contact-meta bg-[var(--item-hover)] p-6 border border-[var(--grid-border)]">
+                            <div id="contact-direct-email-label" class="ui-label opacity-40 mb-3">E-mail</div>
+                            <a class="text-lg font-medium hover:text-[var(--accent)] break-all" href="mailto:ola@seuemail.com">ola@seuemail.com</a>
                         </div>
-                        <div class="contact-meta">
-                            <div id="contact-direct-linkedin-label" class="text-[10px] uppercase tracking-[0.2em] opacity-60 mb-2">LinkedIn</div>
-                            <a class="hover:text-[var(--accent)] break-all" href="https://linkedin.com/in/usuario" aria-label="LinkedIn perfil">linkedin.com/in/usuario</a>
+                        <div class="contact-meta p-6 border border-[var(--grid-border)]">
+                            <div id="contact-direct-linkedin-label" class="ui-label opacity-40 mb-3">LinkedIn</div>
+                            <a class="text-lg font-medium hover:text-[var(--accent)] break-all" href="https://linkedin.com/in/usuario" aria-label="LinkedIn perfil">linkedin.com/in/usuario</a>
                         </div>
-                        <div class="contact-meta">
-                            <div id="contact-direct-sla-label" class="text-[10px] uppercase tracking-[0.2em] opacity-60 mb-2">SLA</div>
-                            <p id="contact-direct-sla-text" class="opacity-80">Retorno em ate 2 dias uteis.</p>
+                        <div class="contact-meta p-6 opacity-40">
+                            <div id="contact-direct-sla-label" class="ui-label mb-3">SLA</div>
+                            <p id="contact-direct-sla-text" class="text-sm italic">Retorno em até 48h úteis.</p>
                         </div>
                     </div>
                 </div>
@@ -1410,51 +1398,62 @@
     </footer>
     <div id="music-alert-stack" class="music-alert-stack" aria-live="polite" aria-atomic="true"></div>
 
-    <div id="comments-modal" class="app-modal modal-hidden fixed inset-0 z-[100] bg-black/70 p-4 md:p-10" role="dialog" aria-modal="true" aria-labelledby="comments-modal-title">
-        <div class="max-w-3xl mx-auto border border-[var(--grid-border)] bg-[var(--bg-color)]">
-            <div class="p-6 border-b border-[var(--grid-border)] flex items-center justify-between">
-                <h3 id="comments-modal-title" class="text-lg font-bold">Comentarios</h3>
+    <div id="comments-modal" class="app-modal modal-hidden" role="dialog" aria-modal="true" aria-labelledby="comments-modal-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 id="comments-modal-title" class="text-3xl font-medium serif-title italic">Comentários</h3>
+                    <p class="text-[10px] font-mono tracking-widest uppercase opacity-50 mt-1">Public_Interaction_Log</p>
+                </div>
                 <button id="comments-modal-close" type="button" class="ui-btn">fechar</button>
             </div>
-            <div class="p-6 space-y-4 max-h-[60vh] overflow-auto" id="comments-list"></div>
-            <form id="comments-form" class="p-6 border-t border-[var(--grid-border)]">
-                <label for="comment-input" class="sr-only">Comentario</label>
-                <input type="text" id="comment-input" class="w-full p-3 bg-transparent border border-[var(--grid-border)] text-sm" placeholder="Escreva um comentario curto" required>
-                <div class="mt-4 flex justify-end">
-                    <button id="comments-submit" type="submit" class="ui-btn">Publicar</button>
-                </div>
-            </form>
+            <div class="modal-body">
+                <div id="comments-list" class="space-y-6 mb-8"></div>
+                <form id="comments-form" class="pt-8 border-t border-[var(--grid-border)]">
+                    <label for="comment-input" class="ui-label">Novo comentário</label>
+                    <textarea id="comment-input" class="ui-textarea" placeholder="Escreva algo..." required></textarea>
+                    <div class="mt-6 flex justify-end">
+                        <button id="comments-submit" type="submit" class="ui-btn">Publicar</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
-    <div id="message-modal" class="app-modal modal-hidden fixed inset-0 z-[100] bg-black/70 p-4 md:p-10" role="dialog" aria-modal="true" aria-labelledby="message-modal-title" aria-describedby="message-modal-help">
-        <div class="max-w-3xl mx-auto border border-[var(--grid-border)] bg-[var(--bg-color)]">
-            <div class="p-6 border-b border-[var(--grid-border)] flex items-center justify-between">
-                <h3 id="message-modal-title" class="text-lg font-bold">Mensagem privada</h3>
+    <div id="message-modal" class="app-modal modal-hidden" role="dialog" aria-modal="true" aria-labelledby="message-modal-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 id="message-modal-title" class="text-3xl font-medium serif-title italic">Mensagem Privada</h3>
+                    <p class="text-[10px] font-mono tracking-widest uppercase opacity-50 mt-1">Secure_Direct_Signal</p>
+                </div>
                 <button id="message-modal-close" type="button" class="ui-btn">fechar</button>
             </div>
-            <form id="message-form" class="p-6">
-                <p id="message-modal-help" class="text-xs opacity-70 mb-4">Interacao local para prototipo de UX. Em CMS real, isso deve usar backend autenticado.</p>
-                <textarea id="message-input" class="w-full min-h-40 p-3 bg-transparent border border-[var(--grid-border)] text-sm" placeholder="Escreva sua mensagem privada" required></textarea>
-                <div class="mt-4 flex justify-end">
-                    <button id="message-submit" type="submit" class="ui-btn">Enviar</button>
-                </div>
-            </form>
+            <div class="modal-body">
+                <form id="message-form" class="space-y-6">
+                    <p class="text-xs opacity-50 italic mb-4">Interação local para protótipo de UX. O sinal será processado localmente.</p>
+                    <div>
+                        <label for="message-input" class="ui-label">Corpo da mensagem</label>
+                        <textarea id="message-input" class="ui-textarea min-h-[200px]" placeholder="Sua mensagem..." required></textarea>
+                    </div>
+                    <div class="flex justify-end">
+                        <button id="message-submit" type="submit" class="ui-btn">Enviar sinal</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
-    <div id="lastfm-day-modal" class="app-modal modal-hidden fixed inset-0 z-[100] bg-black/70 p-4 md:p-10" role="dialog" aria-modal="true" aria-labelledby="lastfm-day-modal-title" aria-describedby="lastfm-day-modal-help">
-        <div class="max-w-3xl mx-auto border border-[var(--grid-border)] bg-[var(--bg-color)]">
-            <div class="p-6 border-b border-[var(--grid-border)] flex items-center justify-between gap-4">
+    <div id="lastfm-day-modal" class="app-modal modal-hidden" role="dialog" aria-modal="true" aria-labelledby="lastfm-day-modal-title">
+        <div class="modal-content">
+            <div class="modal-header">
                 <div>
-                    <h3 id="lastfm-day-modal-title" class="text-lg font-bold">Musicas tocadas hoje</h3>
-                    <p id="lastfm-day-modal-help" class="text-xs opacity-70 mt-1">Faixas agrupadas por repeticao no dia atual.</p>
+                    <h3 id="lastfm-day-modal-title" class="text-4xl md:text-5xl font-medium serif-title italic">Músicas do dia</h3>
+                    <p id="lastfm-day-modal-help" class="text-[10px] font-mono tracking-widest uppercase opacity-50 mt-1">Daily_Listening_Audit</p>
                 </div>
                 <button id="lastfm-day-modal-close" type="button" class="ui-btn">fechar</button>
             </div>
-            <div class="p-6">
-                <div id="lastfm-day-modal-list"></div>
-            </div>
+            <div class="modal-body" id="lastfm-day-modal-list"></div>
         </div>
     </div>
 

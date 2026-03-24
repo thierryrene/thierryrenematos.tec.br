@@ -11,6 +11,11 @@ Este arquivo segue o padrao Keep a Changelog e versionamento semantico.
 - Variaveis `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN` adicionadas ao `.env.example`.
 
 ### Changed
+- Refinamento visual Neo-Brutalista aplicado globalmente em todos os arquivos seguindo `DESIGN.md`.
+- Remocao total de cantos arredondados (`border-radius`) nos cards, containers dinâmicos, indicadores de status no dashboard (`rounded-full` removido) e toast notification de música.
+- Hierarquia tipográfica rígida nas seções principais: headers convertidos para `Instrument Serif (italic, weight 400)` e botoes/links/dados para uppercase 600 weight.
+- Padronização do grid: remoção de fundos em inputs (`transparent`) priorizando demarcações em 1px solid default, preenchimento explícito dos state blocks de inputs (`.ui-btn`, etc).
+- Background geral enriquecido com textura `radial-gradient` pontilhada sutil para realçar aspecto técnico da dashboard.
 - Modo SEO de producao ativado: metatags `robots`/`googlebot`/`bingbot` atualizadas para `index, follow` com previews amplos e sem bloqueio de snippet.
 - `robots.txt` simplificado para liberar rastreamento global (`User-agent: *` + `Allow: /`), removendo bloqueios anteriores.
 - Navegacao SPA com URL real integrada via History API: menu principal e navegacao de posts agora atualizam `pathname` (`/`, `/sobre`, `/fotografias`, `/blog`, `/blog/:slug`, `/contato`) sem recarregar pagina.
