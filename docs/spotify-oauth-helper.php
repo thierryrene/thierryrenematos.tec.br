@@ -35,7 +35,7 @@ loadEnv(__DIR__ . '/../.env');
 
 $clientId     = env('SPOTIFY_CLIENT_ID');
 $clientSecret = env('SPOTIFY_CLIENT_SECRET');
-$redirectUri  = 'http://localhost/thierryrenematos.tec.br/docs/spotify-oauth-helper.php';
+$redirectUri  = 'https://developer.spotify.com/dashboard';
 $scope        = 'user-read-currently-playing user-read-recently-played';
 
 header('Content-Type: text/html; charset=utf-8');
